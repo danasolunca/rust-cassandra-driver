@@ -1,0 +1,37 @@
+[package]
+
+name = "cassandra"
+version = "0.0.1"
+authors = ["Tupshin Harper <tupshin@tupshin.com>"]
+
+[[bin]]
+name="basic"
+path="src/bin/basic.rs"
+
+[[bin]]
+name="batch"
+path="src/bin/batch.rs"
+
+[[bin]]
+name="paging"
+path="src/bin/paging.rs"
+
+[[bin]]
+name="simple"
+path="src/bin/simple.rs"
+
+[[bin]]
+name="async"
+path="src/bin/async.rs"
+
+[[bin]]
+name="collections"
+path="src/bin/collections.rs"
+
+[lib]
+name = "cassandra"
+# path = "src/cassandra/mod.rs"
+
+# [dependencies.uuid]
+# git = "https://github.com/rust-lang/uuid.git"
+
