@@ -4,6 +4,3 @@ pub enum CassCompression {
   LZ4=2,
 }
 
-pub mod internal {
-
-}

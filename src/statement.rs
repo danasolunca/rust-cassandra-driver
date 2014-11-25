@@ -197,7 +197,6 @@ impl Drop for Prepared {
 pub mod internal {
   use types::internal as types_internal;
   use error::internal as error_internal;
-  use consistency::internal as consistency_internal;
   use result::internal as result_internal;
   use collection::internal as collection_internal;
   use consistency;
@@ -243,6 +242,7 @@ pub mod internal {
     pub fn cass_statement_bind_decimal_by_name(statement: *mut CassStatement, name: *const ::libc::c_char, value: types_internal::CassDecimal) -> error_internal::CassError;
     pub fn cass_statement_bind_custom_by_name(statement: *mut CassStatement, name: *const ::libc::c_char, size: types_internal::cass_size_t, output: *mut *mut u8) -> error_internal::CassError;
     pub fn cass_statement_bind_collection_by_name(statement: *mut CassStatement, name: *const ::libc::c_char, collection: *const collection_internal::CassCollection) -> error_internal::CassError;
+
     pub fn cass_prepared_free(prepared: *const CassPrepared);
     pub fn cass_prepared_bind(prepared: *const CassPrepared) -> *mut CassStatement;
 

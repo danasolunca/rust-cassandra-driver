@@ -1,4 +1,4 @@
-pub enum VerifyType {
+#[allow(non_camel_case_types)] pub enum VerifyType {
   NONE = 0,
   PEER_CERT = 1,
   PEER_IDENTITY=2,

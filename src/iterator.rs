@@ -34,13 +34,10 @@ pub struct CollectionIterator {
 }
 
 impl Iterator<CassRow> for ResultIterator {
-    // The 'Iterator' trait only requires the 'next' method to be defined. The
-    // return type is 'Option<T>', 'None' is returned when the 'Iterator' is
-    // over, otherwise the next value is returned wrapped in 'Some'
-    fn next(&mut self) -> Option<CassRow> {
-      if self.has_next() {Some(self.get_next_row())}
-      else {None}
-    }
+  fn next(&mut self) -> Option<CassRow> {
+    if self.has_next() {Some(self.get_next_row())}
+    else {None}
+  }
 }
 
 #[allow(dead_code)]
@@ -52,18 +49,13 @@ impl ResultIterator {
   pub fn get_next_row(&self) -> CassRow {unsafe{
     CassRow{cass_row:internal::cass_iterator_get_row(self.cass_iterator)}
   }}
-
 }
 
 impl Iterator<CassValue> for CollectionIterator {
-    // The 'Iterator' trait only requires the 'next' method to be defined. The
-    // return type is 'Option<T>', 'None' is returned when the 'Iterator' is
-    // over, otherwise the next value is returned wrapped in 'Some'
-    fn next(&mut self) -> Option<CassValue> {
-      if self.has_next() {Some(self.get_next_value())}
-      else {None}
-    }
-
+  fn next(&mut self) -> Option<CassValue> {
+    if self.has_next() {Some(self.get_next_value())}
+    else {None}
+  }
 }
 
 #[allow(dead_code)]
@@ -91,13 +83,9 @@ impl CollectionIterator {
   pub fn get_next_map_value(self) -> CassValue {unsafe{
     CassValue{cass_value:internal::cass_iterator_get_map_value(self.cass_iterator)}
   }}
-
 }
 
 impl Iterator<CassValue> for RowIterator {
-    // The 'Iterator' trait only requires the 'next' method to be defined. The
-    // return type is 'Option<T>', 'None' is returned when the 'Iterator' is
-    // over, otherwise the next value is returned wrapped in 'Some'
   fn next(&mut self) -> Option<CassValue> {
     if self.has_next() {Some(self.get_next_value())}
     else {None}
@@ -125,15 +113,11 @@ pub mod internal {
   use types::internal as types_internal;
   use row::internal as row_internal;
   
-  pub type Enum_CassIteratorType_ = ::libc::c_uint;
-  pub type CassIteratorType = Enum_CassIteratorType_;
-
-  pub enum Struct_CassIterator_ { }
-  pub type CassIterator = Struct_CassIterator_;
+  pub type CassIterator = ::libc::c_uint;
   #[link(name = "cassandra")]
   extern "C" {
     pub fn cass_iterator_free(iterator: *mut CassIterator);
-    pub fn cass_iterator_type(iterator: *mut CassIterator) -> CassIteratorType;
+    pub fn cass_iterator_type(iterator: *mut CassIterator) -> CassIterator;
     pub fn cass_iterator_from_schema(schema: *const schema_internal::CassSchema) -> *mut CassIterator;
     pub fn cass_iterator_from_schema_meta(meta: *const schema_internal::CassSchemaMeta) -> *mut CassIterator;
     pub fn cass_iterator_fields_from_schema_meta(meta: *const schema_internal::CassSchemaMeta) -> *mut CassIterator;

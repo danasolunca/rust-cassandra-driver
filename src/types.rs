@@ -338,6 +338,7 @@ pub mod internal {
     pub fn cass_value_item_count(collection: *const CassValue) -> cass_size_t;
     pub fn cass_value_primary_sub_type(collection: *const CassValue) -> CassValueType;
     pub fn cass_value_secondary_sub_type(collection: *const CassValue) -> CassValueType;
+    
     pub fn cass_string_init(null_terminated: *const ::libc::c_char) -> CassString;
     pub fn cass_string_init2(data: *const ::libc::c_char, length: cass_size_t) -> CassString;
 

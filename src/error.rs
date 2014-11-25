@@ -67,8 +67,6 @@ pub enum CassErrorSSLType {
   NOT_IMPLEMENTED=50331654,
 }
 
-//pub const CASS_ERROR_LAST_ENTRY: ::libc::c_uint = 50331654;
-
 #[allow(dead_code)]
 #[deriving(Clone,Show)]
 pub struct Error {
@@ -85,7 +83,6 @@ impl Error {
   pub fn is_error(self) -> bool {
     if self.cass_error != internal::CASS_OK {true} else {false}
   }
-
 
   pub fn cass_error_desc(&self) -> *const c_char {unsafe{
     internal::cass_error_desc(self.cass_error)

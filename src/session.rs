@@ -72,8 +72,7 @@ pub mod internal {
   use batch::internal as batch_internal;
   use schema::internal as schema_internal;
   
-  pub enum Struct_CassSession_ { }
-  pub type CassSession = Struct_CassSession_;
+  pub enum CassSession { }
 
  #[link(name = "cassandra")]
   extern "C" {

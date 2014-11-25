@@ -87,7 +87,7 @@ pub mod internal {
     pub fn cass_cluster_set_connect_timeout(cluster: *mut CassCluster, timeout_ms: ::libc::c_uint) -> error_internal::CassError;
     pub fn cass_cluster_set_request_timeout(cluster: *mut CassCluster, timeout_ms: ::libc::c_uint) -> error_internal::CassError;
     pub fn cass_cluster_set_log_level(cluster: *mut CassCluster, level: log_internal::CassLogLevel) -> error_internal::CassError;
-    //pub fn cass_cluster_set_log_callback(cluster: *mut CassCluster, callback: CassLogCallback, data: *mut ::libc::c_void) -> error_internal::CassError;
+    pub fn cass_cluster_set_log_callback(cluster: *mut CassCluster, callback: log_internal::CassLogCallback, data: *mut ::libc::c_void) -> error_internal::CassError;
     pub fn cass_cluster_set_credentials(cluster: *mut CassCluster, username: *const ::libc::c_char, password: *const ::libc::c_char) -> error_internal::CassError;
     pub fn cass_cluster_set_load_balance_round_robin(cluster: *mut CassCluster) -> error_internal::CassError;
     pub fn cass_cluster_set_load_balance_dc_aware(cluster: *mut CassCluster, local_dc: *const ::libc::c_char) -> error_internal::CassError;

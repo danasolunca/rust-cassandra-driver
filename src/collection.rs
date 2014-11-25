@@ -200,56 +200,21 @@ pub mod internal {
   pub type Enum_CassCollectionType_ = ::libc::c_uint;
   pub type CassCollectionType = Enum_CassCollectionType_;
 
-  pub const CASS_VALUE_TYPE_UNKNOWN: ::libc::c_uint = 65535;
-  pub const CASS_VALUE_TYPE_CUSTOM: ::libc::c_uint = 0;
-  pub const CASS_VALUE_TYPE_ASCII: ::libc::c_uint = 1; 
-  pub const CASS_VALUE_TYPE_BIGINT: ::libc::c_uint = 2;
-  pub const CASS_VALUE_TYPE_BLOB: ::libc::c_uint = 3;
-  pub const CASS_VALUE_TYPE_BOOLEAN: ::libc::c_uint = 4;
-  pub const CASS_VALUE_TYPE_COUNTER: ::libc::c_uint = 5;
-  pub const CASS_VALUE_TYPE_DECIMAL: ::libc::c_uint = 6;
-  pub const CASS_VALUE_TYPE_DOUBLE: ::libc::c_uint = 7;
-  pub const CASS_VALUE_TYPE_FLOAT: ::libc::c_uint = 8;
-  pub const CASS_VALUE_TYPE_INT: ::libc::c_uint = 9;
-  pub const CASS_VALUE_TYPE_TEXT: ::libc::c_uint = 10;
-  pub const CASS_VALUE_TYPE_TIMESTAMP: ::libc::c_uint = 11;
-  pub const CASS_VALUE_TYPE_UUID: ::libc::c_uint = 12;
-  pub const CASS_VALUE_TYPE_VARCHAR: ::libc::c_uint = 13;
-  pub const CASS_VALUE_TYPE_VARINT: ::libc::c_uint = 14;
-  pub const CASS_VALUE_TYPE_TIMEUUID: ::libc::c_uint = 15;
-  pub const CASS_VALUE_TYPE_INET: ::libc::c_uint = 16;
-  pub const CASS_VALUE_TYPE_LIST: ::libc::c_uint = 32;
-  pub const CASS_VALUE_TYPE_MAP: ::libc::c_uint = 33;
-  pub const CASS_VALUE_TYPE_SET: ::libc::c_uint = 34;
-
   #[link(name = "cassandra")]
   extern "C" {  
-    pub fn cass_collection_new(_type: CassCollectionType,
-                               item_count: types_internal::cass_size_t)
-     -> *mut CassCollection;
+    pub fn cass_collection_new(_type: CassCollectionType, item_count: types_internal::cass_size_t) -> *mut CassCollection;
     pub fn cass_collection_free(collection: *mut CassCollection);
-    pub fn cass_collection_append_int32(collection: *mut CassCollection,
-                                        value: i32) -> error_internal::CassError;
-    pub fn cass_collection_append_int64(collection: *mut CassCollection,
-                                        value: i64) -> error_internal::CassError;
-    pub fn cass_collection_append_float(collection: *mut CassCollection,
-                                        value: f32) -> error_internal::CassError;
-    pub fn cass_collection_append_double(collection: *mut CassCollection,
-                                         value: f64) -> error_internal::CassError;
-    pub fn cass_collection_append_bool(collection: *mut CassCollection,
-                                       value: types_internal::cass_bool_t) -> error_internal::CassError;
-    pub fn cass_collection_append_string(collection: *mut CassCollection,
-                                         value: types_internal::CassString) -> error_internal::CassError;
-    pub fn cass_collection_append_bytes(collection: *mut CassCollection,
-                                        value: types_internal::CassBytes) -> error_internal::CassError;
-    pub fn cass_collection_append_uuid(collection: *mut CassCollection,
-                                       value: types_internal::CassUuid) -> error_internal::CassError;
-    pub fn cass_collection_append_inet(collection: *mut CassCollection,
-                                       value: types_internal::CassInet) -> error_internal::CassError;
-    pub fn cass_collection_append_decimal(collection: *mut CassCollection,
-                                          value: types_internal::CassDecimal) -> error_internal::CassError;
+    pub fn cass_collection_append_int32(collection: *mut CassCollection, value: i32) -> error_internal::CassError;
+    pub fn cass_collection_append_int64(collection: *mut CassCollection, value: i64) -> error_internal::CassError;
+    pub fn cass_collection_append_float(collection: *mut CassCollection, value: f32) -> error_internal::CassError;
+    pub fn cass_collection_append_double(collection: *mut CassCollection, value: f64) -> error_internal::CassError;
+    pub fn cass_collection_append_bool(collection: *mut CassCollection, value: types_internal::cass_bool_t) -> error_internal::CassError;
+    pub fn cass_collection_append_string(collection: *mut CassCollection, value: types_internal::CassString) -> error_internal::CassError;
+    pub fn cass_collection_append_bytes(collection: *mut CassCollection, value: types_internal::CassBytes) -> error_internal::CassError;
+    pub fn cass_collection_append_uuid(collection: *mut CassCollection, value: types_internal::CassUuid) -> error_internal::CassError;
+    pub fn cass_collection_append_inet(collection: *mut CassCollection, value: types_internal::CassInet) -> error_internal::CassError;
+    pub fn cass_collection_append_decimal(collection: *mut CassCollection, value: types_internal::CassDecimal) -> error_internal::CassError;
     pub fn cass_iterator_from_collection(value: *const types_internal::CassValue) -> *mut iterator_internal::CassIterator;
     pub fn cass_iterator_from_map(value: *const types_internal::CassValue) -> *mut iterator_internal::CassIterator;
-
   }
 }

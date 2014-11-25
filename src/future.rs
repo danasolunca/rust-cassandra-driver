@@ -82,7 +82,7 @@ pub mod internal {
   #[link(name = "cassandra")]
   extern "C" {
     pub fn cass_future_free(future: *mut CassFuture);
-    //pub fn cass_future_set_callback(future: *mut CassFuture, callback: CassFutureCallback, data: *mut ::libc::c_void) -> CassError;
+    pub fn cass_future_set_callback(future: *mut CassFuture, callback: CassFutureCallback, data: *mut ::libc::c_void) -> error_internal::CassError;
     pub fn cass_future_ready(future: *mut CassFuture) -> types_internal::cass_bool_t;
     pub fn cass_future_wait(future: *mut CassFuture);
     pub fn cass_future_wait_timed(future: *mut CassFuture, timeout_us: types_internal::cass_duration_t) -> types_internal::cass_bool_t;
