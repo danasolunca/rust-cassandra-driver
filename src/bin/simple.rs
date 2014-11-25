@@ -16,7 +16,8 @@ pub struct Simple {
 
 fn main()  {
   let contact_points = "127.0.0.1".to_string();
-  let mut cluster = Cluster::create(contact_points);
+  let mut cluster = Cluster::new();
+  cluster.set_contact_points(contact_points);
 
   let mut session_future = cluster.connect_async();
   session_future.wait();

@@ -79,7 +79,8 @@ fn main() {
   let items = [ "apple".to_string(), "orange".to_string(), "banana".to_string(), "mango".to_string()].to_vec();
 
   let contact_points = "127.0.0.1".to_string();
-  let cluster = Cluster::create(contact_points);
+  let cluster = Cluster::new();
+  cluster.set_contact_points(contact_points);
 
   match cluster.connect() {
     Err(fail) => println!("fail: {}",fail),

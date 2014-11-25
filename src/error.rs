@@ -3,7 +3,7 @@ extern crate libc;
 use libc::c_char;
 
 pub const CASS_ERROR_LAST_ENTRY: ::libc::c_uint = 50331654;
-pub const CASS_OK: ::libc::c_uint = 0;
+pub const CASS_OK:u32 = 0;
 
 
 
@@ -75,13 +75,14 @@ pub struct Error {
 
 #[allow(dead_code)]
 
+
 impl Error {
   pub fn new(err:u32) -> Error {
     Error{cass_error:err}
   }
 
   pub fn is_error(self) -> bool {
-    if self.cass_error != internal::CASS_OK {true} else {false}
+    if self.cass_error != CASS_OK {true} else {false}
   }
 
   pub fn cass_error_desc(&self) -> *const c_char {unsafe{
@@ -90,12 +91,9 @@ impl Error {
 }
 
 pub mod internal {
-  pub const CASS_OK: ::libc::c_uint = 0;
   pub const CASS_ERROR_LAST_ENTRY: ::libc::c_uint = 50331654;
 
-  
-  type Enum_CassErrorSource_ = ::libc::c_uint;  
-  type CassErrorSource = Enum_CassErrorSource_;
+  type CassErrorSource = ::libc::c_uint;  
   type Enum_CassError_ = ::libc::c_uint;
   pub type CassError = Enum_CassError_;
   #[link(name = "cassandra")]

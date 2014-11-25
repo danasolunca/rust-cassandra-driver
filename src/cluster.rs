@@ -6,6 +6,7 @@ use future::Future as CassFuture;
 use session::Session;
 use error::Error as CassError;
 use types::internal as types_internal;
+use error::CASS_OK;
 
 #[allow(dead_code)]
 pub struct Cluster {
@@ -16,15 +17,17 @@ pub struct Cluster {
 #[allow(unused_variables)]
 impl Cluster {
 
-  fn new() -> Cluster {unsafe{
+  pub fn new() -> Cluster {unsafe{
     Cluster{cass_cluster:internal::cass_cluster_new()}
   }}
 
-  pub fn create(contact_points:String) -> Cluster {unsafe{
-    let cluster = Cluster::new();
+  pub fn set_contact_points(&self, contact_points:String) -> Result<&Cluster,CassError> {unsafe{
     let points = contact_points.to_c_str();
-    let err = internal::cass_cluster_set_contact_points(cluster.cass_cluster,types_internal::cass_string_init(points.as_ptr()).data);
-    cluster
+    let rc = internal::cass_cluster_set_contact_points(self.cass_cluster,types_internal::cass_string_init(points.as_ptr()).data);
+    match rc == CASS_OK{
+      true =>Ok(self),
+      false =>Err(CassError{cass_error:rc}),
+    }
   }}
 
   pub fn connect_async(&mut self) -> CassFuture{unsafe{

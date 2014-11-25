@@ -53,9 +53,9 @@ fn main() {
 		insert: "INSERT INTO async (key, bln, flt, dbl, i32, i64) VALUES (?, ?, ?, ?, ?, ?);"
 	};
 	
-
   let contact_points = "127.0.0.1".to_string();
-  let cluster = Cluster::create(contact_points);
+  let cluster = Cluster::new();
+  cluster.set_contact_points(contact_points);
 
   match cluster.connect() {
     Err(fail) => println!("fail: {}",fail),

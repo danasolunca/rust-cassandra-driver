@@ -5,6 +5,7 @@ use std::string::raw;
 use collection::internal as collection_internal;
 use types::internal as types_internal;
 use error::internal as error_internal;
+use error::CASS_OK;
 
 use error::Error as CassError;
 use libc::c_char;
@@ -88,7 +89,7 @@ impl CassValue {
     let err_string = types_internal::cass_value_get_string(self.cass_value,&mut*output);
     let err = CassError{cass_error:err_string};
     let ref mut output = *output;
-    if err.cass_error == error_internal::CASS_OK {
+    if err.cass_error == CASS_OK {
       let length=output.length as uint;
       println!("item length: {}", length);
       println!("raw: {}", raw::from_parts(output.data as *mut u8, length, length));
@@ -99,31 +100,31 @@ impl CassValue {
   pub fn get_int32(self) ->  Result<i32,CassError> {unsafe{
     let ref mut output:i32=0;
     let err = CassError{cass_error:types_internal::cass_value_get_int32(self.cass_value,output)};
-    if err.cass_error == error_internal::CASS_OK {return Ok(*output)} else {return Err(err)}
+    if err.cass_error == CASS_OK {return Ok(*output)} else {return Err(err)}
   }}
 
   pub fn get_int64(self) ->  Result<i64,CassError> {unsafe{
     let ref mut output:i64=0;
     let err = CassError{cass_error:types_internal::cass_value_get_int64(self.cass_value,output)};
-    if err.cass_error == error_internal::CASS_OK {return Ok(*output)} else {return Err(err)}
+    if err.cass_error == CASS_OK {return Ok(*output)} else {return Err(err)}
     }}
 
   pub fn get_float(self) ->  Result<f32,CassError> {unsafe{
     let ref mut output:f32=0.0;
     let err = CassError{cass_error:types_internal::cass_value_get_float(self.cass_value,output)};
-    if err.cass_error == error_internal::CASS_OK {return Ok(*output)} else {return Err(err)}
+    if err.cass_error == CASS_OK {return Ok(*output)} else {return Err(err)}
   }}
 
   pub fn get_double(self) -> Result<f64,CassError> {unsafe{
     let ref mut output:f64=0.0;
     let err = CassError{cass_error:types_internal::cass_value_get_double(self.cass_value,output)};
-    if err.cass_error == error_internal::CASS_OK {return Ok(*output)} else {return Err(err)}
+    if err.cass_error == CASS_OK {return Ok(*output)} else {return Err(err)}
   }}
 
   pub fn get_bool(self) -> Result<bool,CassError> {unsafe{
     let ref mut output:u32=0;
     let err = CassError{cass_error:types_internal::cass_value_get_bool(self.cass_value,output)};
-    if err.cass_error == error_internal::CASS_OK {return Ok(*output> 0)} else {return Err(err)}
+    if err.cass_error == CASS_OK {return Ok(*output> 0)} else {return Err(err)}
   }}
 
   pub fn get_uuid(self, output: CassUuid) -> CassError {unsafe{

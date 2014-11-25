@@ -64,7 +64,8 @@ fn main()  {
   let mut output=  Basic{bln:false, dbl:0.0f64, flt:0.00f32, i32:0, i64:0};
 
   let contact_points = "127.0.0.1".to_string();
-  let cluster = Cluster::create(contact_points);
+  let cluster = Cluster::new();
+  cluster.set_contact_points(contact_points);
 
   match cluster.connect() {
     Err(fail) => println!("fail: {}",fail),
