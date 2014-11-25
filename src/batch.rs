@@ -2,30 +2,30 @@ extern crate libc;
 #[allow(dead_code)]
 use statement::Statement;
 use error::Error as CassError;
-use cass_internal_api;
 
-pub type BatchType = u32;
-#[allow(dead_code)]pub static LOGGED:BatchType = 0;
-#[allow(dead_code)]pub static UNLOGGED:BatchType = 1;
-#[allow(dead_code)]pub static COUNTER:BatchType = 2;
+pub enum BatchType {
+  LOGGED=0,
+  UNLOGGED=1,
+  COUNTER=2,
+}
 
 #[allow(dead_code)]
 pub struct Batch {
-  pub cass_batch:*mut cass_internal_api::CassBatch,
+  pub cass_batch:*mut internal::CassBatch,
 }
 
 #[allow(dead_code)]
 impl Batch {
   pub fn new(batch_type: BatchType) -> Batch {unsafe{
-    Batch{cass_batch:cass_internal_api::cass_batch_new(batch_type)}
+    Batch{cass_batch:internal::cass_batch_new(batch_type as u32)}
   }}
 
   pub fn free(&mut self) {unsafe{
-    cass_internal_api::cass_batch_free(self.cass_batch);
+    internal::cass_batch_free(self.cass_batch);
   }}
 
   pub fn add_statement(&mut self, statement: Statement) -> CassError {unsafe{
-    CassError{cass_error:cass_internal_api::cass_batch_add_statement(self.cass_batch,statement.cass_statement)}
+    CassError{cass_error:internal::cass_batch_add_statement(self.cass_batch,statement.cass_statement)}
   }}
 }
 
@@ -40,8 +40,27 @@ impl Drop for Batch {
 mod tests {
     #[test]
     fn new() {
-      super::Batch::new(super::LOGGED);
-      super::Batch::new(super::UNLOGGED);
-      super::Batch::new(super::COUNTER);
+      super::Batch::new(BATCH_TYPE::LOGGED_BATCH);
+      super::Batch::new(BATCH_TYPE::UNLOGGED_BATCH);
+      super::Batch::new(BATCH_TYPE::COUNTER_BATCH);
     }
+}
+
+pub mod internal {
+  use consistency;
+  use error::internal as error_internal;
+  use statement::internal as statement_internal;
+
+  pub enum Struct_CassBatch_ { }
+  pub type CassBatch = Struct_CassBatch_;
+  pub type Enum_CassBatchType_ = ::libc::c_uint;
+  pub type CassBatchType = Enum_CassBatchType_;
+
+  #[link(name = "cassandra")]
+  extern "C" {
+    pub fn cass_batch_new(_type: CassBatchType) -> *mut CassBatch;
+    pub fn cass_batch_free(batch: *mut CassBatch);
+    pub fn cass_batch_set_consistency(batch: *mut CassBatch, consistency: consistency::CassConsistency) -> error_internal::CassError;
+    pub fn cass_batch_add_statement(batch: *mut CassBatch, statement: *mut statement_internal::CassStatement) -> error_internal::CassError;
+  }
 }

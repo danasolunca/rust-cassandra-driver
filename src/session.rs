@@ -2,28 +2,29 @@ use statement::Statement;
 use future::Future as CassFuture;
 use result::CResult;
 use batch::Batch;
-use cass_internal_api;
+
+use types::internal as types_internal;
+use session::internal as session_internal;
+use future::internal as future_internal;
 
 #[allow(dead_code)]
 pub struct Session {
-  pub cass_session:*mut cass_internal_api::CassSession
+  pub cass_session:*mut session_internal::CassSession
 }
 
 #[allow(dead_code)]
 impl Session {
   pub fn close_async(&self) -> CassFuture {unsafe{
-    CassFuture{cass_future:cass_internal_api::cass_session_close(self.cass_session)}
+    CassFuture{cass_future:internal::cass_session_close(self.cass_session)}
   }}
 
-  fn build(&self, statement: cass_internal_api::CassString) -> *mut cass_internal_api::CassFuture {unsafe{
-    cass_internal_api::cass_session_prepare(self.cass_session,statement)
+  fn build(&self, statement: types_internal::CassString) -> *mut future_internal::CassFuture {unsafe{
+    internal::cass_session_prepare(self.cass_session,statement)
   }}
 
   pub fn prepare(&self, statement: String) -> CassFuture {unsafe{
-    CassFuture{cass_future:cass_internal_api::cass_session_prepare(
-      self.cass_session,cass_internal_api::cass_string_init(
-        statement.to_c_str().as_ptr()
-      )
+    CassFuture{cass_future:internal::cass_session_prepare(
+      self.cass_session,types_internal::cass_string_init(statement.to_c_str().as_ptr())
     )}
   }}
 
@@ -55,11 +56,31 @@ impl Session {
   }
 
   pub fn execute_async(&self, statement: &Statement) -> CassFuture {unsafe{
-    let future = cass_internal_api::cass_session_execute(self.cass_session,&*statement.cass_statement);
+    let future = internal::cass_session_execute(self.cass_session,&*statement.cass_statement);
     CassFuture{cass_future:future}
   }}
 
   pub fn execute_batch(&self, batch: &Batch) -> CassFuture {unsafe{
-    CassFuture{cass_future:cass_internal_api::cass_session_execute_batch(self.cass_session,&*batch.cass_batch)}
+    CassFuture{cass_future:internal::cass_session_execute_batch(self.cass_session,&*batch.cass_batch)}
   }}
+}
+
+pub mod internal {
+  use future::internal as future_internal;
+  use types::internal as types_internal;
+  use statement::internal as statement_internal;
+  use batch::internal as batch_internal;
+  use schema::internal as schema_internal;
+  
+  pub enum Struct_CassSession_ { }
+  pub type CassSession = Struct_CassSession_;
+
+ #[link(name = "cassandra")]
+  extern "C" {
+    pub fn cass_session_close(session: *mut CassSession) -> *mut future_internal::CassFuture;
+    pub fn cass_session_prepare(session: *mut CassSession, query: types_internal::CassString) -> *mut future_internal::CassFuture;
+    pub fn cass_session_execute(session: *mut CassSession, statement: *const statement_internal::CassStatement) -> *mut future_internal::CassFuture;
+    pub fn cass_session_execute_batch(session: *mut CassSession, batch: *const batch_internal::CassBatch) -> *mut future_internal::CassFuture;
+    pub fn cass_session_get_schema(session: *mut CassSession) -> *const schema_internal::CassSchema;
+  }
 }

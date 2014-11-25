@@ -1,10 +1,17 @@
-pub use cass_internal_api::CASS_CONSISTENCY_ONE as CONSISTENCY_ONE;
-pub use cass_internal_api::CASS_CONSISTENCY_TWO as CONSISTENCY_TWO;
-pub use cass_internal_api::CASS_CONSISTENCY_SERIAL as CONSISTENCY_SERIAL;
+pub enum CassConsistency {
+  ANY=0,
+  ONE=1,
+  TWO=2,
+  THREE=3,
+  QUORUM=4,
+  ALL=5,
+  LOCAL_QUORUM=6,
+  EACH_QUORUM=7,
+  SERIAL=8,
+  LOCAL_SERIAL=9,
+  LOCAL_ONE=10,
+}
 
-#[allow(non_camel_case_types)] pub type CASS_CONSISTENCY = u32;
+pub mod internal {
 
-#[allow(dead_code)]
-pub struct CassConsistency {
-  pub cass_consistency:u64,
 }
