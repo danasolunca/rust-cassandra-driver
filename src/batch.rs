@@ -3,6 +3,7 @@ extern crate libc;
 use statement::Statement;
 use error::Error as CassError;
 
+
 pub enum BatchType {
   LOGGED=0,
   UNLOGGED=1,
@@ -38,11 +39,12 @@ impl Drop for Batch {
 
 #[cfg(test)]
 mod tests {
+    pub use batch::BatchType;
     #[test]
     fn new() {
-      super::Batch::new(BATCH_TYPE::LOGGED_BATCH);
-      super::Batch::new(BATCH_TYPE::UNLOGGED_BATCH);
-      super::Batch::new(BATCH_TYPE::COUNTER_BATCH);
+      super::Batch::new(BatchType::LOGGED);
+      super::Batch::new(BatchType::UNLOGGED);
+      super::Batch::new(BatchType::COUNTER);
     }
 }
 
