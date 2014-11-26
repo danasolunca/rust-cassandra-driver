@@ -66,7 +66,7 @@ fn select_from_paging(session:&mut Session) {
 
 #[allow(unused_variables)]
 fn main() {
-  let contact_points = "127.0.0.1".to_string();
+  let contact_points = "127.0.0.1";
 
   let cluster = Cluster::create(contact_points);
 
