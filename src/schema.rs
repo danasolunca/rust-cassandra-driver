@@ -1,21 +1,26 @@
 #[allow(dead_code)]
-pub enum CassSchemaMetaType {
-  KEYSPACE=0,
-  TABLE=1,
-  COLUMN=2,
+
+pub struct CassSchema {
+  pub cass_schema:*const internal::CassSchema
 }
+//~ impl Drop for CassSchema {
+  //~ fn drop(&mut self) {
+    //~ self.free();
+  //~ }
+//~ }
 
 pub mod internal {
   use types::internal as types_internal;
   
-  pub enum Struct_CassSchema_ { }
-  pub type CassSchema = Struct_CassSchema_;
-  pub enum Struct_CassSchemaMeta_ { }
-  pub type CassSchemaMeta = Struct_CassSchemaMeta_;
-  pub enum Struct_CassSchemaMetaField_ { }
-  pub type CassSchemaMetaField = Struct_CassSchemaMetaField_;
-  pub type Enum_CassSchemaMetaType_ = ::libc::c_uint;
-  pub type CassSchemaMetaType = Enum_CassSchemaMetaType_;
+  pub enum CassSchema { }
+  pub enum CassSchemaMeta { }
+  pub enum CassSchemaMetaField { }
+  pub enum CassSchemaMetaType {
+    KEYSPACE=0,
+    TABLE=1,
+    COLUMN=2,
+}
+
   #[link(name = "cassandra")]
   extern "C" {
     pub fn cass_schema_free(schema: *const CassSchema);

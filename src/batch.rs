@@ -2,6 +2,7 @@ extern crate libc;
 #[allow(dead_code)]
 use statement::Statement;
 use error::Error as CassError;
+use types::internal as internal_types;
 
 
 pub enum BatchType {

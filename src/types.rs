@@ -55,6 +55,55 @@ pub struct CassUuid {
   pub cass_uuid:internal::CassUuid,
 }
 
+impl CassUuid {
+
+  pub fn generate_timeuuid() -> CassUuid {unsafe{
+    let output:types_internal::CassUuid = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    types_internal::cass_uuid_generate_time(output);
+    CassUuid{cass_uuid:output}
+  }}
+
+  pub fn build_from_time(time:u64) -> CassUuid {unsafe{
+    let output:types_internal::CassUuid = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    types_internal::cass_uuid_from_time(time,output);
+    CassUuid{cass_uuid:output}
+  }}
+
+  pub fn min_from_time(time:u64) -> CassUuid {unsafe{
+    let output:types_internal::CassUuid = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    types_internal::cass_uuid_min_from_time(time,output);
+    CassUuid{cass_uuid:output}
+  }}
+
+  pub fn max_from_time(time:u64) -> CassUuid {unsafe{
+    let output:types_internal::CassUuid = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    types_internal::cass_uuid_max_from_time(time,output);
+    CassUuid{cass_uuid:output}
+  }}
+
+  pub fn generate_uuid() -> CassUuid {unsafe{
+    let output:types_internal::CassUuid = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    types_internal::cass_uuid_generate_random(output);
+    CassUuid{cass_uuid:output}
+  }}
+
+  pub fn get_timestamp(&self) -> u64 {unsafe{
+    types_internal::cass_uuid_timestamp(self.cass_uuid)
+  }}
+
+  pub fn get_version(&self) -> u8 {unsafe{
+    types_internal::cass_uuid_version(self.cass_uuid)
+  }}
+
+  //~ pub fn as_string(&self) -> u8 {unsafe{
+    //~ types_internal::cass_uuid_string(self.cass_uuid,
+    //~pub fn cass_uuid_string(uuid: CassUuid, output: *mut ::libc::c_char);
+  //~ }}
+
+
+
+}
+
 #[allow(dead_code)]
 pub struct CassInet {
   pub cass_inet:internal::CassInet,
@@ -84,7 +133,7 @@ impl CassValue {
   }}
 
   pub fn get_string(self) -> Result<String,CassError> {unsafe{
-    let ref mut output:internal::Struct_CassString_=internal::cass_string_init(self.cass_value as *const i8);
+    let ref mut output:internal::CassString=internal::cass_string_init(self.cass_value as *const i8);
     let ref mut output = *output;
     let err_string = types_internal::cass_value_get_string(self.cass_value,&mut*output);
     let err = CassError{cass_error:err_string};
@@ -166,12 +215,6 @@ impl CassValue {
     CassValueType{cass_value_type:types_internal::cass_value_secondary_sub_type(self.cass_value)}
   }}
 
-  //FIXME segfaults
-  pub fn generate_timeuuid() -> CassUuid {unsafe{
-    let output:types_internal::CassUuid = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-    types_internal::cass_uuid_generate_time(output);
-    CassUuid{cass_uuid:output}
-  }}
 
   fn cass_uuid_from_time(time: u64, output: CassUuid) {unsafe{
     internal::cass_uuid_from_time(time,output.cass_uuid);
@@ -261,7 +304,7 @@ pub mod internal {
   use std::string::raw;
 
 
-  impl Show for Struct_CassString_ {
+  impl Show for CassString {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {unsafe{
       let raw = self.data as *const u8;
       let length = self.length as uint;
@@ -270,45 +313,42 @@ pub mod internal {
   }}
 
   
-  pub type Enum_CassValueType_ = ::libc::c_uint;
-  pub type CassValueType = Enum_CassValueType_;
-  
-  pub enum Struct_CassValue_ { }
-  pub type CassValue = Struct_CassValue_;
+  pub type CassValueType = u32;  
+  pub enum CassValue {
+    CassDecimal,
+    CassBytes,
+    CassInet,
+    CassUuid,
+  }
 
   #[repr(C)]
-  pub struct Struct_CassDecimal_ {
+  pub struct CassDecimal {
     pub scale: i32,
     pub varint: CassBytes,
   }
-  pub type CassDecimal = Struct_CassDecimal_;
   
   #[repr(C)]
-  pub struct Struct_CassInet_ {
+  pub struct CassInet {
     pub address: [u8, ..16u],
     pub address_length: u8,
   }
-  pub type CassInet = Struct_CassInet_;
 
   pub type CassUuid = [u8, ..16u];
 
   #[repr(C)]
-  pub struct Struct_CassBytes_ {
+  pub struct CassBytes {
     pub data: *const u8,
     pub size: cass_size_t,
   }
-  pub type CassBytes = Struct_CassBytes_;
 
-  pub type size_t = ::libc::c_ulong;
-  pub type cass_size_t = size_t;
-  pub type Enum_Unnamed1 = ::libc::c_uint;
-  pub type cass_bool_t = Enum_Unnamed1;
+  pub type cass_size_t = u64;
+  pub type cass_bool_t = u32;
   #[repr(C)]
-  pub struct Struct_CassString_ {
-    pub data: *const ::libc::c_char,
+  pub struct CassString {
+    pub data: *const i8,
     pub length: cass_size_t,
   }
-  pub type CassString = Struct_CassString_;
+
   pub type cass_duration_t = u64;
 
 

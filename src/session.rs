@@ -2,6 +2,7 @@ use statement::Statement;
 use future::Future as CassFuture;
 use result::CResult;
 use batch::Batch;
+use schema::CassSchema;
 
 use types::internal as types_internal;
 use session::internal as session_internal;
@@ -63,6 +64,11 @@ impl Session {
   pub fn execute_batch(&self, batch: &Batch) -> CassFuture {unsafe{
     CassFuture{cass_future:internal::cass_session_execute_batch(self.cass_session,&*batch.cass_batch)}
   }}
+
+  pub fn get_schema(&self) -> CassSchema {unsafe{
+    CassSchema{cass_schema:internal::cass_session_get_schema(self.cass_session)}
+  }}
+  
 }
 
 pub mod internal {

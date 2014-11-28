@@ -8,7 +8,6 @@ use types::ValueType;
 use result::CassResult;
 use row::Row;
 
-use types::internal as types_internal;
 use row::internal as row_internal;
 use collection::internal as collection_internal;
 use result::internal as result_internal;
@@ -108,12 +107,11 @@ impl CassCollection {
   }}
 }
 
-//~ //FIXME this should not require a lifetime 
-//~ impl Drop for Collection {
-  //~ fn drop(&mut self) {
-    //~ self.free();
-  //~ }
-//~ }
+impl Drop for CassCollection {
+  fn drop(&mut self) {
+    self.free();
+  }
+}
 
 #[cfg(test)]
 mod tests {
@@ -195,10 +193,8 @@ pub mod internal {
   use error::internal as error_internal;
   use types::internal as types_internal;
   use iterator::internal as iterator_internal;
-  pub enum Struct_CassCollection_ { }
-  pub type CassCollection = Struct_CassCollection_;
-  pub type Enum_CassCollectionType_ = ::libc::c_uint;
-  pub type CassCollectionType = Enum_CassCollectionType_;
+  pub enum CassCollection { }
+  pub type CassCollectionType = u32;
 
   #[link(name = "cassandra")]
   extern "C" {  
