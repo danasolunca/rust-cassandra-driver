@@ -21,13 +21,11 @@ impl Cluster {
     Cluster{cass_cluster:internal::cass_cluster_new()}
   }}
 
-  pub fn set_contact_points(&self, contact_points:String) -> Result<&Cluster,CassError> {unsafe{
+  pub fn create(contact_points:&str) -> Cluster {unsafe{
+    let cluster = Cluster::new();
     let points = contact_points.to_c_str();
-    let rc = internal::cass_cluster_set_contact_points(self.cass_cluster,types_internal::cass_string_init(points.as_ptr()).data);
-    match rc == CASS_OK{
-      true =>Ok(self),
-      false =>Err(CassError{cass_error:rc}),
-    }
+    let err = internal::cass_cluster_set_contact_points(cluster.cass_cluster,types_internal::cass_string_init(points.as_ptr()).data);
+    cluster
   }}
 
   pub fn connect_async(&mut self) -> CassFuture{unsafe{
@@ -109,18 +107,18 @@ mod tests {
 
     #[test]
     fn create() {
-      super::Cluster::create("127.0.0.1".to_string());
+      super::Cluster::create("127.0.0.1");
     }
 
     #[test]
     fn connect() {
-      let cluster = super::Cluster::create("127.0.0.1".to_string());
+      let cluster = super::Cluster::create("127.0.0.1");
       cluster.connect();
     }
 
     #[test_should_fail]
     fn connect_bad_host() {
-      let cluster = super::Cluster::create("10.254.254.254".to_string());
+      let cluster = super::Cluster::create("10.254.254.254");
       cluster.connect();
     }
 }
