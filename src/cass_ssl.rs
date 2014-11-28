@@ -11,6 +11,7 @@ pub struct CassSsl {
   cass_ssl:*mut internal::CassSsl
 }
 
+#[allow(dead_code)]
 impl CassSsl {
   pub fn new() -> CassSsl {unsafe{
     CassSsl{cass_ssl:internal::cass_ssl_new()}

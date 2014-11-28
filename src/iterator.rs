@@ -1,6 +1,8 @@
 #[allow(dead_code)]
 use row::Row as CassRow;
 use types::CassValue;
+use result::CassResult;
+use collection::CassCollection;
 
 #[allow(non_camel_case_types)] pub enum IteratorType {
   RESULT=0,
@@ -14,26 +16,20 @@ use types::CassValue;
 
 
 
-impl Drop for RowIterator {
-  fn drop(&mut self) {unsafe{
-    internal::cass_iterator_free(self.cass_iterator)
-  }}
+//~ impl Drop for RowIterator {
+  //~ fn drop(&mut self) {unsafe{
+    //~ internal::cass_iterator_free(self.cass_iterator)
+  //~ }}
+//~ }
+
+pub struct CassIterator<T> {
+  pub cass_iterator:*mut internal::CassIterator
 }
 
-#[allow(dead_code)]
-pub struct ResultIterator {
-  pub cass_iterator:*mut internal::CassIterator,
-}
+pub type ResultIterator = CassIterator<CassResult>;
+pub type RowIterator = CassIterator<CassRow>;
+pub type CollectionIterator = CassIterator<CassCollection>;
 
-#[allow(dead_code)]
-pub struct RowIterator {
-  pub cass_iterator:*mut internal::CassIterator,
-}
-
-#[allow(dead_code)]
-pub struct CollectionIterator {
-  pub cass_iterator:*mut internal::CassIterator,
-}
 
 enum CassIteratorType {
   ResultIterator,
@@ -130,7 +126,6 @@ pub mod internal {
   extern "C" {
     pub fn cass_iterator_free(iterator: *mut CassIterator);
     pub fn cass_iterator_type(iterator: *mut CassIterator) -> CassIterator;
-    pub fn cass_iterator_from_schema(schema: *const schema_internal::CassSchema) -> *mut CassIterator;
     pub fn cass_iterator_from_schema_meta(meta: *const schema_internal::CassSchemaMeta) -> *mut CassIterator;
     pub fn cass_iterator_fields_from_schema_meta(meta: *const schema_internal::CassSchemaMeta) -> *mut CassIterator;
     pub fn cass_iterator_next(iterator: *mut CassIterator) -> types_internal::cass_bool_t;

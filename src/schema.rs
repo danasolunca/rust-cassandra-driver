@@ -1,16 +1,26 @@
 #[allow(dead_code)]
 
+use iterator::CassIterator;
+
 pub struct CassSchema {
   pub cass_schema:*const internal::CassSchema
 }
-//~ impl Drop for CassSchema {
-  //~ fn drop(&mut self) {
-    //~ self.free();
-  //~ }
+
+impl Drop for CassSchema {
+  fn drop(&mut self) {
+    //self.free();
+  }
+}
+
+//~ impl CassSchema {
+  //~ pub fn get_iterator(&self) -> CassIterator {unsafe{
+    //~ CassIterator{cass_iterator:cass_schema_free(&self.cass_schema)}
+  //~ }}
 //~ }
 
 pub mod internal {
   use types::internal as types_internal;
+  use iterator::internal as iterator_internal;
   
   pub enum CassSchema { }
   pub enum CassSchemaMeta { }
@@ -23,6 +33,7 @@ pub mod internal {
 
   #[link(name = "cassandra")]
   extern "C" {
+    pub fn cass_iterator_from_schema(schema: *const CassSchema) -> *mut iterator_internal::CassIterator;
     pub fn cass_schema_free(schema: *const CassSchema);
     pub fn cass_schema_get_keyspace(schema: *const CassSchema, keyspace_name: *const ::libc::c_char) -> *const CassSchemaMeta;
     pub fn cass_schema_meta_type(meta: *const CassSchemaMeta) -> CassSchemaMetaType;
