@@ -17,7 +17,7 @@ impl CassSsl {
     CassSsl{cass_ssl:internal::cass_ssl_new()}
   }}
 
-  pub fn add_trusted_cert(&self, cert: &String) -> CassError {unsafe{
+  pub fn add_trusted_cert(&self, cert: &str) -> CassError {unsafe{
     CassError{cass_error:internal::cass_ssl_add_trusted_cert(self.cass_ssl,CassValue::str_to_cass_string(cert))}
   }}
 
@@ -25,11 +25,11 @@ impl CassSsl {
     internal::cass_ssl_set_verify_flags(self.cass_ssl,flags);
   }}
 
-  pub fn set_cert(&self, cert: &String) -> CassError {unsafe{
+  pub fn set_cert(&self, cert: &str) -> CassError {unsafe{
     CassError{cass_error:internal::cass_ssl_set_cert(self.cass_ssl,CassValue::str_to_cass_string(cert))}
   }}
 
-  pub fn set_private_key(&self, key: &String, password: &String) -> CassError {unsafe{
+  pub fn set_private_key(&self, key: &str, password: &str) -> CassError {unsafe{
     CassError{cass_error:internal::cass_ssl_set_private_key(self.cass_ssl,CassValue::str_to_cass_string(key),CassValue::str_to_cass_string(password).data)}
   }}  
 }

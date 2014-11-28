@@ -274,7 +274,11 @@ impl CassValue {
     CassValue::cass_decimal_init(scale,varint)
   }
 
-  pub fn str_to_cass_string(string:&String) -> internal::CassString {unsafe{
+  pub fn string_to_cass_string(string:&String) -> internal::CassString {unsafe{
+     internal::cass_string_init2(string.as_bytes().as_ptr() as *const i8,string.as_bytes().len() as u64)
+  }}
+
+  pub fn str_to_cass_string(string:&str) -> internal::CassString {unsafe{
      internal::cass_string_init2(string.as_bytes().as_ptr() as *const i8,string.as_bytes().len() as u64)
   }}
 

@@ -20,14 +20,14 @@ struct Commands {
 static NUM_CONCURRENT_REQUESTS:uint = 5;
 
 #[allow(unused_must_use)]
-fn insert_into_async(session:&Session, cmd:&String, key:String) {
+fn insert_into_async(session:&Session, cmd:&str, key:&str) {
   let mut futures:DList<CassFuture> = DList::new();
   let mut i:uint = 0;
   while i < NUM_CONCURRENT_REQUESTS {
-    let mut statement = Statement::build_from_string(cmd, 6);
-    let wrapped = key + i.to_string();
+    let mut statement = Statement::build_from_str(cmd, 6);
+    let wrapped = key.to_string() + i.to_string();
     println!("response:{}",wrapped);
-    statement.bind_string(0, &wrapped);
+    statement.bind_string(0, wrapped.as_slice());
     statement.bind_bool(1, if i % 2 == 0 {true} else {false} as u32);
     statement.bind_float(2, i as f32 / 2.0);
     statement.bind_double(3, i  as f64 / 200.0);
@@ -67,7 +67,7 @@ fn main() {
       assert!(session.execute_str(cmds.use_ks).is_ok());
       assert!(session.execute_str(cmds.create_table).is_ok());
 
-      insert_into_async(session, &cmds.insert.to_string(),"test".to_string());
+      insert_into_async(session, cmds.insert,"test");
 
       let mut close_future = session.close_async();
       close_future.wait();

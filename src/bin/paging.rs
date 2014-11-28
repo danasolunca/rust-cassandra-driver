@@ -21,11 +21,11 @@ use std::vec::Vec;
 static NUM_CONCURRENT_REQUESTS:uint = 100;
 
 #[allow(unused_variables)]
-fn insert_into_paging(session:&mut Session, key:String) {
-  let query = "INSERT INTO paging (key, value) VALUES (?, ?);".to_string();
+fn insert_into_paging(session:&mut Session, key:&str) {
+  let query = "INSERT INTO paging (key, value) VALUES (?, ?);";
   let mut futures:Vec<CassFuture> = Vec::new();
   for i in range(1,NUM_CONCURRENT_REQUESTS) {
-    let mut statement = Statement::new(&query, 2);
+    let mut statement = Statement::new(query, 2);
 //    let uuid1 = Uuid::new_v4();
 //    statement.bind_string(0, &uuid1.to_string());
 //    statement.bind_string(1,&i.to_string());
@@ -83,7 +83,7 @@ fn main() {
 
       let result=session.execute(&mut Statement::build_from_str("USE examples",0));
 
-      insert_into_paging(&mut session, "test".to_string());
+      insert_into_paging(&mut session, "test");
       select_from_paging(&mut session);
      }
   }

@@ -65,12 +65,12 @@ impl CassCollection {
   }}
 
   pub fn append_string(&mut self, value: &String) -> CassError {unsafe{
-    let cass_string = CassValue::str_to_cass_string(value);
+    let cass_string = CassValue::string_to_cass_string(value);
    CassError{cass_error:internal::cass_collection_append_string(self.cass_collection,cass_string)}
   }}
 
   pub fn append_str(&mut self, value: &str) -> CassError {unsafe{
-    let cass_string = CassValue::str_to_cass_string(&value.to_string());
+    let cass_string = CassValue::string_to_cass_string(&value.to_string());
     CassError{cass_error:internal::cass_collection_append_string(self.cass_collection,cass_string)}
   }}
 

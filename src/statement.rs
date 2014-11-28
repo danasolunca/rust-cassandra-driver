@@ -38,7 +38,7 @@ impl Drop for Statement {
 
 #[allow(dead_code)]
 impl Statement {
-  pub fn new(statement_string: &String, parameter_count: types_internal::cass_size_t) ->  Statement {unsafe{
+  pub fn new(statement_string: &str, parameter_count: types_internal::cass_size_t) ->  Statement {unsafe{
     let cass_string = CassValue::str_to_cass_string(statement_string);
     let statement = statement_internal::cass_statement_new(cass_string,parameter_count);
     Statement{cass_statement:statement,last_error:CassError::new(0)}
@@ -112,7 +112,7 @@ impl Statement {
     self
   }}
 
-  pub fn bind_string(&mut self, index: types_internal::cass_size_t, value: &String) -> &mut Statement {unsafe{
+  pub fn bind_string(&mut self, index: types_internal::cass_size_t, value: &str) -> &mut Statement {unsafe{
     let cass_string = CassValue::str_to_cass_string(value);
       println!("cass_string={}",cass_string);
     self.last_error = CassError{cass_error:statement_internal::cass_statement_bind_string(self.cass_statement,index,cass_string)};
@@ -120,7 +120,7 @@ impl Statement {
   }}
 
   pub fn bind_str(&mut self, index: types_internal::cass_size_t, value: &str) -> &mut Statement {
-    self.bind_string(index, &value.to_string())
+    self.bind_string(index, value)
   }
 
 
@@ -167,7 +167,7 @@ pub struct Prepared {
 
 #[allow(dead_code)]
 impl Prepared {
-  pub fn new(statement_string:&String, session:Session) -> CassFuture {unsafe{
+  pub fn new(statement_string:&str, session:Session) -> CassFuture {unsafe{
     let cass_string = CassValue::str_to_cass_string(statement_string);
     let state:*mut future_internal::Struct_CassFuture_ = session_internal::cass_session_prepare(session.cass_session,cass_string);
     let prepared = CassFuture{cass_future:state};

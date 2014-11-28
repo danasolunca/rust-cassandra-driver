@@ -18,18 +18,18 @@ pub const CASS_BATCH_TYPE_COUNTER: ::libc::c_uint = 2;
 
 
 struct Pair {
-    key:String,
-    value:String
+  key:&static str,
+  value:&static str
 }
 
 struct Commands {
-	use_ks:String,
-	insert:String,
-	create_ks:String,
-	create_table:String,
+	use_ks:&static str,
+	insert:&static str,
+	create_ks:&static str,
+	create_table:&static str,
 } 
 
-fn prepare_insert_into_batch(session:Session, query:String) -> Result<Prepared,CassError> {
+fn prepare_insert_into_batch(session:Session, query:&str) -> Result<Prepared,CassError> {
 
   let mut future = session.prepare(query);
   future.wait();

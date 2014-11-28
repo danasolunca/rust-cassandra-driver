@@ -17,15 +17,15 @@ pub struct Basic {
 }
 
 struct Commands {
-	use_ks:String,
-	insert:String,
-	create_ks:String,
-	create_table:String,
-	select:String
+	use_ks:&'static str,
+	insert:&'static str,
+	create_ks:&'static str,
+	create_table:&'static str,
+	select:&'static str
 } 
 
-pub fn insert_into_basic(session:&mut Session, insert_statement: &String, key:&String, basic:Basic) -> CResult {
-  let mut statement = Statement::build_from_string(insert_statement, 6);
+pub fn insert_into_basic(session:&mut Session, insert_statement: &str, key:&str, basic:Basic) -> CResult {
+  let mut statement = Statement::build_from_str(insert_statement, 6);
   println!("inserting key:{}",key);
   statement.bind_string(0, key);
   statement.bind_bool(1, basic.bln as u32);
@@ -36,8 +36,8 @@ pub fn insert_into_basic(session:&mut Session, insert_statement: &String, key:&S
   session.execute(&mut statement)
 }
 
-pub fn select_from_basic(session:&mut Session, select_statement: &String, key:&String) -> CResult {
-  let mut statement = Statement::build_from_string(select_statement, 1);
+pub fn select_from_basic(session:&mut Session, select_statement: &str, key:&str) -> CResult {
+  let mut statement = Statement::build_from_str(select_statement, 1);
   statement.bind_string(0, key);
   let future:CResult=session.execute(&mut statement);
   match future {
@@ -52,11 +52,11 @@ pub fn select_from_basic(session:&mut Session, select_statement: &String, key:&S
 fn main()  {
 	
 	let cmds = Commands{
-		use_ks:"Use examples".to_string(),
-		create_ks: "CREATE KEYSPACE IF NOT EXISTS examples WITH replication = { 'class': 'SimpleStrategy', 'replication_factor': '1' }".to_string(),
-		create_table: "CREATE TABLE IF NOT EXISTS examples.basic (key text, bln boolean, flt float, dbl double, i32 int, i64 bigint, PRIMARY KEY (key));".to_string(),
-		insert: "INSERT INTO examples.basic (key, bln, flt, dbl, i32, i64) VALUES (?, ?, ?, ?, ?, ?);".to_string(),
-		select: "SELECT * FROM examples.basic WHERE key = ?;".to_string(),
+		use_ks:"Use examples",
+		create_ks: "CREATE KEYSPACE IF NOT EXISTS examples WITH replication = { 'class': 'SimpleStrategy', 'replication_factor': '1' }",
+		create_table: "CREATE TABLE IF NOT EXISTS examples.basic (key text, bln boolean, flt float, dbl double, i32 int, i64 bigint, PRIMARY KEY (key));",
+		insert: "INSERT INTO examples.basic (key, bln, flt, dbl, i32, i64) VALUES (?, ?, ?, ?, ?, ?);",
+		select: "SELECT * FROM examples.basic WHERE key = ?;",
 	};
 	
 	
@@ -71,17 +71,17 @@ fn main()  {
     Ok(session) => {
       let mut session = session;
       
-      assert!(session.execute_string(&cmds.create_ks).is_ok());
-      assert!(session.execute_string(&cmds.use_ks).is_ok());
-      assert!(session.execute_string(&cmds.create_table).is_ok());
+      assert!(session.execute_str(cmds.create_ks).is_ok());
+      assert!(session.execute_str(cmds.use_ks).is_ok());
+      assert!(session.execute_str(cmds.create_table).is_ok());
 
-      let insert = insert_into_basic(&mut session, &cmds.insert, &"test".to_string(), input);
+      let insert = insert_into_basic(&mut session, cmds.insert, "test", input);
       match insert {
         Err(fail) => println!("result: {}",fail),
         Ok(results) => {}
       }
 
-      let response = select_from_basic(&mut session, &cmds.select, &"test".to_string());
+      let response = select_from_basic(&mut session, cmds.select, "test");
       match response {
         Err(fail) => println!("result: {}",fail),
         Ok(results) => {

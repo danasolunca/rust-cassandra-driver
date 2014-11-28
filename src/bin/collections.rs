@@ -10,11 +10,11 @@ use cassandra::CResult;
 use cassandra::CassCollection;
 
 struct Commands {
-	use_ks:String,
-	insert:String,
-	create_ks:String,
-	create_table:String,
-  select:String,
+	use_ks:&'static str,
+	insert:&'static str,
+	create_ks:&'static str,
+	create_table:&'static str,
+  select:&'static str,
 } 
 
 #[allow(unused)]
@@ -24,16 +24,16 @@ fn print_error(future:&mut CassFuture) {
 }
 
 #[allow(unused_must_use)]
-fn insert_into_collections(session:&mut Session, cmd:&String, key:&String, items:Vec<String>) -> CResult {
+fn insert_into_collections(session:&mut Session, cmd:&str, key:&str, items:Vec<&str>) -> CResult {
    println!("inserting key:{}",key);
-  let mut statement = Statement::build_from_string(cmd, 2);
+  let mut statement = Statement::build_from_str(cmd, 2);
 
   //~ CassCollection::new_set(1);
   
   statement.bind_string(0, key);
   let mut collection = CassCollection::new_list(2);
   for item  in items.iter() {
-    collection.append_string(item);
+    collection.append_str(*item);
   }
   statement.bind_collection(1, collection);
   let future=session.execute(&mut statement);
@@ -44,8 +44,8 @@ fn insert_into_collections(session:&mut Session, cmd:&String, key:&String, items
 }
 
 #[allow(unused_must_use)]
-fn select_from_collections(session:&Session, cmd:&String, key:&String) {
-  let mut statement = Statement::build_from_string(cmd, 1);
+fn select_from_collections(session:&Session, cmd:&str, key:&str) {
+  let mut statement = Statement::build_from_str(cmd, 1);
   statement.bind_string(0, key);
  
   match session.execute(&statement) {
@@ -69,14 +69,14 @@ fn select_from_collections(session:&Session, cmd:&String, key:&String) {
 
 fn main() {
 	let cmds = Commands{
-		use_ks:"Use examples".to_string(),
-		create_ks: "CREATE KEYSPACE IF NOT EXISTS examples WITH replication = { 'class': 'SimpleStrategy', 'replication_factor': '1' }".to_string(),
-		create_table: "CREATE TABLE IF NOT EXISTS examples.collections (key text, items set<text>, PRIMARY KEY (key))".to_string(),
-		insert: "INSERT INTO examples.collections (key, items) VALUES (?, ?);".to_string(),
-    select: "SELECT key,items FROM examples.collections WHERE key = ?".to_string(),
+		use_ks:"Use examples",
+		create_ks: "CREATE KEYSPACE IF NOT EXISTS examples WITH replication = { 'class': 'SimpleStrategy', 'replication_factor': '1' }",
+		create_table: "CREATE TABLE IF NOT EXISTS examples.collections (key text, items set<text>, PRIMARY KEY (key))",
+		insert: "INSERT INTO examples.collections (key, items) VALUES (?, ?);",
+    select: "SELECT key,items FROM examples.collections WHERE key = ?",
 	};
 
-  let items = [ "apple".to_string(), "orange".to_string(), "banana".to_string(), "mango".to_string()].to_vec();
+  let items = [ "apple", "orange", "banana", "mango"].to_vec();
 
   let contact_points = "127.0.0.1";
   let cluster = Cluster::create(contact_points);
@@ -86,11 +86,11 @@ fn main() {
     Ok(session) => {
       let mut session=session;
       let session = &mut session;
-      assert!(session.execute_string(&cmds.create_ks).is_ok());
-      assert!(session.execute_string(&cmds.use_ks).is_ok());
-      assert!(session.execute_string(&cmds.create_table).is_ok());
-      assert!(insert_into_collections(session, &cmds.insert,&"test23".to_string(), items).is_ok());
-      let collection = select_from_collections(session, &cmds.select,&"test23".to_string());
+      assert!(session.execute_str(cmds.create_ks).is_ok());
+      assert!(session.execute_str(cmds.use_ks).is_ok());
+      assert!(session.execute_str(cmds.create_table).is_ok());
+      assert!(insert_into_collections(session, cmds.insert,"test23", items).is_ok());
+      let collection = select_from_collections(session, cmds.select,"test23");
       println!("collection:{}",collection);
       let mut close_future = session.close_async();
       close_future.wait();

@@ -8,10 +8,10 @@ use cassandra::CassResult;
 
 #[deriving(Show)]
 pub struct Simple {
-  pub keyspace_name: String,
+  pub keyspace_name: &'static str,
   pub durable_writes: bool,
-  pub strategy_class: String,
-  pub strategy_options: String
+  pub strategy_class: &'static str,
+  pub strategy_options: &'static str
 }
 
 fn main()  {
@@ -35,16 +35,16 @@ fn main()  {
       let mut rows = result.iterator();
 
       let mut output:Simple = Simple {
-        keyspace_name:"abc".to_string(),
+        keyspace_name:"abc",
         durable_writes:false,
-        strategy_class:"def".to_string(),
-        strategy_options:"ghi".to_string(),
+        strategy_class:"def",
+        strategy_options:"ghi",
       };
       for row in rows {
-        match row.get_column(0).get_string() {Err(err) => println!("{}0-",err),Ok(col) => output.keyspace_name=col};
+        match row.get_column(0).get_string() {Err(err) => println!("{}0-",err),Ok(col) => output.keyspace_name=col.as_slice().clone()};
         match row.get_column(1).get_bool() {Err(err) => println!("{}1-",err),Ok(col) => output.durable_writes=col};
-        match row.get_column(2).get_string() {Err(err) => println!("{}2-",err),Ok(col) => output.strategy_class=col};
-        match row.get_column(3).get_string() {Err(err) => println!("{}3-",err),Ok(col) => output.strategy_options=col};
+        match row.get_column(2).get_string() {Err(err) => println!("{}2-",err),Ok(col) => output.strategy_class=col.as_slice().clone()};
+        match row.get_column(3).get_string() {Err(err) => println!("{}3-",err),Ok(col) => output.strategy_options=col.as_slice().clone()};
         println!("output:{}",output);
       }
     } else {
