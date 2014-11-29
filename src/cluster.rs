@@ -4,7 +4,7 @@ use libc::c_char;
 
 use future::Future as CassFuture;
 use session::Session;
-use error::Error as CassError;
+use error::CassError;
 use types::internal as types_internal;
 //use error::CASS_OK;
 use cass_ssl::CassSsl;

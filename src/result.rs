@@ -6,7 +6,7 @@ use std::string::raw;
 
 use row::Row;
 use ResultIterator;
-use error::Error as CassError;
+use error::CassError;
 use result::internal as result_internal;
 use types::internal as types_internal;
 

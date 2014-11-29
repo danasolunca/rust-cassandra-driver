@@ -6,20 +6,23 @@ pub struct Row {
 }
 
 impl Row {
-  #[allow(dead_code)]
   pub fn iterator(&mut self) -> RowIterator {unsafe{
     let ref cass_row = *self.cass_row;
     let my_iter = internal::cass_iterator_from_row(cass_row);
     RowIterator{cass_iterator:my_iter}
   }}
 
-  #[allow(dead_code)]
   pub fn get_column(&self, index: u64) -> CassValue {unsafe{
     let ref cass_row = *self.cass_row;
     let col = internal::cass_row_get_column(cass_row,index);
     CassValue{cass_value:col}
   }}
 
+  pub fn get_column_by_name(&self, name: &str) -> CassValue {unsafe{
+    let ref cass_row = *self.cass_row;
+    let col = internal::cass_row_get_column_by_name(cass_row,name.as_ptr() as *const i8);
+    CassValue{cass_value:col}
+  }}
 }
 
 pub mod internal {

@@ -1,4 +1,4 @@
-use error::Error as CassError;
+use error::CassError;
 use types::CassValue;
 
 #[allow(dead_code)]

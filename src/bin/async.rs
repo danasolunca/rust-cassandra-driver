@@ -21,7 +21,7 @@ static NUM_CONCURRENT_REQUESTS:uint = 5;
 
 fn insert_into_async(session:&CassSession, cmd:&str, key:&str) {
   let mut futures:DList<CassFuture> = DList::new();
-  let mut i:uint = 0;
+  let mut i = 0;
   while i < NUM_CONCURRENT_REQUESTS {
     let mut statement = CassStatement::build_from_str(cmd, 6);
     let wrapped = key.to_string() + i.to_string();

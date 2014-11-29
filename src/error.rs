@@ -78,16 +78,16 @@ pub enum CassErrorSSLType {
 
 #[allow(dead_code)]
 #[deriving(Clone,Show)]
-pub struct Error {
+pub struct CassError {
   pub cass_error:internal::CassError,
 }
 
 #[allow(dead_code)]
 
 
-impl Error {
-  pub fn new(err:u32) -> Error {
-    Error{cass_error:err}
+impl CassError {
+  pub fn new(err:u32) -> CassError {
+    CassError{cass_error:err}
   }
 
   pub fn is_error(self) -> bool {

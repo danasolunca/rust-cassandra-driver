@@ -10,6 +10,16 @@ pub enum CassLogLevelType {
   LAST_ENTRY=7,
 }
 
+pub struct CassLogLevel {
+  cass_log_level:u32
+}
+
+impl CassLogLevel {
+  pub fn get_level(&self) -> *const ::libc::c_char {unsafe{
+    internal::cass_log_level_string(self.cass_log_level)
+  }}
+}
+
 pub mod internal {
   use types::internal as types_internal;
   pub type CassLogLevel = u32;

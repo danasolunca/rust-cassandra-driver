@@ -1,7 +1,7 @@
 use std::string::raw;
 
 use session::Session;
-use error::Error as CassError;
+use error::CassError;
 use statement::Prepared;
 use result::CassResult;
 use types::internal as types_internal;

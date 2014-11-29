@@ -1,7 +1,8 @@
 extern crate libc;
 #[allow(dead_code)]
 use statement::Statement;
-use error::Error as CassError;
+use error::CassError;
+use consistency::CassConsistency;
 
 pub enum BatchType {
   LOGGED=0,
@@ -27,6 +28,11 @@ impl Batch {
   pub fn add_statement(&mut self, statement: Statement) -> CassError {unsafe{
     CassError{cass_error:internal::cass_batch_add_statement(self.cass_batch,statement.cass_statement)}
   }}
+
+  pub fn set_consistency(&mut self, consistency: CassConsistency) -> CassError {unsafe{
+    CassError{cass_error:internal::cass_batch_set_consistency(self.cass_batch,consistency)}
+  }}
+
 }
 
 impl Drop for Batch {

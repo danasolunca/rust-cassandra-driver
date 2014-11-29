@@ -6,7 +6,7 @@ use collection::internal as collection_internal;
 use types::internal as types_internal;
 use error::CASS_OK;
 
-use error::Error as CassError;
+use error::CassError;
 use libc::c_char;
 use std::vec::Vec;
 use std::num::Int;
@@ -281,7 +281,7 @@ impl CassValue {
      internal::cass_string_init2(string.as_bytes().as_ptr() as *const i8,string.as_bytes().len() as u64)
   }}
 
-  pub fn cass_string_to_str(cass_str:internal::CassString) -> String {unsafe{
+  pub fn cass_string_to_string(cass_str:internal::CassString) -> String {unsafe{
     raw::from_buf_len(cass_str.data as *const u8,cass_str.length as uint)
   }}
 
@@ -405,7 +405,7 @@ pub mod internal {
       let test_string = "test_string2345678";
       let cass_string:types_internal::CassString = super::CassValue::str_to_cass_string(test_string);
       //println!("cassstr: {}", cass_string);
-      let reconstituted = super::CassValue::cass_string_to_str(cass_string);
+      let reconstituted = super::CassValue::cass_string_to_string(cass_string);
       println!("reconstituted: {}", reconstituted);
       assert!(test_string == reconstituted.as_slice());
     }

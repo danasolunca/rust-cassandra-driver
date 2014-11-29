@@ -113,8 +113,6 @@ impl RowIterator {
     CassValue{cass_value:internal::cass_iterator_get_value(self.cass_iterator)}
   }}
 
-  //~ pub fn get_schea_field_iterator(&self) -> {unsafe{
-      //~ cass_iterator_get_schema_meta_field(iterator: *mut CassIterator) -> *const schema_internal::CassSchemaMetaField;
 
 }
 
