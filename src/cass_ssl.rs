@@ -8,7 +8,7 @@ use types::CassValue;
 }
 
 pub struct CassSsl {
-  cass_ssl:*mut internal::CassSsl
+  pub cass_ssl:*mut internal::CassSsl
 }
 
 #[allow(dead_code)]

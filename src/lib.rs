@@ -1,4 +1,5 @@
 #![feature(globs)]
+#![feature(unsafe_destructor)]
 
 extern crate libc;
 //extern crate uuid;
@@ -18,6 +19,7 @@ pub use row::Row;
 pub use session::Session;
 pub use statement::Statement;
 pub use statement::Prepared;
+pub use log::CassLogLevelType;
 
 pub use types::CassValue;
 pub use types::CassUuid;

@@ -25,6 +25,10 @@ name="async"
 path="src/bin/async.rs"
 
 [[bin]]
+name="extended"
+path="src/bin/extended.rs"
+
+[[bin]]
 name="collections"
 path="src/bin/collections.rs"
 
