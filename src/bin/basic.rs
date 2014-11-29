@@ -4,8 +4,9 @@ extern crate cassandra;
 
 use cassandra::CassCluster;
 use cassandra::CassSession;
-use cassandra::CResult;
 use cassandra::CassStatement;
+use cassandra::CassError;
+use cassandra::CassResult;
 
 #[deriving(Show, Clone)]
 pub struct Basic {
@@ -24,7 +25,7 @@ struct Commands {
 	select:&'static str
 } 
 
-pub fn insert_into_basic(session:&mut CassSession, insert_statement: &str, key:&str, basic:Basic) -> CResult {
+pub fn insert_into_basic(session:&mut CassSession, insert_statement: &str, key:&str, basic:Basic) -> Result<CassResult,CassError> {
   let mut statement = CassStatement::build_from_str(insert_statement, 6);
   println!("inserting key:{}",key);
   statement.bind_string(0, key).unwrap()
@@ -36,10 +37,10 @@ pub fn insert_into_basic(session:&mut CassSession, insert_statement: &str, key:&
   session.execute(&mut statement)
 }
 
-pub fn select_from_basic(session:&mut CassSession, select_statement: &str, key:&str) -> CResult {
+pub fn select_from_basic(session:&mut CassSession, select_statement: &str, key:&str) -> Result<CassResult,CassError> {
   let mut statement = CassStatement::build_from_str(select_statement, 1);
   statement.bind_string(0, key).unwrap();
-  let future:CResult=session.execute(&mut statement);
+  let future=session.execute(&mut statement);
   match future {
     Err(err) => return Err(err),
     Ok(result) => {

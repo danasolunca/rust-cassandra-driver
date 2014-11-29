@@ -78,16 +78,16 @@ pub enum CassErrorSSLType {
 
 #[allow(dead_code)]
 #[deriving(Clone,Show)]
-pub struct CassError {
-  pub cass_error:internal::CassError,
+pub struct Error {
+  pub cass_error:CassError,
 }
 
 #[allow(dead_code)]
 
 
-impl CassError {
-  pub fn new(err:u32) -> CassError {
-    CassError{cass_error:err}
+impl Error {
+  pub fn new(err:u32) -> Error {
+    Error{cass_error:err}
   }
 
   pub fn is_error(self) -> bool {
@@ -95,13 +95,9 @@ impl CassError {
   }
 
   pub fn cass_error_desc(&self) -> *const c_char {unsafe{
-    internal::cass_error_desc(self.cass_error)
+    cass_error_desc(self.cass_error)
   }}
 }
-
-pub mod internal {
-  #[allow(dead_code)]
-  pub const CASS_ERROR_LAST_ENTRY: ::libc::c_uint = 50331654;
 
   type CassErrorSource = ::libc::c_uint;  
   pub type CassError = ::libc::c_uint;
@@ -109,4 +105,4 @@ pub mod internal {
   extern "C" {
     pub fn cass_error_desc(error: CassError) -> *const ::libc::c_char;
   }
-}
+

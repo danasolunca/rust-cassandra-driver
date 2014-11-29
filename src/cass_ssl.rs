@@ -1,5 +1,7 @@
 use error::CassError;
-use types::CassValue;
+use error::Error;
+use types::Value;
+use types::CassString;
 
 #[allow(dead_code)]
 #[allow(non_camel_case_types)]
@@ -10,42 +12,39 @@ pub enum VerifyType {
 }
 
 #[allow(dead_code)]
-pub struct CassSsl {
-  pub cass_ssl:*mut internal::CassSsl
+pub struct Ssl {
+  pub cass_ssl:*mut CassSsl
 }
 
 #[allow(dead_code)]
-impl CassSsl {
-  pub fn new() -> CassSsl {unsafe{
-    CassSsl{cass_ssl:internal::cass_ssl_new()}
+impl Ssl {
+  pub fn new() -> Ssl {unsafe{
+    Ssl{cass_ssl:cass_ssl_new()}
   }}
 
-  pub fn add_trusted_cert(&self, cert: &str) -> CassError {unsafe{
-    CassError{cass_error:internal::cass_ssl_add_trusted_cert(self.cass_ssl,CassValue::str_to_cass_string(cert))}
+  pub fn add_trusted_cert(&self, cert: &str) -> Error {unsafe{
+    Error{cass_error:cass_ssl_add_trusted_cert(self.cass_ssl,Value::str_to_cass_string(cert))}
   }}
 
   pub fn set_verify_flags(&self, flags: i32) {unsafe{
-    internal::cass_ssl_set_verify_flags(self.cass_ssl,flags);
+    cass_ssl_set_verify_flags(self.cass_ssl,flags);
   }}
 
-  pub fn set_cert(&self, cert: &str) -> CassError {unsafe{
-    CassError{cass_error:internal::cass_ssl_set_cert(self.cass_ssl,CassValue::str_to_cass_string(cert))}
+  pub fn set_cert(&self, cert: &str) -> Error {unsafe{
+    Error{cass_error:cass_ssl_set_cert(self.cass_ssl,Value::str_to_cass_string(cert))}
   }}
 
-  pub fn set_private_key(&self, key: &str, password: &str) -> CassError {unsafe{
-    CassError{cass_error:internal::cass_ssl_set_private_key(self.cass_ssl,CassValue::str_to_cass_string(key),CassValue::str_to_cass_string(password).data)}
+  pub fn set_private_key(&self, key: &str, password: &str) -> Error {unsafe{
+    Error{cass_error:cass_ssl_set_private_key(self.cass_ssl,Value::str_to_cass_string(key),Value::str_to_cass_string(password).data)}
   }}  
 }
 
-impl Drop for CassSsl {
+impl Drop for Ssl {
   fn drop(&mut self) {unsafe{
-    internal::cass_ssl_free(self.cass_ssl);
+    cass_ssl_free(self.cass_ssl);
   }}
 }
 
-pub mod internal {
-  use types::internal as types_internal;
-  use error::internal as error_internal;
 
 
   
@@ -55,9 +54,9 @@ pub mod internal {
   extern "C" {
     pub fn cass_ssl_new() -> *mut CassSsl;    
     pub fn cass_ssl_free(ssl: *mut CassSsl);
-    pub fn cass_ssl_add_trusted_cert(ssl: *mut CassSsl, cert: types_internal::CassString) -> error_internal::CassError;
+    pub fn cass_ssl_add_trusted_cert(ssl: *mut CassSsl, cert: CassString) -> CassError;
     pub fn cass_ssl_set_verify_flags(ssl: *mut CassSsl, flags: ::libc::c_int);
-    pub fn cass_ssl_set_cert(ssl: *mut CassSsl, cert: types_internal::CassString) -> error_internal::CassError;
-    pub fn cass_ssl_set_private_key(ssl: *mut CassSsl, key: types_internal::CassString, password: *const ::libc::c_char) -> error_internal::CassError;
+    pub fn cass_ssl_set_cert(ssl: *mut CassSsl, cert: CassString) -> CassError;
+    pub fn cass_ssl_set_private_key(ssl: *mut CassSsl, key: CassString, password: *const ::libc::c_char) -> CassError;
   }
-}
+

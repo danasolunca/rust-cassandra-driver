@@ -6,8 +6,9 @@ use cassandra::CassStatement;
 use cassandra::CassFuture;
 use cassandra::CassSession;
 use cassandra::CassCluster;
-use cassandra::CResult;
+use cassandra::CassResult;
 use cassandra::CassCollection;
+use cassandra::CassError;
 
 struct Commands {
 	use_ks:&'static str,
@@ -24,7 +25,7 @@ fn print_error(future:&mut CassFuture) {
 }
 
 #[allow(unused_must_use)]
-fn insert_into_collections(session:&mut CassSession, cmd:&str, key:&str, items:Vec<&str>) -> CResult {
+fn insert_into_collections(session:&mut CassSession, cmd:&str, key:&str, items:Vec<&str>) -> Result<CassResult,CassError> {
    println!("inserting key:{}",key);
   let mut statement = CassStatement::build_from_str(cmd, 2);
 

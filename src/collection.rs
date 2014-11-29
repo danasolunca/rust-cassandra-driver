@@ -1,100 +1,113 @@
 use error::CassError;
+use error::Error;
+use types::Decimal;
+use types::Inet;
+use types::Uuid;
+use types::Bytes;
+use types::Value;
+use types::CassValue;
 use types::CassDecimal;
 use types::CassInet;
 use types::CassUuid;
 use types::CassBytes;
-use types::CassValue;
+use types::CassString;
+use types::CassBoolType;
+use types::CassSizeType;
+
 use types::ValueType;
+use types::_ValueType;
 use result::CassResult;
 use row::Row;
+use row;
+use iterator::internal as iterator_internal;
 
-use row::internal as row_internal;
+
 use result::internal as result_internal;
 
 use iterator::CollectionIterator;
 
 #[allow(dead_code)]
-pub enum CassCollectionType {
+pub enum CollectionType {
   LIST=32 as int,
   MAP=33 as int,
   SET=34 as int,
 }
 
 #[allow(dead_code)]
-pub struct CassCollection {
-  pub cass_collection:*mut internal::CassCollection,
+pub struct Collection {
+  pub cass_collection:*mut CassCollection,
 }
 
 #[allow(dead_code)]
-impl CassCollection {
-  pub fn new_list(item_count: u64) -> CassCollection {unsafe{
-    CassCollection{cass_collection:internal::cass_collection_new(CassCollectionType::LIST as u32,item_count)}
+impl Collection {
+  pub fn new_list(item_count: u64) -> Collection {unsafe{
+    Collection{cass_collection:cass_collection_new(CollectionType::LIST as u32,item_count)}
   }}
 
-  pub fn new_map(item_count: u64) -> CassCollection {unsafe{
-    CassCollection{cass_collection:internal::cass_collection_new(ValueType::MAP as u32,item_count)}
+  pub fn new_map(item_count: u64) -> Collection {unsafe{
+    Collection{cass_collection:cass_collection_new(_ValueType::MAP as u32,item_count)}
   }}
 
-  pub fn new_set(item_count: u64) -> CassCollection {unsafe{
-    CassCollection{cass_collection:internal::cass_collection_new(ValueType::SET as u32,item_count)}
+  pub fn new_set(item_count: u64) -> Collection {unsafe{
+    Collection{cass_collection:cass_collection_new(_ValueType::SET as u32,item_count)}
   }}
 
   pub fn free(&mut self) {unsafe{
-    internal::cass_collection_free(self.cass_collection)
+    cass_collection_free(self.cass_collection)
   }}
 
-  pub fn append_int32(&mut self, value: i32) -> CassError {unsafe{
-    CassError{cass_error:internal::cass_collection_append_int32(self.cass_collection,value)}
+  pub fn append_int32(&mut self, value: i32) -> Error {unsafe{
+    Error{cass_error:cass_collection_append_int32(self.cass_collection,value)}
   }}
 
-  pub fn append_int64(&mut self, value: i64) -> CassError {unsafe{
-    CassError{cass_error:internal::cass_collection_append_int64(self.cass_collection,value)}
+  pub fn append_int64(&mut self, value: i64) -> Error {unsafe{
+    Error{cass_error:cass_collection_append_int64(self.cass_collection,value)}
   }}
 
-  pub fn append_float(&mut self, value: f32) -> CassError {unsafe{
-      CassError{cass_error:internal::cass_collection_append_float(self.cass_collection,value)}
+  pub fn append_float(&mut self, value: f32) -> Error {unsafe{
+    Error{cass_error:cass_collection_append_float(self.cass_collection,value)}
   }}
 
-  pub fn append_double(&mut self, value: f64) -> CassError {unsafe{
-    CassError{cass_error:internal::cass_collection_append_double(self.cass_collection,value)}
+  pub fn append_double(&mut self, value: f64) -> Error {unsafe{
+    Error{cass_error:cass_collection_append_double(self.cass_collection,value)}
   }}
 
-  pub fn append_bool(&mut self, value: bool) -> CassError {unsafe{
-    CassError{cass_error:internal::cass_collection_append_bool(self.cass_collection,match value {true=>1,false=>0})}
+  pub fn append_bool(&mut self, value: bool) -> Error {unsafe{
+    Error{cass_error:cass_collection_append_bool(self.cass_collection,match value {true=>1,false=>0})}
   }}
 
-  pub fn append_string(&mut self, value: &String) -> CassError {unsafe{
-    let cass_string = CassValue::string_to_cass_string(value);
-   CassError{cass_error:internal::cass_collection_append_string(self.cass_collection,cass_string)}
+  pub fn append_string(&mut self, value: &String) -> Error {unsafe{
+    let cass_string = Value::string_to_cass_string(value);
+   Error{cass_error:cass_collection_append_string(self.cass_collection,cass_string)}
   }}
 
-  pub fn append_str(&mut self, value: &str) -> CassError {unsafe{
-    let cass_string = CassValue::string_to_cass_string(&value.to_string());
-    CassError{cass_error:internal::cass_collection_append_string(self.cass_collection,cass_string)}
+  pub fn append_str(&mut self, value: &str) -> Error {unsafe{
+    let cass_string = Value::string_to_cass_string(&value.to_string());
+    Error{cass_error:cass_collection_append_string(self.cass_collection,cass_string)}
   }}
 
-  pub fn append_bytes(&mut self, value: CassBytes) -> CassError {unsafe{
-    CassError{cass_error:internal::cass_collection_append_bytes(self.cass_collection,value.cass_bytes)}
+  pub fn append_bytes(&mut self, value: Bytes) -> Error {unsafe{
+    Error{cass_error:cass_collection_append_bytes(self.cass_collection,value.cass_bytes)}
   }}
 
-  pub fn append_uuid(&mut self, value: CassUuid) -> CassError {unsafe{
-    CassError{cass_error:internal::cass_collection_append_uuid(self.cass_collection,value.cass_uuid)}
+  pub fn append_uuid(&mut self, value: Uuid) -> Error {unsafe{
+    Error{cass_error:cass_collection_append_uuid(self.cass_collection,value.cass_uuid)}
   }}
 
-  pub fn append_inet(&mut self, value: CassInet) -> CassError {unsafe{
-    CassError{cass_error:internal::cass_collection_append_inet(self.cass_collection,value.cass_inet)}
+  pub fn append_inet(&mut self, value: Inet) -> Error {unsafe{
+    Error{cass_error:cass_collection_append_inet(self.cass_collection,value.cass_inet)}
     }}
 
-  pub fn append_decimal(&mut self, value: CassDecimal) -> CassError {unsafe{
-    CassError::new(internal::cass_collection_append_decimal(self.cass_collection,value.cass_decimal))
-    }}
-
-  pub fn collection_iterator_from_collection(collection:CassValue) -> CollectionIterator {unsafe{
-    CollectionIterator{cass_iterator:internal::cass_iterator_from_collection(collection.cass_value)}
+  pub fn append_decimal(&mut self, value: Decimal) -> Error {unsafe{
+    Error::new(cass_collection_append_decimal(self.cass_collection,value.cass_decimal))
   }}
 
-  pub fn collection_iterator_from_map(collection:CassValue) -> CollectionIterator {unsafe{
-    CollectionIterator{cass_iterator:internal::cass_iterator_from_map(collection.cass_value)}
+  pub fn collection_iterator_from_collection(collection:Value) -> CollectionIterator {unsafe{
+    CollectionIterator{cass_iterator:cass_iterator_from_collection(collection.cass_value)}
+  }}
+
+  pub fn collection_iterator_from_map(collection:Value) -> CollectionIterator {unsafe{
+    CollectionIterator{cass_iterator:cass_iterator_from_map(collection.cass_value)}
   }}
 
   pub fn collection_iterator_from_result(result:CassResult) -> CollectionIterator {unsafe{
@@ -102,15 +115,39 @@ impl CassCollection {
   }}
 
   pub fn collection_iterator_from_row(row:Row) -> CollectionIterator {unsafe{
-    CollectionIterator{cass_iterator:row_internal::cass_iterator_from_row(row.cass_row)}
+    CollectionIterator{cass_iterator:row::cass_iterator_from_row(row.cass_row)}
   }}
 }
 
-impl Drop for CassCollection {
+impl Drop for Collection {
   fn drop(&mut self) {
     self.free();
   }
 }
+
+
+  pub enum CassCollection { }
+  type CassCollectionType = u32;
+
+  #[link(name = "cassandra")]
+  extern "C" {  
+    fn cass_collection_new(_type: CassCollectionType, item_count: CassSizeType) -> *mut CassCollection;
+    fn cass_collection_free(collection: *mut CassCollection);
+    fn cass_collection_append_int32(collection: *mut CassCollection, value: i32) -> CassError;
+    fn cass_collection_append_int64(collection: *mut CassCollection, value: i64) -> CassError;
+    fn cass_collection_append_float(collection: *mut CassCollection, value: f32) -> CassError;
+    fn cass_collection_append_double(collection: *mut CassCollection, value: f64) -> CassError;
+    fn cass_collection_append_bool(collection: *mut CassCollection, value: CassBoolType) -> CassError;
+    fn cass_collection_append_string(collection: *mut CassCollection, value: CassString) -> CassError;
+    fn cass_collection_append_bytes(collection: *mut CassCollection, value: CassBytes) -> CassError;
+    fn cass_collection_append_uuid(collection: *mut CassCollection, value: CassUuid) -> CassError;
+    fn cass_collection_append_inet(collection: *mut CassCollection, value: CassInet) -> CassError;
+    fn cass_collection_append_decimal(collection: *mut CassCollection, value: CassDecimal) -> CassError;
+    pub fn cass_iterator_from_collection(value: *const CassValue) -> *mut iterator_internal::CassIterator;
+    fn cass_iterator_from_map(value: *const CassValue) -> *mut iterator_internal::CassIterator;
+  }
+
+
 
 #[cfg(test)]
 mod tests {
@@ -120,24 +157,24 @@ use std::io::net::ip::Ipv4Addr;
 use std::io::net::ip::Ipv6Addr;
 use types::CassBytes;
 use super::CassCollection;
-use types::CassValue;
+use types::Value;
 use types::CassDecimal;
   #[test]
   fn new() {
-    super::CassCollection::new_list(4);
-    super::CassCollection::new_map(5);
-    super::CassCollection::new_set(6);
+    super::Collection::new_list(4);
+    super::Collection::new_map(5);
+    super::Collection::new_set(6);
   }
 
   #[test]
   fn append_list() {
-    let mut list = CassCollection::new_list(10);
+    let mut list = super::Collection::new_list(10);
     list.append_bool(true);
-    list.append_bytes(CassValue::build_cass_bytes("cass_bytes".to_string().into_bytes()));
-    list.append_decimal(CassValue::build_cass_decimal(1234567890,3));
+    list.append_bytes(Value::build_cass_bytes("cass_bytes".to_string().into_bytes()));
+    list.append_decimal(Value::build_cass_decimal(1234567890,3));
     list.append_double(1234.392832f64);
     list.append_float(1234.39232f32);
-    list.append_inet(CassValue::build_cass_inet(match from_str("127.0.0.1") {
+    list.append_inet(Value::build_cass_inet(match from_str("127.0.0.1") {
       Some(ip) => ip,
       None => panic!("failed to parse inet address")
     }));
@@ -150,13 +187,13 @@ use types::CassDecimal;
 
   #[test]
   fn append_map() {
-    let mut map = CassCollection::new_map(10);
+    let mut map = super::Collection::new_map(10);
     map.append_bool(true);
-    map.append_bytes(CassValue::build_cass_bytes("cass_bytes".to_string().into_bytes()));
-    map.append_decimal(CassValue::build_cass_decimal(1234567890,3));
+    map.append_bytes(Value::build_cass_bytes("cass_bytes".to_string().into_bytes()));
+    map.append_decimal(Value::build_cass_decimal(1234567890,3));
     map.append_double(1234.392832f64);
     map.append_float(1234.39232f32);
-    map.append_inet(CassValue::build_cass_inet(match from_str("127.0.0.1") {
+    map.append_inet(Value::build_cass_inet(match from_str("127.0.0.1") {
       Some(ip) => ip,
       None => panic!("failed to parse inet address")
     }));
@@ -170,13 +207,13 @@ use types::CassDecimal;
 
   //#[test]
   fn append_set() {
-    let mut set = CassCollection::new_set(10);
+    let mut set = super::Collection::new_set(10);
     set.append_bool(true);
-    set.append_bytes(CassValue::build_cass_bytes("cass_bytes".to_string().into_bytes()));
-    set.append_decimal(CassValue::build_cass_decimal(1234567890,3));
+    set.append_bytes(Value::build_cass_bytes("cass_bytes".to_string().into_bytes()));
+    set.append_decimal(Value::build_cass_decimal(1234567890,3));
     set.append_double(1234.392832f64);
     set.append_float(1234.39232f32);
-    set.append_inet(CassValue::build_cass_inet(match from_str("127.0.0.1") {
+    set.append_inet(Value::build_cass_inet(match from_str("127.0.0.1") {
       Some(ip) => ip,
       None => panic!("failed to parse inet address")
     }));
@@ -188,28 +225,3 @@ use types::CassDecimal;
   }
 }
 
-pub mod internal {
-  use error::internal as error_internal;
-  use types::internal as types_internal;
-  use iterator::internal as iterator_internal;
-  pub enum CassCollection { }
-  pub type CassCollectionType = u32;
-
-  #[link(name = "cassandra")]
-  extern "C" {  
-    pub fn cass_collection_new(_type: CassCollectionType, item_count: types_internal::CassSizeType) -> *mut CassCollection;
-    pub fn cass_collection_free(collection: *mut CassCollection);
-    pub fn cass_collection_append_int32(collection: *mut CassCollection, value: i32) -> error_internal::CassError;
-    pub fn cass_collection_append_int64(collection: *mut CassCollection, value: i64) -> error_internal::CassError;
-    pub fn cass_collection_append_float(collection: *mut CassCollection, value: f32) -> error_internal::CassError;
-    pub fn cass_collection_append_double(collection: *mut CassCollection, value: f64) -> error_internal::CassError;
-    pub fn cass_collection_append_bool(collection: *mut CassCollection, value: types_internal::CassBoolType) -> error_internal::CassError;
-    pub fn cass_collection_append_string(collection: *mut CassCollection, value: types_internal::CassString) -> error_internal::CassError;
-    pub fn cass_collection_append_bytes(collection: *mut CassCollection, value: types_internal::CassBytes) -> error_internal::CassError;
-    pub fn cass_collection_append_uuid(collection: *mut CassCollection, value: types_internal::CassUuid) -> error_internal::CassError;
-    pub fn cass_collection_append_inet(collection: *mut CassCollection, value: types_internal::CassInet) -> error_internal::CassError;
-    pub fn cass_collection_append_decimal(collection: *mut CassCollection, value: types_internal::CassDecimal) -> error_internal::CassError;
-    pub fn cass_iterator_from_collection(value: *const types_internal::CassValue) -> *mut iterator_internal::CassIterator;
-    pub fn cass_iterator_from_map(value: *const types_internal::CassValue) -> *mut iterator_internal::CassIterator;
-  }
-}

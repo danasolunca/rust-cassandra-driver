@@ -4,13 +4,18 @@ use std::fmt;
 
 use std::string::raw;
 
+  use iterator::CassIterator;
+  use types::CassBoolType;
+  use types::CassValueType;
+  use types::CassSizeType;
+  use types::CassString;
+
 use row::Row;
+use row::CassRow;
 use ResultIterator;
 use error::CassError;
+use error::Error;
 use result::internal as result_internal;
-use types::internal as types_internal;
-
-pub type CResult = Result<CassResult,CassError>;
 
 #[allow(dead_code)]
 #[allow(raw_pointer_deriving)]
@@ -52,7 +57,7 @@ impl CassResult {
     raw::from_parts(raw, length, length)
   }}
 
-  pub fn column_type(&self, index: u64) -> types_internal::CassValueType {unsafe{
+  pub fn column_type(&self, index: u64) -> CassValueType {unsafe{
     result_internal::cass_result_column_type(self.cass_result,index)
   }}
 
@@ -70,20 +75,24 @@ impl CassResult {
 
 pub mod internal {
   use iterator::internal as iterator_internal;
-  use types::internal as types_internal;
-  use row::internal as row_internal;
+  use types::CassBoolType;
+  use types::CassValueType;
+  use types::CassSizeType;
+  use types::CassString;
+  use row;
+  use row::CassRow;
 
   
   pub enum CassResult { }
    #[link(name = "cassandra")]
   extern "C" {
     pub fn cass_result_free(result: *const CassResult);
-    pub fn cass_result_row_count(result: *const CassResult) -> types_internal::CassSizeType;
-    pub fn cass_result_column_count(result: *const CassResult) -> types_internal::CassSizeType;
-    pub fn cass_result_column_name(result: *const CassResult, index: types_internal::CassSizeType) -> types_internal::CassString;
-    pub fn cass_result_column_type(result: *const CassResult, index: types_internal::CassSizeType) -> types_internal::CassValueType;
-    pub fn cass_result_first_row(result: *const CassResult) -> *const row_internal::CassRow;
-    pub fn cass_result_has_more_pages(result: *const CassResult) -> types_internal::CassBoolType;
+    pub fn cass_result_row_count(result: *const CassResult) -> CassSizeType;
+    pub fn cass_result_column_count(result: *const CassResult) -> CassSizeType;
+    pub fn cass_result_column_name(result: *const CassResult, index: CassSizeType) -> CassString;
+    pub fn cass_result_column_type(result: *const CassResult, index: CassSizeType) -> CassValueType;
+    pub fn cass_result_first_row(result: *const CassResult) -> *const CassRow;
+    pub fn cass_result_has_more_pages(result: *const CassResult) -> CassBoolType;
     pub fn cass_iterator_from_result(result: *const CassResult) -> *mut iterator_internal::CassIterator;
   }
 }

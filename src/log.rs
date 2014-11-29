@@ -1,5 +1,7 @@
+use types::CassString;
+
 #[allow(non_camel_case_types)]
-pub enum CassLogLevelType {
+pub enum LogLevelType {
   DISABLED=0,
   CRITICAL=1,
   ERROR=2,
@@ -10,24 +12,22 @@ pub enum CassLogLevelType {
   LAST_ENTRY=7,
 }
 
-pub struct CassLogLevel {
+pub struct LogLevel {
   cass_log_level:u32
 }
 
-impl CassLogLevel {
+impl LogLevel {
   pub fn get_level(&self) -> *const ::libc::c_char {unsafe{
-    internal::cass_log_level_string(self.cass_log_level)
+    cass_log_level_string(self.cass_log_level)
   }}
 }
 
-pub mod internal {
-  use types::internal as types_internal;
   pub type CassLogLevel = u32;
   pub type CassLogCallback = ::std::option::Option<extern "C" fn
                               (arg1: u64, arg2: CassLogLevel,
-                               arg3: types_internal::CassString, arg4: *mut ::libc::c_void)>;
+                               arg3: CassString, arg4: *mut ::libc::c_void)>;
   #[link(name = "cassandra")]
   extern "C" {
     pub fn cass_log_level_string(log_level: CassLogLevel) -> *const ::libc::c_char;
   }
-}
+
