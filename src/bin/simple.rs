@@ -2,8 +2,8 @@ extern crate log;
 extern crate libc;
 extern crate cassandra;
 
-use cassandra::Statement;
-use cassandra::Cluster;
+use cassandra::CassStatement;
+use cassandra::CassCluster;
 use cassandra::CassResult;
 
 #[deriving(Show)]
@@ -16,7 +16,7 @@ pub struct Simple {
 
 fn main()  {
   let contact_points = "127.0.0.1";
-  let mut cluster = Cluster::new();
+  let mut cluster = CassCluster::new();
   cluster = cluster.set_contact_points(contact_points).unwrap();
 
   let mut session_future = cluster.connect_async();
@@ -26,7 +26,7 @@ fn main()  {
   if !session_future.error_code().is_error() {
     let session = session_future.get_session();
 
-    let mut statement = Statement::build_from_str("SELECT * FROM system.schema_keyspaces;", 0);
+    let mut statement = CassStatement::build_from_str("SELECT * FROM system.schema_keyspaces;", 0);
 
     let mut result_future = session.execute_async(&mut statement);
     result_future.wait();

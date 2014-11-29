@@ -3,10 +3,10 @@ extern crate libc;
 extern crate collections;
 extern crate cassandra;
 
-use cassandra::Statement;
-use cassandra::Future as CassFuture;
-use cassandra::Session;
-use cassandra::Cluster;
+use cassandra::CassStatement;
+use cassandra::CassFuture;
+use cassandra::CassSession;
+use cassandra::CassCluster;
 
 use std::collections::DList;
 
@@ -20,11 +20,11 @@ struct Commands {
 static NUM_CONCURRENT_REQUESTS:uint = 5;
 
 #[allow(unused_must_use)]
-fn insert_into_async(session:&Session, cmd:&str, key:&str) {
+fn insert_into_async(session:&CassSession, cmd:&str, key:&str) {
   let mut futures:DList<CassFuture> = DList::new();
   let mut i:uint = 0;
   while i < NUM_CONCURRENT_REQUESTS {
-    let mut statement = Statement::build_from_str(cmd, 6);
+    let mut statement = CassStatement::build_from_str(cmd, 6);
     let wrapped = key.to_string() + i.to_string();
     println!("response:{}",wrapped);
     statement.bind_string(0, wrapped.as_slice());
@@ -54,7 +54,7 @@ fn main() {
 	};
 	
   let contact_points = "127.0.0.1";
-  let mut cluster = Cluster::new();
+  let mut cluster = CassCluster::new();
   cluster = cluster.set_contact_points(contact_points).unwrap();
 
   match cluster.connect() {

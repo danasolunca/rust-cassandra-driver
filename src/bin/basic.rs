@@ -2,10 +2,10 @@ extern crate log;
 extern crate libc;
 extern crate cassandra;
 
-use cassandra::Cluster;
-use cassandra::Session;
+use cassandra::CassCluster;
+use cassandra::CassSession;
 use cassandra::CResult;
-use cassandra::Statement;
+use cassandra::CassStatement;
 
 #[deriving(Show, Clone)]
 pub struct Basic {
@@ -24,8 +24,8 @@ struct Commands {
 	select:&'static str
 } 
 
-pub fn insert_into_basic(session:&mut Session, insert_statement: &str, key:&str, basic:Basic) -> CResult {
-  let mut statement = Statement::build_from_str(insert_statement, 6);
+pub fn insert_into_basic(session:&mut CassSession, insert_statement: &str, key:&str, basic:Basic) -> CResult {
+  let mut statement = CassStatement::build_from_str(insert_statement, 6);
   println!("inserting key:{}",key);
   statement.bind_string(0, key);
   statement.bind_bool(1, basic.bln as u32);
@@ -36,8 +36,8 @@ pub fn insert_into_basic(session:&mut Session, insert_statement: &str, key:&str,
   session.execute(&mut statement)
 }
 
-pub fn select_from_basic(session:&mut Session, select_statement: &str, key:&str) -> CResult {
-  let mut statement = Statement::build_from_str(select_statement, 1);
+pub fn select_from_basic(session:&mut CassSession, select_statement: &str, key:&str) -> CResult {
+  let mut statement = CassStatement::build_from_str(select_statement, 1);
   statement.bind_string(0, key);
   let future:CResult=session.execute(&mut statement);
   match future {
@@ -64,7 +64,7 @@ fn main()  {
   let mut output=  Basic{bln:false, dbl:0.0f64, flt:0.00f32, i32:0, i64:0};
 
   let contact_points = "127.0.0.1";
-  let mut cluster = Cluster::new();
+  let mut cluster = CassCluster::new();
   cluster = cluster.set_contact_points(contact_points).unwrap();
 
   match cluster.connect() {

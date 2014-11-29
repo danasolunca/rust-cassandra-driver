@@ -4,22 +4,23 @@
 extern crate libc;
 extern crate uuid;
 
-pub use batch::Batch;
-pub use cluster::Cluster;
+pub use batch::Batch as CassBatch;
+pub use cluster::Cluster as CassCluster;
 pub use collection::CassCollection;
 pub use consistency::CassConsistency;
-pub use error::Error;
-pub use future::Future;
+pub use error::Error as CassError;
+pub use future::Future as CassFuture;
 pub use iterator::RowIterator;
 pub use iterator::CollectionIterator;
 pub use iterator::ResultIterator;
 pub use result::CResult;
 pub use result::CassResult;	
-pub use row::Row;
-pub use session::Session;
-pub use statement::Statement;
-pub use statement::Prepared;
+pub use row::Row as CassRow;
+pub use session::Session as CassSession;
+pub use statement::Statement as CassStatement;
+pub use statement::Prepared as CassPrepared;
 pub use log::CassLogLevelType;
+pub use cass_ssl::CassSsl;
 
 pub use types::CassValue;
 pub use types::CassUuid;

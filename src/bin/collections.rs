@@ -2,10 +2,10 @@ extern crate log;
 extern crate libc;
 extern crate cassandra;
 
-use cassandra::Statement;
-use cassandra::Future as CassFuture;
-use cassandra::Session;
-use cassandra::Cluster;
+use cassandra::CassStatement;
+use cassandra::CassFuture;
+use cassandra::CassSession;
+use cassandra::CassCluster;
 use cassandra::CResult;
 use cassandra::CassCollection;
 
@@ -24,9 +24,9 @@ fn print_error(future:&mut CassFuture) {
 }
 
 #[allow(unused_must_use)]
-fn insert_into_collections(session:&mut Session, cmd:&str, key:&str, items:Vec<&str>) -> CResult {
+fn insert_into_collections(session:&mut CassSession, cmd:&str, key:&str, items:Vec<&str>) -> CResult {
    println!("inserting key:{}",key);
-  let mut statement = Statement::build_from_str(cmd, 2);
+  let mut statement = CassStatement::build_from_str(cmd, 2);
 
   //~ CassCollection::new_set(1);
   
@@ -44,8 +44,8 @@ fn insert_into_collections(session:&mut Session, cmd:&str, key:&str, items:Vec<&
 }
 
 #[allow(unused_must_use)]
-fn select_from_collections(session:&Session, cmd:&str, key:&str) {
-  let mut statement = Statement::build_from_str(cmd, 1);
+fn select_from_collections(session:&CassSession, cmd:&str, key:&str) {
+  let mut statement = CassStatement::build_from_str(cmd, 1);
   statement.bind_string(0, key);
  
   match session.execute(&statement) {
@@ -79,7 +79,7 @@ fn main() {
   let items = [ "apple", "orange", "banana", "mango"].to_vec();
 
   let contact_points = "127.0.0.1";
-  let mut cluster = Cluster::new();
+  let mut cluster = CassCluster::new();
   cluster = cluster.set_contact_points(contact_points).unwrap();
 
   match cluster.connect() {
