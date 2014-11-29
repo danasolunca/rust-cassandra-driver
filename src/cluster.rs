@@ -33,7 +33,7 @@ impl Cluster {
     CassFuture{cass_future:internal::cass_cluster_connect( self.cass_cluster)}
   }}
 
-  pub fn connect(mut self) -> Result<Session,CassError> {
+  pub fn connect(&mut self) -> Result<Session,CassError> {
     let mut future: CassFuture = self.connect_async();
     future.wait();
     let rc = future.error_code();
@@ -171,7 +171,6 @@ impl Cluster {
     Ok(self)
   }}
 
-    
 }
 
 impl Drop for Cluster {
@@ -231,18 +230,21 @@ mod tests {
 
     #[test]
     fn create() {
-      super::Cluster::create("127.0.0.1");
+      let mut cluster = super::Cluster::new();
+      cluster = cluster.set_contact_points("127.0.0.1").unwrap();
     }
 
     #[test]
     fn connect() {
-      let cluster = super::Cluster::create("127.0.0.1");
+      let mut cluster = super::Cluster::new();
+      cluster = cluster.set_contact_points("127.0.0.1").unwrap();
       cluster.connect();
     }
 
     #[test_should_fail]
     fn connect_bad_host() {
-      let cluster = super::Cluster::create("10.254.254.254");
-      cluster.connect();
+     let mut cluster = super::Cluster::new();
+     cluster = cluster.set_contact_points("10.254.254.254").unwrap();
+     cluster.connect();
     }
 }

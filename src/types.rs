@@ -400,11 +400,11 @@ pub mod internal {
     use types::internal as types_internal;
     #[test]
     fn string_wrapping() {
-      let test_string = "test_string2345678".to_string();
-      let cass_string:types_internal::CassString = super::CassValue::str_to_cass_string(&test_string);
+      let test_string = "test_string2345678";
+      let cass_string:types_internal::CassString = super::CassValue::str_to_cass_string(test_string);
       //println!("cassstr: {}", cass_string);
-      let reconstituted:String = super::CassValue::cass_string_to_str(cass_string);
+      let reconstituted = super::CassValue::cass_string_to_str(cass_string);
       println!("reconstituted: {}", reconstituted);
-      assert!(test_string == reconstituted);
+      assert!(test_string == reconstituted.as_slice());
     }
 }
