@@ -2,7 +2,7 @@
 #![feature(unsafe_destructor)]
 
 extern crate libc;
-//extern crate uuid;
+extern crate uuid;
 
 pub use batch::Batch;
 pub use cluster::Cluster;

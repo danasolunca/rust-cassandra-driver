@@ -1,4 +1,3 @@
-//use uuid::Uuid;
 use collection::CassCollection;
 use error::Error as CassError;
 use types::CassDecimal;
@@ -12,6 +11,8 @@ use types::internal as types_internal;
 use session::internal as session_internal;
 use statement::internal as statement_internal;
 use future::internal as future_internal;
+
+use uuid::Uuid;
 
 use future::Future as CassFuture;
 use std::fmt::Show;
@@ -129,15 +130,15 @@ impl Statement {
     self
   }}
 
-  //~ pub fn bind_uuid(&mut self, index: cass_internal_api::cass_size_t, value: Uuid) -> &mut Statement {unsafe{
-	  //~ let bytes = value.as_bytes();
-	  //~ let my_uuid:[u8,..16]=
-	  //~ [bytes[0],bytes[1],bytes[2],bytes[3],bytes[4],bytes[5],bytes[6],bytes[7],
-	   //~ bytes[8],bytes[9],bytes[10],bytes[11],bytes[12],bytes[13],bytes[14],bytes[15]];
+  pub fn bind_uuid(&mut self, index: types_internal::CassSizeType, value: Uuid) -> &mut Statement {unsafe{
+	  let bytes = value.as_bytes();
+	  let my_uuid:[u8,..16]=
+	  [bytes[0],bytes[1],bytes[2],bytes[3],bytes[4],bytes[5],bytes[6],bytes[7],
+	   bytes[8],bytes[9],bytes[10],bytes[11],bytes[12],bytes[13],bytes[14],bytes[15]];
 
-    //~ self.last_error = CassError{cass_error:cass_internal_api::cass_statement_bind_uuid(self.cass_statement,index,my_uuid)};
-    //~ self
-  //~ }}
+    self.last_error = CassError{cass_error:statement_internal::cass_statement_bind_uuid(self.cass_statement,index,my_uuid)};
+    self
+  }}
 
   pub fn bind_inet(&mut self, index: types_internal::CassSizeType, value: CassInet) -> &mut Statement {unsafe{
     self.last_error = CassError{cass_error:statement_internal::cass_statement_bind_inet(self.cass_statement,index,value.cass_inet)};

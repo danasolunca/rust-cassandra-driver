@@ -36,6 +36,6 @@ path="src/bin/collections.rs"
 name = "cassandra"
 # path = "src/cassandra/mod.rs"
 
-# [dependencies.uuid]
-# git = "https://github.com/rust-lang/uuid.git"
+[dependencies]
+uuid = "*"
 
