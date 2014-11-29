@@ -65,29 +65,29 @@ fn main()  {
 
   let contact_points = "127.0.0.1";
   let mut cluster = Cluster::new();
-  cluster = cluster.set_contact_points(contact_points).unwrap();
-  cluster = cluster.set_port(9042).unwrap();
-  cluster = cluster.set_protocol_version(3).unwrap();
-  cluster = cluster.set_queue_size_io(3).unwrap();
-  cluster = cluster.set_queue_size_event(3).unwrap();
-  cluster = cluster.set_queue_size_log(3).unwrap();
-  cluster = cluster.set_core_connections_per_host(3).unwrap();
-  cluster = cluster.set_max_connections_per_host(3).unwrap();
-  cluster = cluster.set_reconnect_wait_time(3).unwrap();
-  cluster = cluster.set_max_concurrent_creation(3).unwrap();
-  cluster = cluster.set_max_concurrent_requests_threshold(3).unwrap();
-  cluster = cluster.set_max_requests_per_flush(3).unwrap();
-  cluster = cluster.set_write_bytes_high_water_mark(3).unwrap();
-  cluster = cluster.set_write_bytes_low_water_mark(3).unwrap();
-  cluster = cluster.set_pending_requests_high_water_mark(3).unwrap();
-  cluster = cluster.set_pending_requests_low_water_mark(3).unwrap();
-  cluster = cluster.set_connect_timeout(300).unwrap();
-  cluster = cluster.set_request_timeout(300).unwrap();
-  cluster = cluster.set_log_level(CassLogLevelType::DEBUG).unwrap();
-  cluster = cluster.set_credentials("foo","bar").unwrap();
-  cluster = cluster.set_load_balance_round_robin().unwrap();
-  cluster = cluster.set_load_balance_dc_aware("dc1").unwrap();
-  cluster = cluster.set_token_aware_routing(true).unwrap();
+  cluster = cluster.set_contact_points(contact_points).unwrap()
+        .set_port(9042).unwrap()
+        .set_protocol_version(3).unwrap()
+        .set_queue_size_io(3).unwrap()
+        .set_queue_size_event(3).unwrap()
+        .set_queue_size_log(3).unwrap()
+        .set_core_connections_per_host(3).unwrap()
+        .set_max_connections_per_host(3).unwrap()
+        .set_reconnect_wait_time(3).unwrap()
+        .set_max_concurrent_creation(3).unwrap()
+        .set_max_concurrent_requests_threshold(3).unwrap()
+        .set_max_requests_per_flush(3).unwrap()
+        .set_write_bytes_high_water_mark(3).unwrap()
+        .set_write_bytes_low_water_mark(3).unwrap()
+        .set_pending_requests_high_water_mark(3).unwrap()
+        .set_pending_requests_low_water_mark(3).unwrap()
+        .set_connect_timeout(300).unwrap()
+        .set_request_timeout(300).unwrap()
+        .set_log_level(CassLogLevelType::DEBUG).unwrap()
+        .set_credentials("foo","bar").unwrap()
+        .set_load_balance_round_robin().unwrap()
+        .set_load_balance_dc_aware("dc1").unwrap()
+        .set_token_aware_routing(true).unwrap();
 
   
 
