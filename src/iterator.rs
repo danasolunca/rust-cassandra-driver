@@ -1,3 +1,4 @@
+#![feature(unsafe_destructor)]
 #[allow(dead_code)]
 use row::Row as CassRow;
 use types::CassValue;

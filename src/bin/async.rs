@@ -54,7 +54,8 @@ fn main() {
 	};
 	
   let contact_points = "127.0.0.1";
-  let cluster = Cluster::create(contact_points);
+  let mut cluster = Cluster::new();
+  cluster = cluster.set_contact_points(contact_points).unwrap();
 
   match cluster.connect() {
     Err(fail) => println!("fail: {}",fail),

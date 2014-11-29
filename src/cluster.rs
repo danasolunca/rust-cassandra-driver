@@ -21,11 +21,11 @@ impl Cluster {
     Cluster{cass_cluster:internal::cass_cluster_new()}
   }}
 
-  pub fn create(contact_points:&str) -> Cluster {unsafe{
+  pub fn set_contact_points(self,contact_points:&str) -> Result<Cluster,CassError> {unsafe{
     let cluster = Cluster::new();
     let points = contact_points.to_c_str();
     let err = internal::cass_cluster_set_contact_points(cluster.cass_cluster,types_internal::cass_string_init(points.as_ptr()).data);
-    cluster
+    Ok(cluster)
   }}
 
   pub fn connect_async(&mut self) -> CassFuture{unsafe{
