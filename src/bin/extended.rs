@@ -28,18 +28,18 @@ struct Commands {
 pub fn insert_into_basic(session:&mut CassSession, insert_statement: &str, key:&str, extended:Extended) -> CResult {
   let mut statement = CassStatement::build_from_str(insert_statement, 6);
   println!("inserting key:{}",key);
-  statement.bind_string(0, key);
-  statement.bind_bool(1, extended.bln as u32);
-  statement.bind_float(2, extended.flt);
-  statement.bind_double(3, extended.dbl);
-  statement.bind_int32(4, extended.i32);
-  statement.bind_int64(5, extended.i64);
+  statement.bind_string(0, key).unwrap()
+        .bind_bool(1, extended.bln as u32).unwrap()
+        .bind_float(2, extended.flt).unwrap()
+        .bind_double(3, extended.dbl).unwrap()
+        .bind_int32(4, extended.i32).unwrap()
+        .bind_int64(5, extended.i64).unwrap();
   session.execute(&mut statement)
 }
 
 pub fn select_from_basic(session:&mut CassSession, select_statement: &str, key:&str) -> CResult {
   let mut statement = CassStatement::build_from_str(select_statement, 1);
-  statement.bind_string(0, key);
+  statement.bind_string(0, key).unwrap();
   let future:CResult=session.execute(&mut statement);
   match future {
     Err(err) => return Err(err),

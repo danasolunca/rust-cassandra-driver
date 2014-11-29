@@ -46,6 +46,11 @@ impl Future {
     CassResult{cass_result:internal::cass_future_get_result(self.cass_future)}
   }}
 
+  //~ pub fn set_callback(&mut self,callback: CassFutureCallback, data: *mut ::libc::c_void) -> CassResult {unsafe{
+    //~ CassResult{cass_result:internal::cass_future_set_callback(self.cass_future)}
+  //~ }}
+
+
   pub fn get_prepared(&mut self) -> Prepared {unsafe{
     Prepared{cass_prepared:internal::cass_future_get_prepared(self.cass_future)}
   }}

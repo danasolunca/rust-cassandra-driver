@@ -296,6 +296,10 @@ impl CassValue {
   fn cass_bytes_init(data: *const u8, size: internal::CassSizeType) -> CassBytes {unsafe{
     CassBytes{cass_bytes:internal::cass_bytes_init(data,size)}
   }}
+
+  pub fn get_type(&self) -> u32 {unsafe{
+    internal::cass_value_type(self.cass_value)
+  }}
 }
 
 pub mod internal {
@@ -313,7 +317,6 @@ pub mod internal {
       write!(f, "{}", raw::from_buf_len(raw, length))
     }
   }}
-
 
   pub type CassValueType = u32;
   #[repr(C)]
@@ -391,7 +394,6 @@ pub mod internal {
     pub fn cass_inet_init_v6(address: *const u8) -> CassInet;
     pub fn cass_decimal_init(scale: i32, varint: CassBytes) -> CassDecimal;
     pub fn cass_bytes_init(data: *const u8, size: CassSizeType) -> CassBytes;
-
   }
 }
 

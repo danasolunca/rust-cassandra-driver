@@ -43,13 +43,12 @@ fn prepare_insert_into_batch(session:Session, query:&str) -> Result<Prepared,Cas
    }
 }
 
-#[allow(unused_variables)]
 fn insert_into_batch_with_prepared(session:Session , mut prepared:Prepared, pairs:&mut DList<Pair>) -> CassError {
   let batch = &mut Batch::new(BATCH_TYPE::LOGGED_BATCH);
   for pair in pairs.iter_mut() {
-    let mut statement = prepared.bind(2);
-    statement.bind_string(0, &pair.key);
-    statement.bind_string(1, &pair.value);
+    let mut statement = prepared.bind(2).unwrap()
+          .bind_string(0, &pair.key).unwrap()
+          .bind_string(1, &pair.value).unwrap();
     batch.add_statement(statement);
   }
   let st2 = Statement::build_from_str("INSERT INTO examples.pairs (key, value) VALUES ('c', '3')",0);

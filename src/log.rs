@@ -12,7 +12,7 @@ pub enum CassLogLevelType {
 
 pub mod internal {
   use types::internal as types_internal;
-  pub type CassLogLevel = ::libc::c_uint;
+  pub type CassLogLevel = u32;
   pub type CassLogCallback = ::std::option::Option<extern "C" fn
                               (arg1: u64, arg2: CassLogLevel,
                                arg3: types_internal::CassString, arg4: *mut ::libc::c_void)>;

@@ -11,13 +11,13 @@ use types::internal as types_internal;
 use session::internal as session_internal;
 use statement::internal as statement_internal;
 use future::internal as future_internal;
+use std::fmt;
 
 use uuid::Uuid;
 
 use future::Future as CassFuture;
 use std::fmt::Show;
 use std::fmt::Formatter;
-use std::fmt::Result;
 
 
 pub struct Statement {
@@ -26,7 +26,7 @@ pub struct Statement {
 }
 
 impl Show for Statement {
-   fn fmt(&self, f: &mut Formatter) -> Result {
+   fn fmt(&self, f: &mut Formatter) -> fmt::Result {
      write!(f, "(Statement:{})", self)
     }
 }
@@ -78,167 +78,166 @@ impl Statement {
     }
   }}
   
-  pub fn set_serial_consistency(&mut self) -> &mut Statement {unsafe{
+  pub fn set_serial_consistency(&mut self) -> Result<&mut Statement,CassError> {unsafe{
     self.last_error = CassError{cass_error:statement_internal::cass_statement_set_serial_consistency(self.cass_statement,CassConsistency::SERIAL)};
-    self
+    Ok(self)
   }}
 
-  pub fn add_key_index(&mut self, index:u64) -> &mut Statement {unsafe{
+  pub fn add_key_index(&mut self, index:u64) -> Result<&mut Statement,CassError> {unsafe{
     self.last_error = CassError{cass_error:statement_internal::cass_statement_add_key_index(self.cass_statement,index)};
-    self
+    Ok(self)
   }}
 
-  pub fn set_consistency(&mut self,consistency:CassConsistency) -> &mut Statement {unsafe{
+  pub fn set_consistency(&mut self,consistency:CassConsistency) -> Result<&mut Statement,CassError> {unsafe{
     self.last_error = CassError{cass_error:statement_internal::cass_statement_set_consistency(self.cass_statement,consistency)};
-    self
+    Ok(self)
   }}
 
-  pub fn set_keyspace(&mut self, keyspace:&str) -> &mut Statement {unsafe{
+  pub fn set_keyspace(&mut self, keyspace:&str) -> Result<&mut Statement,CassError> {unsafe{
     self.last_error = CassError{cass_error:statement_internal::cass_statement_set_keyspace(self.cass_statement,keyspace.as_ptr() as *const i8)};
-    self
+    Ok(self)
   }}
  
-  pub fn bind_null(&mut self, index: types_internal::CassSizeType) -> &mut Statement {unsafe{
+  pub fn bind_null(&mut self, index: types_internal::CassSizeType) -> Result<&mut Statement,CassError> {unsafe{
     self.last_error = CassError{cass_error:statement_internal::cass_statement_bind_null(self.cass_statement,index)};
-    self
+    Ok(self)
   }}
 
-  pub fn bind_int32(&mut self, index: types_internal::CassSizeType, value: i32) -> &mut Statement {unsafe{
+  pub fn bind_int32(&mut self, index: types_internal::CassSizeType, value: i32) -> Result<&mut Statement,CassError> {unsafe{
     self.last_error = CassError{cass_error:statement_internal::cass_statement_bind_int32(self.cass_statement,index,value)};
-    self
+    Ok(self)
   }}
 
-  pub fn bind_int32_by_name(&mut self, name: &str, value: i32) -> &mut Statement {unsafe{
+  pub fn bind_int32_by_name(&mut self, name: &str, value: i32) -> Result<&mut Statement,CassError> {unsafe{
     self.last_error = CassError{cass_error:internal::cass_statement_bind_int32_by_name(self.cass_statement,name.as_ptr() as *const i8,value)};
-    self
+    Ok(self)
   }}
 
-  pub fn bind_int64_by_name(&mut self, name: &str, value: i64) -> &mut Statement {unsafe{
+  pub fn bind_int64_by_name(&mut self, name: &str, value: i64) -> Result<&mut Statement,CassError> {unsafe{
     self.last_error = CassError{cass_error:internal::cass_statement_bind_int64_by_name(self.cass_statement,name.as_ptr() as *const i8,value)};
-    self
+    Ok(self)
   }}
 
-  pub fn bind_float_by_name(&mut self, name: &str, value: f32) -> &mut Statement {unsafe{
+  pub fn bind_float_by_name(&mut self, name: &str, value: f32) -> Result<&mut Statement,CassError> {unsafe{
     self.last_error = CassError{cass_error:internal::cass_statement_bind_float_by_name(self.cass_statement,name.as_ptr() as *const i8,value)};
-    self
+    Ok(self)
   }}
 
-  pub fn bind_double_by_name(&mut self, name: &str, value: f64) -> &mut Statement {unsafe{
+  pub fn bind_double_by_name(&mut self, name: &str, value: f64) -> Result<&mut Statement,CassError> {unsafe{
     self.last_error = CassError{cass_error:internal::cass_statement_bind_double_by_name(self.cass_statement,name.as_ptr() as *const i8,value)};
-    self
+    Ok(self)
   }}
 
-  pub fn bind_bool_by_name(&mut self, name: &str, value: bool) -> &mut Statement {unsafe{
+  pub fn bind_bool_by_name(&mut self, name: &str, value: bool) -> Result<&mut Statement,CassError> {unsafe{
     self.last_error = CassError{cass_error:internal::cass_statement_bind_bool_by_name(self.cass_statement,name.as_ptr() as *const i8,match value {true=>1,false=>0})};
-    self
+    Ok(self)
   }}
 
-  pub fn bind_string_by_name(&mut self, name: &str, value: &str) -> &mut Statement {unsafe{
+  pub fn bind_string_by_name(&mut self, name: &str, value: &str) -> Result<&mut Statement,CassError> {unsafe{
     self.last_error = CassError{cass_error:internal::cass_statement_bind_string_by_name(self.cass_statement,name.as_ptr() as *const i8,CassValue::str_to_cass_string(value))};
-    self
+    Ok(self)
   }}
 
-  pub fn bind_bytes_by_name(&mut self, name: &str, value: CassBytes) -> &mut Statement {unsafe{
+  pub fn bind_bytes_by_name(&mut self, name: &str, value: CassBytes) -> Result<&mut Statement,CassError> {unsafe{
     self.last_error = CassError{cass_error:internal::cass_statement_bind_bytes_by_name(self.cass_statement,name.as_ptr() as *const i8,value.cass_bytes)};
-    self
+    Ok(self)
   }}
 
-  pub fn bind_uuid_by_name(&mut self, name: &str, value: Uuid) -> &mut Statement {unsafe{
+  pub fn bind_uuid_by_name(&mut self, name: &str, value: Uuid) -> Result<&mut Statement,CassError> {unsafe{
 	  let bytes = value.as_bytes();
 	  let my_uuid:[u8,..16]=
 	  [bytes[0],bytes[1],bytes[2],bytes[3],bytes[4],bytes[5],bytes[6],bytes[7],
 	   bytes[8],bytes[9],bytes[10],bytes[11],bytes[12],bytes[13],bytes[14],bytes[15]];
 
     self.last_error = CassError{cass_error:statement_internal::cass_statement_bind_uuid_by_name(self.cass_statement,name.as_ptr() as *const i8,my_uuid)};
-    self
+    Ok(self)
   }}
 
-  pub fn bind_inet_by_name(&mut self, name: &str, value: CassInet) -> &mut Statement {unsafe{
+  pub fn bind_inet_by_name(&mut self, name: &str, value: CassInet) -> Result<&mut Statement,CassError> {unsafe{
     self.last_error = CassError{cass_error:statement_internal::cass_statement_bind_inet_by_name(self.cass_statement,name.as_ptr() as *const i8,value.cass_inet)};
-    self
+    Ok(self)
   }}
 
-  pub fn bind_decimal_by_name(&mut self, name: &str, value: CassDecimal) -> &mut Statement {unsafe{
+  pub fn bind_decimal_by_name(&mut self, name: &str, value: CassDecimal) -> Result<&mut Statement,CassError> {unsafe{
     self.last_error = CassError{cass_error:statement_internal::cass_statement_bind_decimal_by_name(self.cass_statement,name.as_ptr() as *const i8,value.cass_decimal)};
-    self
+    Ok(self)
   }}
 
-  pub fn bind_collection_by_name(&mut self,name: &str, collection: CassCollection) -> &mut Statement {unsafe{
+  pub fn bind_collection_by_name(&mut self,name: &str, collection: CassCollection) -> Result<&mut Statement,CassError> {unsafe{
     self.last_error = CassError{cass_error:statement_internal::cass_statement_bind_collection_by_name(self.cass_statement,name.as_ptr() as *const i8,&*collection.cass_collection)};
-    self
+    Ok(self)
   }}
 
 
-  pub fn bind_custom_by_name(&mut self, name: &str, size: types_internal::CassSizeType, output: *mut *mut u8) -> &mut Statement {unsafe{
+  pub fn bind_custom_by_name(&mut self, name: &str, size: types_internal::CassSizeType, output: *mut *mut u8) -> Result<&mut Statement,CassError> {unsafe{
     self.last_error = CassError{cass_error:statement_internal::cass_statement_bind_custom_by_name(self.cass_statement,name.as_ptr() as *const i8,size,output)};
-    self
+    Ok(self)
   }}
 
-  pub fn bind_int64(&mut self, index: types_internal::CassSizeType, value: i64) -> &mut Statement {unsafe{
+  pub fn bind_int64(&mut self, index: types_internal::CassSizeType, value: i64) -> Result<&mut Statement,CassError> {unsafe{
     self.last_error = CassError{cass_error:statement_internal::cass_statement_bind_int64(self.cass_statement,index,value)};
-    self
+    Ok(self)
   }}
 
-  pub fn bind_float(&mut self, index: types_internal::CassSizeType, value: f32) -> &mut Statement {unsafe{
+  pub fn bind_float(&mut self, index: types_internal::CassSizeType, value: f32) -> Result<&mut Statement,CassError> {unsafe{
     self.last_error = CassError{cass_error:statement_internal::cass_statement_bind_float(self.cass_statement,index,value)};
-    self
+    Ok(self)
   }}
 
-  pub fn bind_double(&mut self, index: types_internal::CassSizeType, value: f64) -> &mut Statement {unsafe{
+  pub fn bind_double(&mut self, index: types_internal::CassSizeType, value: f64) -> Result<&mut Statement,CassError> {unsafe{
     self.last_error = CassError{cass_error:statement_internal::cass_statement_bind_double(self.cass_statement,index,value)};
-    self
+    Ok(self)
   }}
 
-  pub fn bind_bool(&mut self, index: types_internal::CassSizeType, value: types_internal::CassBoolType) -> &mut Statement {unsafe{
+  pub fn bind_bool(&mut self, index: types_internal::CassSizeType, value: types_internal::CassBoolType) -> Result<&mut Statement,CassError> {unsafe{
     self.last_error = CassError{cass_error:statement_internal::cass_statement_bind_bool(self.cass_statement,index,value)};
-    self
+    Ok(self)
   }}
 
-  pub fn bind_string(&mut self, index: types_internal::CassSizeType, value: &str) -> &mut Statement {unsafe{
+  pub fn bind_string(&mut self, index: types_internal::CassSizeType, value: &str) -> Result<&mut Statement,CassError> {unsafe{
     let cass_string = CassValue::str_to_cass_string(value);
-      println!("cass_string={}",cass_string);
     self.last_error = CassError{cass_error:statement_internal::cass_statement_bind_string(self.cass_statement,index,cass_string)};
-    self
+    Ok(self)
   }}
 
-  pub fn bind_str(&mut self, index: types_internal::CassSizeType, value: &str) -> &mut Statement {
+  pub fn bind_str(&mut self, index: types_internal::CassSizeType, value: &str) -> Result<&mut Statement,CassError> {
     self.bind_string(index, value)
   }
 
 
-  pub fn bind_bytes(&mut self, index: types_internal::CassSizeType, value: CassBytes) -> &mut Statement {unsafe{
+  pub fn bind_bytes(&mut self, index: types_internal::CassSizeType, value: CassBytes) -> Result<&mut Statement,CassError> {unsafe{
     self.last_error = CassError{cass_error:statement_internal::cass_statement_bind_bytes(self.cass_statement,index,value.cass_bytes)};
-    self
+    Ok(self)
   }}
 
-  pub fn bind_uuid(&mut self, index: types_internal::CassSizeType, value: Uuid) -> &mut Statement {unsafe{
+  pub fn bind_uuid(&mut self, index: types_internal::CassSizeType, value: Uuid) -> Result<&mut Statement,CassError> {unsafe{
 	  let bytes = value.as_bytes();
 	  let my_uuid:[u8,..16]=
 	  [bytes[0],bytes[1],bytes[2],bytes[3],bytes[4],bytes[5],bytes[6],bytes[7],
 	   bytes[8],bytes[9],bytes[10],bytes[11],bytes[12],bytes[13],bytes[14],bytes[15]];
 
     self.last_error = CassError{cass_error:statement_internal::cass_statement_bind_uuid(self.cass_statement,index,my_uuid)};
-    self
+    Ok(self)
   }}
 
-  pub fn bind_inet(&mut self, index: types_internal::CassSizeType, value: CassInet) -> &mut Statement {unsafe{
+  pub fn bind_inet(&mut self, index: types_internal::CassSizeType, value: CassInet) -> Result<&mut Statement,CassError> {unsafe{
     self.last_error = CassError{cass_error:statement_internal::cass_statement_bind_inet(self.cass_statement,index,value.cass_inet)};
-    self
+    Ok(self)
   }}
 
-  pub fn bind_decimal(&mut self, index: types_internal::CassSizeType, value: CassDecimal) -> &mut Statement {unsafe{
+  pub fn bind_decimal(&mut self, index: types_internal::CassSizeType, value: CassDecimal) -> Result<&mut Statement,CassError> {unsafe{
     self.last_error = CassError{cass_error:statement_internal::cass_statement_bind_decimal(self.cass_statement,index,value.cass_decimal)};
-    self
+    Ok(self)
   }}
 
-  pub fn bind_custom(&mut self, index: types_internal::CassSizeType, size: types_internal::CassSizeType, output: *mut *mut u8) -> &mut Statement {unsafe{
+  pub fn bind_custom(&mut self, index: types_internal::CassSizeType, size: types_internal::CassSizeType, output: *mut *mut u8) -> Result<&mut Statement,CassError> {unsafe{
     self.last_error = CassError{cass_error:statement_internal::cass_statement_bind_custom(self.cass_statement,index,size,output)};
-    self
+    Ok(self)
   }}
 
-  pub fn bind_collection(&mut self, index: types_internal::CassSizeType, collection: CassCollection) -> &mut Statement {unsafe{
+  pub fn bind_collection(&mut self, index: types_internal::CassSizeType, collection: CassCollection) -> Result<&mut Statement,CassError> {unsafe{
     self.last_error = CassError{cass_error:statement_internal::cass_statement_bind_collection(self.cass_statement,index,&*collection.cass_collection)};
-    self
+    Ok(self)
   }}
 }
 
