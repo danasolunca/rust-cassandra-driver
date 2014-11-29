@@ -4,6 +4,7 @@ use types::CassValue;
 use result::CassResult;
 use collection::CassCollection;
 
+#[allow(dead_code)]
 #[allow(non_camel_case_types)] pub enum IteratorType {
   RESULT=0,
   ROW=1,
@@ -31,6 +32,7 @@ pub type RowIterator = CassIterator<CassRow>;
 pub type CollectionIterator = CassIterator<CassCollection>;
 
 
+#[allow(dead_code)]
 enum CassIteratorType {
   ResultIterator,
   RowIterator,
@@ -117,24 +119,24 @@ impl RowIterator {
 }
 
 pub mod internal {
-  use schema::internal as schema_internal;
+//  use schema::internal as schema_internal;
   use types::internal as types_internal;
   use row::internal as row_internal;
-  
+  #[repr(C)]
   pub type CassIterator = ::libc::c_uint;
   #[link(name = "cassandra")]
   extern "C" {
     pub fn cass_iterator_free(iterator: *mut CassIterator);
     pub fn cass_iterator_type(iterator: *mut CassIterator) -> CassIterator;
-    pub fn cass_iterator_from_schema_meta(meta: *const schema_internal::CassSchemaMeta) -> *mut CassIterator;
-    pub fn cass_iterator_fields_from_schema_meta(meta: *const schema_internal::CassSchemaMeta) -> *mut CassIterator;
-    pub fn cass_iterator_next(iterator: *mut CassIterator) -> types_internal::cass_bool_t;
+    //~ pub fn cass_iterator_from_schema_meta(meta: *const schema_internal::CassSchemaMeta) -> *mut CassIterator;
+    //~ pub fn cass_iterator_fields_from_schema_meta(meta: *const schema_internal::CassSchemaMeta) -> *mut CassIterator;
+    pub fn cass_iterator_next(iterator: *mut CassIterator) -> types_internal::CassBoolType;
     pub fn cass_iterator_get_row(iterator: *mut CassIterator) -> *const row_internal::CassRow;
     pub fn cass_iterator_get_column(iterator: *mut CassIterator) -> *const types_internal::CassValue;
     pub fn cass_iterator_get_value(iterator: *mut CassIterator) -> *const types_internal::CassValue;
     pub fn cass_iterator_get_map_key(iterator: *mut CassIterator) -> *const types_internal::CassValue;
     pub fn cass_iterator_get_map_value(iterator: *mut CassIterator) -> *const types_internal::CassValue;
-    pub fn cass_iterator_get_schema_meta(iterator: *mut CassIterator) -> *const schema_internal::CassSchemaMeta;
-    pub fn cass_iterator_get_schema_meta_field(iterator: *mut CassIterator) -> *const schema_internal::CassSchemaMetaField;
+    //~ pub fn cass_iterator_get_schema_meta(iterator: *mut CassIterator) -> *const schema_internal::CassSchemaMeta;
+    //~ pub fn cass_iterator_get_schema_meta_field(iterator: *mut CassIterator) -> *const schema_internal::CassSchemaMetaField;
   }
 }

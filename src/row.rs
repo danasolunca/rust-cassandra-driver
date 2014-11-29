@@ -26,12 +26,11 @@ pub mod internal {
   use iterator::internal as iterator_internal;
   use types::internal as types_internal;
   
-  pub enum Struct_CassRow_ { }
-  pub type CassRow = Struct_CassRow_;
+  pub enum CassRow { }
   #[link(name = "cassandra")]
   extern "C" {
     pub fn cass_iterator_from_row(row: *const CassRow) -> *mut iterator_internal::CassIterator;
-    pub fn cass_row_get_column(row: *const CassRow, index: types_internal::cass_size_t) -> *const types_internal::CassValue;
+    pub fn cass_row_get_column(row: *const CassRow, index: types_internal::CassSizeType) -> *const types_internal::CassValue;
     pub fn cass_row_get_column_by_name(row: *const CassRow, name: *const ::libc::c_char) -> *const types_internal::CassValue;
   }
 }

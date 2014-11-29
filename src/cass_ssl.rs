@@ -1,12 +1,15 @@
 use error::Error as CassError;
 use types::CassValue;
 
-#[allow(non_camel_case_types)] pub enum VerifyType {
+#[allow(dead_code)]
+#[allow(non_camel_case_types)]
+pub enum VerifyType {
   NONE = 0,
   PEER_CERT = 1,
   PEER_IDENTITY=2,
 }
 
+#[allow(dead_code)]
 pub struct CassSsl {
   pub cass_ssl:*mut internal::CassSsl
 }

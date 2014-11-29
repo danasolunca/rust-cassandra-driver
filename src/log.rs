@@ -1,3 +1,4 @@
+#[allow(non_camel_case_types)]
 pub enum CassLogLevelType {
   DISABLED=0,
   CRITICAL=1,

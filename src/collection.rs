@@ -9,7 +9,6 @@ use result::CassResult;
 use row::Row;
 
 use row::internal as row_internal;
-use collection::internal as collection_internal;
 use result::internal as result_internal;
 
 use iterator::CollectionIterator;
@@ -198,13 +197,13 @@ pub mod internal {
 
   #[link(name = "cassandra")]
   extern "C" {  
-    pub fn cass_collection_new(_type: CassCollectionType, item_count: types_internal::cass_size_t) -> *mut CassCollection;
+    pub fn cass_collection_new(_type: CassCollectionType, item_count: types_internal::CassSizeType) -> *mut CassCollection;
     pub fn cass_collection_free(collection: *mut CassCollection);
     pub fn cass_collection_append_int32(collection: *mut CassCollection, value: i32) -> error_internal::CassError;
     pub fn cass_collection_append_int64(collection: *mut CassCollection, value: i64) -> error_internal::CassError;
     pub fn cass_collection_append_float(collection: *mut CassCollection, value: f32) -> error_internal::CassError;
     pub fn cass_collection_append_double(collection: *mut CassCollection, value: f64) -> error_internal::CassError;
-    pub fn cass_collection_append_bool(collection: *mut CassCollection, value: types_internal::cass_bool_t) -> error_internal::CassError;
+    pub fn cass_collection_append_bool(collection: *mut CassCollection, value: types_internal::CassBoolType) -> error_internal::CassError;
     pub fn cass_collection_append_string(collection: *mut CassCollection, value: types_internal::CassString) -> error_internal::CassError;
     pub fn cass_collection_append_bytes(collection: *mut CassCollection, value: types_internal::CassBytes) -> error_internal::CassError;
     pub fn cass_collection_append_uuid(collection: *mut CassCollection, value: types_internal::CassUuid) -> error_internal::CassError;

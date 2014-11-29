@@ -4,7 +4,6 @@ use std::string::raw;
 
 use collection::internal as collection_internal;
 use types::internal as types_internal;
-use error::internal as error_internal;
 use error::CASS_OK;
 
 use error::Error as CassError;
@@ -20,7 +19,7 @@ use std::io::net::ip::Ipv6Addr;
 use CollectionIterator;
 
 
-
+#[allow(dead_code)]
 pub enum ValueType {
   UNKNOWN = 65535,
   CUSTOM = 0,
@@ -286,8 +285,7 @@ impl CassValue {
     raw::from_buf_len(cass_str.data as *const u8,cass_str.length as uint)
   }}
 
-  //PRIVATE METHODS
-  fn cass_inet_init_v6(address: *const u8) -> CassInet {unsafe{
+  pub fn cass_inet_init_v6(address: *const u8) -> CassInet {unsafe{
     CassInet{cass_inet:internal::cass_inet_init_v6(address)}
   }}
 
@@ -295,7 +293,7 @@ impl CassValue {
     CassDecimal{cass_decimal:internal::cass_decimal_init(scale,varint.cass_bytes)}
   }}
 
-  fn cass_bytes_init(data: *const u8, size: internal::cass_size_t) -> CassBytes {unsafe{
+  fn cass_bytes_init(data: *const u8, size: internal::CassSizeType) -> CassBytes {unsafe{
     CassBytes{cass_bytes:internal::cass_bytes_init(data,size)}
   }}
 }
@@ -316,8 +314,10 @@ pub mod internal {
     }
   }}
 
-  
-  pub type CassValueType = u32;  
+
+  pub type CassValueType = u32;
+  #[repr(C)]
+  #[allow(dead_code)]
   pub enum CassValue {
     CassDecimal,
     CassBytes,
@@ -342,18 +342,18 @@ pub mod internal {
   #[repr(C)]
   pub struct CassBytes {
     pub data: *const u8,
-    pub size: cass_size_t,
+    pub size: CassSizeType,
   }
 
-  pub type cass_size_t = u64;
-  pub type cass_bool_t = u32;
+  pub type CassSizeType = u64;
+  pub type CassBoolType = u32;
   #[repr(C)]
   pub struct CassString {
     pub data: *const i8,
-    pub length: cass_size_t,
+    pub length: CassSizeType,
   }
 
-  pub type cass_duration_t = u64;
+  pub type CassDurationType = u64;
 
 
   #[link(name = "cassandra")]
@@ -371,26 +371,26 @@ pub mod internal {
     pub fn cass_value_get_int64(value: *const CassValue, output: *mut i64) -> error_internal::CassError;
     pub fn cass_value_get_float(value: *const CassValue, output: *mut f32) -> error_internal::CassError;
     pub fn cass_value_get_double(value: *const CassValue, output: *mut f64) -> error_internal::CassError;
-    pub fn cass_value_get_bool(value: *const CassValue, output: *mut cass_bool_t) -> error_internal::CassError;
+    pub fn cass_value_get_bool(value: *const CassValue, output: *mut CassBoolType) -> error_internal::CassError;
     pub fn cass_value_get_uuid(value: *const CassValue, output: CassUuid) -> error_internal::CassError;
     pub fn cass_value_get_inet(value: *const CassValue, output: *mut CassInet) -> error_internal::CassError;
     pub fn cass_value_get_string(value: *const CassValue, output: *mut CassString) -> error_internal::CassError;
     pub fn cass_value_get_bytes(value: *const CassValue, output: *mut CassBytes) -> error_internal::CassError;
     pub fn cass_value_get_decimal(value: *const CassValue, output: *mut CassDecimal) -> error_internal::CassError;
     pub fn cass_value_type(value: *const CassValue) -> CassValueType;
-    pub fn cass_value_is_null(value: *const CassValue) -> cass_bool_t;
-    pub fn cass_value_is_collection(value: *const CassValue) -> cass_bool_t;
-    pub fn cass_value_item_count(collection: *const CassValue) -> cass_size_t;
+    pub fn cass_value_is_null(value: *const CassValue) -> CassBoolType;
+    pub fn cass_value_is_collection(value: *const CassValue) -> CassBoolType;
+    pub fn cass_value_item_count(collection: *const CassValue) -> CassSizeType;
     pub fn cass_value_primary_sub_type(collection: *const CassValue) -> CassValueType;
     pub fn cass_value_secondary_sub_type(collection: *const CassValue) -> CassValueType;
     
     pub fn cass_string_init(null_terminated: *const ::libc::c_char) -> CassString;
-    pub fn cass_string_init2(data: *const ::libc::c_char, length: cass_size_t) -> CassString;
+    pub fn cass_string_init2(data: *const ::libc::c_char, length: CassSizeType) -> CassString;
 
     pub fn cass_inet_init_v4(address: *const u8) -> CassInet;
     pub fn cass_inet_init_v6(address: *const u8) -> CassInet;
     pub fn cass_decimal_init(scale: i32, varint: CassBytes) -> CassDecimal;
-    pub fn cass_bytes_init(data: *const u8, size: cass_size_t) -> CassBytes;
+    pub fn cass_bytes_init(data: *const u8, size: CassSizeType) -> CassBytes;
 
   }
 }

@@ -1,3 +1,5 @@
+#[allow(dead_code)]
+#[allow(non_camel_case_types)]
 pub enum CassErrorSourceType {
   PORT = 0,
   CQL_VERSION = 1,

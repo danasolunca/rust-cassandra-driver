@@ -2,7 +2,10 @@ extern crate libc;
 
 use libc::c_char;
 
+#[allow(dead_code)]
 pub const CASS_ERROR_LAST_ENTRY: ::libc::c_uint = 50331654;
+#[allow(non_camel_case_types)]
+#[allow(dead_code)]
 pub const CASS_OK:u32 = 0;
 
 
@@ -16,6 +19,8 @@ pub enum CassErrorSourceType {
   COMPRESSION=4,
 }
 
+#[allow(dead_code)]
+#[allow(non_camel_case_types)]
 pub enum CassErrorLibType {
   BAD_PARAMS=16777217,
   NO_STREAMS=16777218,
@@ -40,6 +45,8 @@ pub enum CassErrorLibType {
   NOT_IMPLEMENTED=16777237,
 }
 
+#[allow(dead_code)]
+#[allow(non_camel_case_types)]
 pub enum CassErrorServerType {
   SERVER_ERROR=33554432,
   PROTOCOL_ERROR=33554442,
@@ -58,6 +65,8 @@ pub enum CassErrorServerType {
   UNPREPARED=33563904,
 }
 
+#[allow(dead_code)]
+#[allow(non_camel_case_types)]
 pub enum CassErrorSSLType {
   INVALID_CERT=50331649,
   INVALID_PRIVATE_KEY=50331650,
@@ -91,11 +100,11 @@ impl Error {
 }
 
 pub mod internal {
+  #[allow(dead_code)]
   pub const CASS_ERROR_LAST_ENTRY: ::libc::c_uint = 50331654;
 
   type CassErrorSource = ::libc::c_uint;  
-  type Enum_CassError_ = ::libc::c_uint;
-  pub type CassError = Enum_CassError_;
+  pub type CassError = ::libc::c_uint;
   #[link(name = "cassandra")]
   extern "C" {
     pub fn cass_error_desc(error: CassError) -> *const ::libc::c_char;

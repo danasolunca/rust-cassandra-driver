@@ -25,7 +25,7 @@ fn insert_into_paging(session:&mut Session, key:&str) {
   let query = "INSERT INTO paging (key, value) VALUES (?, ?);";
   let mut futures:Vec<CassFuture> = Vec::new();
   for i in range(1,NUM_CONCURRENT_REQUESTS) {
-    let mut statement = Statement::new(query, 2);
+    let statement = Statement::new(query, 2);
 //    let uuid1 = Uuid::new_v4();
 //    statement.bind_string(0, &uuid1.to_string());
 //    statement.bind_string(1,&i.to_string());

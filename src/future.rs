@@ -12,7 +12,7 @@ mod cassandra {
 
 #[allow(dead_code)]
 pub struct Future {
-  pub cass_future:*mut  internal::Struct_CassFuture_,
+  pub cass_future:*mut  internal::CassFuture,
 }
 
 
@@ -26,7 +26,7 @@ impl Drop for Future {
 impl Future {
 
 
-  pub fn ready(&self) -> types_internal::cass_bool_t {unsafe{
+  pub fn ready(&self) -> types_internal::CassSizeType {unsafe{
     internal::cass_future_ready(self.cass_future)
   }}
 
@@ -34,7 +34,7 @@ impl Future {
     internal::cass_future_wait(self.cass_future)
   }}
 
-  pub fn timed(&mut self, timeout: types_internal::cass_duration_t) -> types_internal::cass_bool_t {unsafe{
+  pub fn timed(&mut self, timeout: types_internal::CassDurationType) -> types_internal::CassBoolType {unsafe{
     internal::cass_future_wait_timed(self.cass_future,timeout)
   }}
 
@@ -77,15 +77,14 @@ pub mod internal {
                               (arg1: *mut CassFuture,
                                arg2: *mut ::libc::c_void)>;
   
-  pub enum Struct_CassFuture_ { }
-  pub type CassFuture = Struct_CassFuture_;
+  pub enum CassFuture { }
   #[link(name = "cassandra")]
   extern "C" {
     pub fn cass_future_free(future: *mut CassFuture);
     pub fn cass_future_set_callback(future: *mut CassFuture, callback: CassFutureCallback, data: *mut ::libc::c_void) -> error_internal::CassError;
-    pub fn cass_future_ready(future: *mut CassFuture) -> types_internal::cass_bool_t;
+    pub fn cass_future_ready(future: *mut CassFuture) -> types_internal::CassSizeType;
     pub fn cass_future_wait(future: *mut CassFuture);
-    pub fn cass_future_wait_timed(future: *mut CassFuture, timeout_us: types_internal::cass_duration_t) -> types_internal::cass_bool_t;
+    pub fn cass_future_wait_timed(future: *mut CassFuture, timeout_us: types_internal::CassDurationType) -> types_internal::CassBoolType;
     pub fn cass_future_get_session(future: *mut CassFuture) -> *mut session_internal::CassSession;
     pub fn cass_future_get_result(future: *mut CassFuture) -> *const result_internal::CassResult;
     pub fn cass_future_get_prepared(future: *mut CassFuture) -> *const statement_internal::CassPrepared;

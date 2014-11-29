@@ -6,7 +6,7 @@ use future::Future as CassFuture;
 use session::Session;
 use error::Error as CassError;
 use types::internal as types_internal;
-use error::CASS_OK;
+//use error::CASS_OK;
 use cass_ssl::CassSsl;
 use log::CassLogLevelType;
 
@@ -215,7 +215,7 @@ pub mod internal {
     pub fn cass_cluster_set_credentials(cluster: *mut CassCluster, username: *const ::libc::c_char, password: *const ::libc::c_char) -> error_internal::CassError;
     pub fn cass_cluster_set_load_balance_round_robin(cluster: *mut CassCluster) -> error_internal::CassError;
     pub fn cass_cluster_set_load_balance_dc_aware(cluster: *mut CassCluster, local_dc: *const ::libc::c_char) -> error_internal::CassError;
-    pub fn cass_cluster_set_token_aware_routing(cluster: *mut CassCluster, enabled: types_internal::cass_bool_t);
+    pub fn cass_cluster_set_token_aware_routing(cluster: *mut CassCluster, enabled: types_internal::CassBoolType);
     pub fn cass_cluster_connect(cluster: *mut CassCluster) -> *mut future_internal::CassFuture;
     pub fn cass_cluster_connect_keyspace(cluster: *mut CassCluster,keyspace: *const ::libc::c_char) -> *mut future_internal::CassFuture;
   }

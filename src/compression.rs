@@ -1,3 +1,4 @@
+#[allow(dead_code)]
 pub enum CassCompression {
   NONE=0,
   SNAPPY=1,

@@ -1,7 +1,5 @@
 #[allow(dead_code)]
 
-use iterator::CassIterator;
-
 pub struct CassSchema {
   pub cass_schema:*const internal::CassSchema
 }
@@ -23,8 +21,12 @@ pub mod internal {
   use iterator::internal as iterator_internal;
   
   pub enum CassSchema { }
+  #[allow(dead_code)]
   pub enum CassSchemaMeta { }
+  #[allow(dead_code)]
   pub enum CassSchemaMetaField { }
+  #[repr(C)]
+  #[allow(dead_code)]
   pub enum CassSchemaMetaType {
     KEYSPACE=0,
     TABLE=1,

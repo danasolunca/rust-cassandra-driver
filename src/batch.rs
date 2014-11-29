@@ -2,8 +2,6 @@ extern crate libc;
 #[allow(dead_code)]
 use statement::Statement;
 use error::Error as CassError;
-use types::internal as internal_types;
-
 
 pub enum BatchType {
   LOGGED=0,
@@ -54,10 +52,8 @@ pub mod internal {
   use error::internal as error_internal;
   use statement::internal as statement_internal;
 
-  pub enum Struct_CassBatch_ { }
-  pub type CassBatch = Struct_CassBatch_;
-  pub type Enum_CassBatchType_ = ::libc::c_uint;
-  pub type CassBatchType = Enum_CassBatchType_;
+  pub enum CassBatch { }
+  pub type CassBatchType = ::libc::c_uint;
 
   #[link(name = "cassandra")]
   extern "C" {

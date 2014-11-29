@@ -1,3 +1,5 @@
+#[allow(non_camel_case_types)]
+#[repr(C)]
 pub enum CassConsistency {
   ANY=0,
   ONE=1,
