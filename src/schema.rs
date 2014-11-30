@@ -4,6 +4,7 @@ use iterator::CIterator;
 use types::CassValue;
 use types::CassString;
 use types::Value;
+use libc::c_char;
 
 pub struct Schema {
   pub cass_schema:*const CassSchema
@@ -75,10 +76,10 @@ impl CassSchemaMetaField {
 extern "C" {
   pub fn cass_iterator_from_schema(schema: *const CassSchema) -> *mut CassIterator;
   pub fn cass_schema_free(schema: *const CassSchema);
-  pub fn cass_schema_get_keyspace(schema: *const CassSchema, keyspace_name: *const ::libc::c_char) -> *const CassSchemaMeta;
+  pub fn cass_schema_get_keyspace(schema: *const CassSchema, keyspace_name: *const c_char) -> *const CassSchemaMeta;
   pub fn cass_schema_meta_type(meta: *const CassSchemaMeta) -> CassSchemaMetaType;
-  pub fn cass_schema_meta_get_entry(meta: *const CassSchemaMeta, name: *const ::libc::c_char) -> *const CassSchemaMeta;
-  pub fn cass_schema_meta_get_field(meta: *const CassSchemaMeta, name: *const ::libc::c_char) -> *const CassSchemaMetaField;
+  pub fn cass_schema_meta_get_entry(meta: *const CassSchemaMeta, name: *const c_char) -> *const CassSchemaMeta;
+  pub fn cass_schema_meta_get_field(meta: *const CassSchemaMeta, name: *const c_char) -> *const CassSchemaMetaField;
   pub fn cass_schema_meta_field_name(field: *const CassSchemaMetaField) -> CassString;
   pub fn cass_schema_meta_field_value(field: *const CassSchemaMetaField) -> *const CassValue;
 }

@@ -1,5 +1,8 @@
 use types::CassString;
 
+use libc::c_char;
+use libc::c_void;
+
 #[allow(non_camel_case_types)]
 pub enum LogLevelType {
   DISABLED=0,
@@ -25,9 +28,9 @@ impl LogLevel {
   pub type CassLogLevel = u32;
   pub type CassLogCallback = ::std::option::Option<extern "C" fn
                               (arg1: u64, arg2: CassLogLevel,
-                               arg3: CassString, arg4: *mut ::libc::c_void)>;
+                               arg3: CassString, arg4: *mut c_void)>;
   #[link(name = "cassandra")]
   extern "C" {
-    pub fn cass_log_level_string(log_level: CassLogLevel) -> *const ::libc::c_char;
+    pub fn cass_log_level_string(log_level: CassLogLevel) -> *const c_char;
   }
 

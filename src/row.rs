@@ -4,6 +4,8 @@ use Value;
 use iterator::CassIterator;
 use types::CassValue;
 use types::CassSizeType;
+
+use libc::c_char;
   
 pub struct Row {
   pub cass_row:*const CassRow,
@@ -33,6 +35,6 @@ impl Row {
   extern "C" {
     pub fn cass_iterator_from_row(row: *const CassRow) -> *mut CassIterator;
     fn cass_row_get_column(row: *const CassRow, index: CassSizeType) -> *const CassValue;
-    fn cass_row_get_column_by_name(row: *const CassRow, name: *const ::libc::c_char) -> *const CassValue;
+    fn cass_row_get_column_by_name(row: *const CassRow, name: *const c_char) -> *const CassValue;
   }
 

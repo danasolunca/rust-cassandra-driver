@@ -1,7 +1,6 @@
 use std::fmt::Show;
 use std::fmt::Formatter;
 use std::fmt;
-use std::string::raw;
 
 use iterator::CassIterator;
 use types::CassBoolType;
@@ -51,7 +50,7 @@ impl Result {
     let cass_str = result::cass_result_column_name(self.cass_result,index);
     let raw = cass_str.data as *mut u8;
     let length = cass_str.length as uint;
-    raw::from_parts(raw, length, length)
+    String::from_raw_parts(raw, length, length)
   }}
 
   pub fn column_type(&self, index: u64) -> CassValueType {unsafe{

@@ -9,6 +9,7 @@ use types::CassBoolType;
 use types::Value;
 use types::CassValue;
 
+use libc::c_uint;
 
 #[allow(dead_code)]
 #[allow(non_camel_case_types)] pub enum IteratorType {
@@ -118,7 +119,7 @@ impl RowIterator {
 }
 
   #[repr(C)]
-  pub type CassIterator = ::libc::c_uint;
+  pub type CassIterator = c_uint;
   #[link(name = "cassandra")]
   extern "C" {
     pub fn cass_iterator_free(iterator: *mut CassIterator);

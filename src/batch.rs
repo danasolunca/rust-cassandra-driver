@@ -6,6 +6,7 @@ use error::CassError;
 use error::Error;
 use consistency::CassConsistency;
 
+use libc::c_uint;
 
 pub enum BatchType {
   LOGGED=0,
@@ -24,7 +25,7 @@ impl Batch {
     Batch{cass_batch:cass_batch_new(batch_type as u32)}
   }}
 
-  pub fn free(&mut self) {unsafe{
+  pub fn free(&self) {unsafe{
     cass_batch_free(self.cass_batch);
   }}
 
@@ -48,7 +49,7 @@ impl Drop for Batch {
 
 
   pub enum CassBatch { }
-  type CassBatchType = ::libc::c_uint;
+  type CassBatchType = c_uint;
 
   #[link(name = "cassandra")]
   extern "C" {

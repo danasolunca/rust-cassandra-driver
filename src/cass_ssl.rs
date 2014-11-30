@@ -3,6 +3,9 @@ use error::Error;
 use types::Value;
 use types::CassString;
 
+use libc::c_char;
+use libc::c_int;
+
 #[allow(dead_code)]
 #[allow(non_camel_case_types)]
 pub enum VerifyType {
@@ -45,18 +48,15 @@ impl Drop for Ssl {
   }}
 }
 
+pub enum CassSsl { }
 
-
-  
-  pub enum CassSsl { }
-
-  #[link(name = "cassandra")]
-  extern "C" {
-    pub fn cass_ssl_new() -> *mut CassSsl;    
-    pub fn cass_ssl_free(ssl: *mut CassSsl);
-    pub fn cass_ssl_add_trusted_cert(ssl: *mut CassSsl, cert: CassString) -> CassError;
-    pub fn cass_ssl_set_verify_flags(ssl: *mut CassSsl, flags: ::libc::c_int);
-    pub fn cass_ssl_set_cert(ssl: *mut CassSsl, cert: CassString) -> CassError;
-    pub fn cass_ssl_set_private_key(ssl: *mut CassSsl, key: CassString, password: *const ::libc::c_char) -> CassError;
+#[link(name = "cassandra")]
+extern "C" {
+  fn cass_ssl_new() -> *mut CassSsl;    
+  fn cass_ssl_free(ssl: *mut CassSsl);
+  fn cass_ssl_add_trusted_cert(ssl: *mut CassSsl, cert: CassString) -> CassError;
+  fn cass_ssl_set_verify_flags(ssl: *mut CassSsl, flags: c_int);
+  fn cass_ssl_set_cert(ssl: *mut CassSsl, cert: CassString) -> CassError;
+  fn cass_ssl_set_private_key(ssl: *mut CassSsl, key: CassString, password: *const c_char) -> CassError;
   }
 

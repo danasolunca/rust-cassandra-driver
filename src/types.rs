@@ -12,7 +12,6 @@ use std::num::Int;
 use std::io::net::ip::IpAddr;
 use std::io::net::ip::Ipv4Addr;
 use std::io::net::ip::Ipv6Addr;
-use std::string::raw;
 use std::vec::Vec;
 
 use CollectionIterator;
@@ -135,8 +134,8 @@ impl Value {
     if err.cass_error == CASS_OK {
       let length=output.length as uint;
       println!("item length: {}", length);
-      println!("raw: {}", raw::from_parts(output.data as *mut u8, length, length));
-      Ok(raw::from_parts(output.data as *mut u8, length, length))
+      println!("raw: {}", String::from_raw_parts(output.data as *mut u8, length, length));
+      Ok(String::from_raw_parts(output.data as *mut u8, length, length))
     } else {Err(err)}
   }}
 
@@ -277,7 +276,7 @@ impl Value {
   }}
 
   pub fn cass_string_to_string(cass_str:CassString) -> String {unsafe{
-    raw::from_buf_len(cass_str.data as *const u8,cass_str.length as uint)
+    String::from_raw_buf_len(cass_str.data as *const u8,cass_str.length as uint)
   }}
 
   pub fn cass_inet_init_v6(address: *const u8) -> Inet {unsafe{
@@ -301,7 +300,7 @@ impl Show for CassString {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {unsafe{
     let raw = self.data as *const u8;
     let length = self.length as uint;
-    write!(f, "{}", raw::from_buf_len(raw, length))
+    write!(f, "{}", String::from_raw_buf_len(raw, length))
   }
 }}
 
@@ -354,7 +353,7 @@ extern "C" {
   fn cass_uuid_generate_random(output: CassUuid);
   fn cass_uuid_timestamp(uuid: CassUuid) -> u64;
   fn cass_uuid_version(uuid: CassUuid) -> u8;
-  fn cass_uuid_string(uuid: CassUuid, output: *mut ::libc::c_char);
+  fn cass_uuid_string(uuid: CassUuid, output: *mut c_char);
   fn cass_value_get_int32(value: *const CassValue, output: *mut i32) -> CassError;
   fn cass_value_get_int64(value: *const CassValue, output: *mut i64) -> CassError;
   fn cass_value_get_float(value: *const CassValue, output: *mut f32) -> CassError;
@@ -371,8 +370,8 @@ extern "C" {
   fn cass_value_item_count(collection: *const CassValue) -> CassSizeType;
   fn cass_value_primary_sub_type(collection: *const CassValue) -> CassValueType;
   fn cass_value_secondary_sub_type(collection: *const CassValue) -> CassValueType;   
-  pub fn cass_string_init(null_terminated: *const ::libc::c_char) -> CassString;
-  fn cass_string_init2(data: *const ::libc::c_char, length: CassSizeType) -> CassString;
+  pub fn cass_string_init(null_terminated: *const c_char) -> CassString;
+  fn cass_string_init2(data: *const c_char, length: CassSizeType) -> CassString;
   fn cass_inet_init_v4(address: *const u8) -> CassInet;
   fn cass_inet_init_v6(address: *const u8) -> CassInet;
   fn cass_decimal_init(scale: i32, varint: CassBytes) -> CassDecimal;

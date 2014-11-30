@@ -1,6 +1,7 @@
 extern crate libc;
 
 use libc::c_char;
+use libc::c_uint;
 
 #[allow(dead_code)]
 pub const CASS_ERROR_LAST_ENTRY: ::libc::c_uint = 50331654;
@@ -99,10 +100,10 @@ impl Error {
   }}
 }
 
-  type CassErrorSource = ::libc::c_uint;  
-  pub type CassError = ::libc::c_uint;
+  type CassErrorSource = c_uint;  
+  pub type CassError = c_uint;
   #[link(name = "cassandra")]
   extern "C" {
-    pub fn cass_error_desc(error: CassError) -> *const ::libc::c_char;
+    pub fn cass_error_desc(error: CassError) -> *const c_char;
   }
 

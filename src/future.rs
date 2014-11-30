@@ -1,5 +1,3 @@
-use std::string::raw;
-
 use session::Session;
 use error::CassError;
 use error::Error;
@@ -12,12 +10,8 @@ use types::CassDurationType;
 use types::CassSizeType;
 use statement::CassPrepared;
 use session::CassSession;
+use libc::c_void;
 
-mod cassandra {
-  #[path="../error.rs"] pub mod error;
-}
-
-#[allow(dead_code)]
 pub struct Future {
   pub cass_future:*mut  CassFuture,
 }
@@ -29,10 +23,7 @@ impl Drop for Future {
   }
 }}
 
-#[allow(dead_code)]
 impl Future {
-
-
   pub fn ready(&self) -> CassSizeType {unsafe{
     cass_future_ready(self.cass_future)
   }}
@@ -69,7 +60,7 @@ impl Future {
   pub fn error_message(&mut self) -> String {unsafe{
     let cstr = cass_future_error_message(self.cass_future);
     let (raw,length) = (cstr.data as *mut u8,cstr.length as uint);
-    raw::from_parts(raw, length, length)
+    String::from_raw_parts(raw, length, length)
   }}
 
   pub fn print_error(&mut self) {
@@ -77,16 +68,13 @@ impl Future {
   }
 }
 
-  pub type CassFutureCallback =
-    ::std::option::Option<extern "C" fn
-                              (arg1: *mut CassFuture,
-                               arg2: *mut ::libc::c_void)>;
+pub type CassFutureCallback = Option<extern "C" fn (arg1: *mut CassFuture, arg2: *mut c_void)>;
   
   pub enum CassFuture { }
   #[link(name = "cassandra")]
   extern "C" {
     pub fn cass_future_free(future: *mut CassFuture);
-    pub fn cass_future_set_callback(future: *mut CassFuture, callback: CassFutureCallback, data: *mut ::libc::c_void) -> CassError;
+    pub fn cass_future_set_callback(future: *mut CassFuture, callback: CassFutureCallback, data: *mut c_void) -> CassError;
     pub fn cass_future_ready(future: *mut CassFuture) -> CassSizeType;
     pub fn cass_future_wait(future: *mut CassFuture);
     pub fn cass_future_wait_timed(future: *mut CassFuture, timeout_us: CassDurationType) -> CassBoolType;
@@ -95,6 +83,5 @@ impl Future {
     pub fn cass_future_get_prepared(future: *mut CassFuture) -> *const CassPrepared;
     pub fn cass_future_error_code(future: *mut CassFuture) -> CassError;
     pub fn cass_future_error_message(future: *mut CassFuture) -> CassString;
-
   }
 
