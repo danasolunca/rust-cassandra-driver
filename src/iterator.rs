@@ -1,7 +1,7 @@
 #[allow(dead_code)]
 use row::Row;
 use types::Value;
-use result::CassResult;
+use result::Result;
 use collection::CassCollection;
 use row::CassRow;
 
@@ -28,7 +28,7 @@ pub struct CassIterator<T> {
   pub cass_iterator:*mut internal::CassIterator
 }
 
-pub type ResultIterator = CassIterator<CassResult>;
+pub type ResultIterator = CassIterator<Result>;
 pub type RowIterator = CassIterator<CassRow>;
 pub type CollectionIterator = CassIterator<CassCollection>;
 

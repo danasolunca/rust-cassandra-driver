@@ -16,13 +16,13 @@ use types::CassSizeType;
 
 use types::ValueType;
 use types::_ValueType;
-use result::CassResult;
+use result::Result;
 use row::Row;
 use row;
 use iterator::internal as iterator_internal;
 
 
-use result::internal as result_internal;
+use result;
 
 use iterator::CollectionIterator;
 
@@ -110,8 +110,8 @@ impl Collection {
     CollectionIterator{cass_iterator:cass_iterator_from_map(collection.cass_value)}
   }}
 
-  pub fn collection_iterator_from_result(result:CassResult) -> CollectionIterator {unsafe{
-    CollectionIterator{cass_iterator:result_internal::cass_iterator_from_result(result.cass_result)}
+  pub fn collection_iterator_from_result(result:Result) -> CollectionIterator {unsafe{
+    CollectionIterator{cass_iterator:result::cass_iterator_from_result(result.cass_result)}
   }}
 
   pub fn collection_iterator_from_row(row:Row) -> CollectionIterator {unsafe{

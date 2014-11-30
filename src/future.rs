@@ -4,13 +4,13 @@ use session::Session;
 use error::CassError;
 use error::Error;
 use statement::Prepared;
-use result::CassResult;
-use result::internal as result_internal;
-use statement as statement_internal;
+use result::Result;
+use result;
 use types::CassString;
 use types::CassBoolType;
 use types::CassDurationType;
 use types::CassSizeType;
+use statement::CassPrepared;
 use session::CassSession;
 
 mod cassandra {
@@ -49,8 +49,8 @@ impl Future {
     Session{cass_session:cass_future_get_session(self.cass_future)}
   }}
 
-  pub fn get_result(&mut self) -> CassResult {unsafe{
-    CassResult{cass_result:cass_future_get_result(self.cass_future)}
+  pub fn get_result(&mut self) -> Result {unsafe{
+    Result{cass_result:cass_future_get_result(self.cass_future)}
   }}
 
   //~ pub fn set_callback(&mut self,callback: CassFutureCallback, data: *mut ::libc::c_void) -> CassResult {unsafe{
@@ -91,8 +91,8 @@ impl Future {
     pub fn cass_future_wait(future: *mut CassFuture);
     pub fn cass_future_wait_timed(future: *mut CassFuture, timeout_us: CassDurationType) -> CassBoolType;
     pub fn cass_future_get_session(future: *mut CassFuture) -> *mut CassSession;
-    pub fn cass_future_get_result(future: *mut CassFuture) -> *const result_internal::CassResult;
-    pub fn cass_future_get_prepared(future: *mut CassFuture) -> *const statement_internal::CassPrepared;
+    pub fn cass_future_get_result(future: *mut CassFuture) -> *const result::CassResult;
+    pub fn cass_future_get_prepared(future: *mut CassFuture) -> *const CassPrepared;
     pub fn cass_future_error_code(future: *mut CassFuture) -> CassError;
     pub fn cass_future_error_message(future: *mut CassFuture) -> CassString;
 

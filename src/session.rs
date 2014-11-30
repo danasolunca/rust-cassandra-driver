@@ -3,13 +3,14 @@ use statement::CassStatement;
 use future::Future;
 use future::CassFuture;
 use batch::Batch;
-use result::CassResult;
+use result::Result;
 use error::Error;
 use batch::CassBatch;
 use schema::Schema;
 use schema::CassSchema;
 use types;
 use types::CassString;
+use std::result::Result as RustResult;
 
 #[allow(dead_code)]
 pub struct Session {
@@ -32,7 +33,7 @@ impl Session {
     )}
   }}
 
-  pub fn execute_string(&self, statement:&String) -> Result<CassResult,Error> {
+  pub fn execute_string(&self, statement:&String) -> RustResult<Result,Error> {
 	let statement = Statement::build_from_string(statement, 0);
 	self.execute_async(&statement);
     let mut future:Future = self.execute_async(&statement);
@@ -44,11 +45,11 @@ impl Session {
     return Ok(future.get_result());
   }
 
-  pub fn execute_str(&self, statement:&str) -> Result<CassResult,Error> {
+  pub fn execute_str(&self, statement:&str) -> RustResult<Result,Error> {
     self.execute_string(&statement.to_string())
   }
 
-  pub fn execute(&self, statement:&Statement) -> Result<CassResult,Error> {
+  pub fn execute(&self, statement:&Statement) -> RustResult<Result,Error> {
 
     let mut future:Future = self.execute_async(statement);
     future.wait();

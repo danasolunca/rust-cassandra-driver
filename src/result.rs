@@ -10,77 +10,73 @@ use std::string::raw;
   use types::CassSizeType;
   use types::CassString;
 
+  use iterator::internal as iterator_internal;
+  use row;
+  use row::CassRow;
+
 use row::Row;
-use row::CassRow;
 use ResultIterator;
 use error::CassError;
 use error::Error;
-use result::internal as result_internal;
+use result;
 
 #[allow(dead_code)]
 #[allow(raw_pointer_deriving)]
 #[deriving(Clone)]
-pub struct CassResult {
-  pub cass_result:*const internal::CassResult
+pub struct Result {
+  pub cass_result:*const CassResult
 }
 
-impl Drop for CassResult {
+impl Drop for Result {
   fn drop(&mut self) {unsafe{
-    internal::cass_result_free(self.cass_result)
+    cass_result_free(self.cass_result)
   }}
 }
 
-impl Show for CassResult {
+impl Show for Result {
    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
      write!(f, "(Result:{})", self.cass_result)
     }
 }
 
 #[allow(dead_code)]
-impl CassResult {
+impl Result {
   pub fn has_more_pages(&self) -> bool {unsafe{
-    result_internal::cass_result_has_more_pages(self.cass_result) > 0
+    result::cass_result_has_more_pages(self.cass_result) > 0
   }}
 
   pub fn row_count(&self) -> u64 {unsafe{
-    result_internal::cass_result_row_count(self.cass_result)
+    result::cass_result_row_count(self.cass_result)
   }}
 
   pub fn column_count(&self) -> u64 {unsafe{
-    result_internal::cass_result_column_count(self.cass_result)
+    result::cass_result_column_count(self.cass_result)
   }}
 
   pub fn column_name(&self, index: u64) -> String {unsafe{
-    let cass_str = result_internal::cass_result_column_name(self.cass_result,index);
+    let cass_str = result::cass_result_column_name(self.cass_result,index);
     let raw = cass_str.data as *mut u8;
     let length = cass_str.length as uint;
     raw::from_parts(raw, length, length)
   }}
 
   pub fn column_type(&self, index: u64) -> CassValueType {unsafe{
-    result_internal::cass_result_column_type(self.cass_result,index)
+    result::cass_result_column_type(self.cass_result,index)
   }}
 
   pub fn first_row(&self) -> Option<Row> {unsafe{
     match self.row_count() {
       0 => None,
-      _ => Some(Row{cass_row:result_internal::cass_result_first_row(self.cass_result)})
+      _ => Some(Row{cass_row:result::cass_result_first_row(self.cass_result)})
     }
   }}
 
   pub fn iterator(&self) -> ResultIterator {unsafe{
-    ResultIterator{cass_iterator:result_internal::cass_iterator_from_result(self.cass_result)}
+    ResultIterator{cass_iterator:result::cass_iterator_from_result(self.cass_result)}
   }}
 }
 
-pub mod internal {
-  use iterator::internal as iterator_internal;
-  use types::CassBoolType;
-  use types::CassValueType;
-  use types::CassSizeType;
-  use types::CassString;
-  use row;
-  use row::CassRow;
+
 
   
   pub enum CassResult { }
@@ -95,4 +91,4 @@ pub mod internal {
     pub fn cass_result_has_more_pages(result: *const CassResult) -> CassBoolType;
     pub fn cass_iterator_from_result(result: *const CassResult) -> *mut iterator_internal::CassIterator;
   }
-}
+
