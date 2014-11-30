@@ -1,9 +1,9 @@
 use RowIterator;
 use Value;
 
-  use iterator::internal as iterator_internal;
-  use types::CassValue;
-  use types::CassSizeType;
+use iterator::CassIterator;
+use types::CassValue;
+use types::CassSizeType;
   
 
 
@@ -33,7 +33,7 @@ impl Row {
   pub enum CassRow { }
   #[link(name = "cassandra")]
   extern "C" {
-    pub fn cass_iterator_from_row(row: *const CassRow) -> *mut iterator_internal::CassIterator;
+    pub fn cass_iterator_from_row(row: *const CassRow) -> *mut CassIterator;
     fn cass_row_get_column(row: *const CassRow, index: CassSizeType) -> *const CassValue;
     fn cass_row_get_column_by_name(row: *const CassRow, name: *const ::libc::c_char) -> *const CassValue;
   }

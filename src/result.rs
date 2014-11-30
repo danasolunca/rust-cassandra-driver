@@ -5,12 +5,11 @@ use std::fmt;
 use std::string::raw;
 
   use iterator::CassIterator;
+  use iterator::CIterator;
   use types::CassBoolType;
   use types::CassValueType;
   use types::CassSizeType;
   use types::CassString;
-
-  use iterator::internal as iterator_internal;
   use row;
   use row::CassRow;
 
@@ -89,6 +88,6 @@ impl Result {
     pub fn cass_result_column_type(result: *const CassResult, index: CassSizeType) -> CassValueType;
     pub fn cass_result_first_row(result: *const CassResult) -> *const CassRow;
     pub fn cass_result_has_more_pages(result: *const CassResult) -> CassBoolType;
-    pub fn cass_iterator_from_result(result: *const CassResult) -> *mut iterator_internal::CassIterator;
+    pub fn cass_iterator_from_result(result: *const CassResult) -> *mut CassIterator;
   }
 

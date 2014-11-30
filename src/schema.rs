@@ -1,9 +1,9 @@
 #[allow(dead_code)]
 use iterator::CassIterator;
+use iterator::CIterator;
 use types::CassValue;
 use types::CassString;
 use types::Value;
-use iterator::internal as iterator_internal;
 
 pub struct Schema {
   pub cass_schema:*const CassSchema
@@ -14,8 +14,8 @@ pub struct SchemaMeta {
 }
 
 impl Schema {
-  pub fn get_iterator(&self) -> CassIterator<Schema> {unsafe{
-    CassIterator{cass_iterator:cass_iterator_from_schema(self.cass_schema)}
+  pub fn get_iterator(&self) -> CIterator<Schema> {unsafe{
+    CIterator{cass_iterator:cass_iterator_from_schema(self.cass_schema)}
   }}
 
   pub fn free(&self) {unsafe{
@@ -73,7 +73,7 @@ impl Drop for Schema {
 
   #[link(name = "cassandra")]
   extern "C" {
-    pub fn cass_iterator_from_schema(schema: *const CassSchema) -> *mut iterator_internal::CassIterator;
+    pub fn cass_iterator_from_schema(schema: *const CassSchema) -> *mut CassIterator;
     pub fn cass_schema_free(schema: *const CassSchema);
     pub fn cass_schema_get_keyspace(schema: *const CassSchema, keyspace_name: *const ::libc::c_char) -> *const CassSchemaMeta;
     pub fn cass_schema_meta_type(meta: *const CassSchemaMeta) -> CassSchemaMetaType;

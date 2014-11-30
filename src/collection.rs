@@ -19,7 +19,7 @@ use types::_ValueType;
 use result::Result;
 use row::Row;
 use row;
-use iterator::internal as iterator_internal;
+use iterator::CassIterator;
 
 
 use result;
@@ -143,8 +143,8 @@ impl Drop for Collection {
     fn cass_collection_append_uuid(collection: *mut CassCollection, value: CassUuid) -> CassError;
     fn cass_collection_append_inet(collection: *mut CassCollection, value: CassInet) -> CassError;
     fn cass_collection_append_decimal(collection: *mut CassCollection, value: CassDecimal) -> CassError;
-    pub fn cass_iterator_from_collection(value: *const CassValue) -> *mut iterator_internal::CassIterator;
-    fn cass_iterator_from_map(value: *const CassValue) -> *mut iterator_internal::CassIterator;
+    pub fn cass_iterator_from_collection(value: *const CassValue) -> *mut CassIterator;
+    fn cass_iterator_from_map(value: *const CassValue) -> *mut CassIterator;
   }
 
 
