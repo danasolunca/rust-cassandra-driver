@@ -7,7 +7,6 @@ use cassandra::Statement;
 use cassandra::Cluster;
 use cassandra::Session;
 use cassandra::Prepared;
-use cassandra::Error as CassError;
 use cassandra::Batch;
 
 use std::collections::DList;
@@ -15,7 +14,6 @@ use std::collections::DList;
 pub const CASS_BATCH_TYPE_LOGGED: ::libc::c_uint = 0;
 pub const CASS_BATCH_TYPE_UNLOGGED: ::libc::c_uint = 1;
 pub const CASS_BATCH_TYPE_COUNTER: ::libc::c_uint = 2;
-
 
 struct Pair {
   key:&static str,
@@ -30,17 +28,15 @@ struct Commands {
 } 
 
 fn prepare_insert_into_batch(session:Session, query:&str) -> Result<Prepared,CassError> {
-
   let mut future = session.prepare(query);
   future.wait();
-
-   if future.error_code().is_error() {
+  if future.error_code().is_error() {
      println!("error: {}",future.error_code());
      return Err(future.error_code());
-   } else {
+  } else {
     let prepared = future.get_prepared();
     return Ok(prepared);
-   }
+  }
 }
 
 fn insert_into_batch_with_prepared(session:Session , mut prepared:Prepared, pairs:&mut DList<Pair>) -> CassError {
@@ -53,21 +49,16 @@ fn insert_into_batch_with_prepared(session:Session , mut prepared:Prepared, pair
   }
   let st2 = Statement::build_from_str("INSERT INTO examples.pairs (key, value) VALUES ('c', '3')",0);
   batch.add_statement(st2);
-
-  
   let mut statement = Statement::build_from_str("INSERT INTO examples.pairs (key, value) VALUES (?, ?)",2);
   statement.bind_str(0, "d");
   statement.bind_str(1, "4");
   batch.add_statement(statement);
-  
-
   let mut future = session.execute_batch(batch);
   future.wait();
   if !future.error_code().is_error() {
   } else {
     let prepared = future.get_prepared();
   }
-
   return future.error_code();
 }
 
@@ -79,7 +70,6 @@ fn main() {
 		create_table: "CREATE TABLE IF NOT EXISTS examples.pairs (key text, value text, PRIMARY KEY (key));".to_string(),
 		insert: "INSERT INTO examples.pairs (key, value) VALUES (?, ?)".to_string(),
 	};
-	
 	
   let contact_points = "127.0.0.1".to_string();
   let cluster = Cluster::create(contact_points);
@@ -93,7 +83,6 @@ fn main() {
       assert!(session.execute_string(&cmds.create_ks).is_ok());
       assert!(session.execute_string(&cmds.use_ks).is_ok());
       assert!(session.execute_string(&cmds.create_table).is_ok());
-
       let response = prepare_insert_into_batch(session,cmds.insert);
       match response {
         Err(fail) => println!("fail: {}",fail),

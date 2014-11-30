@@ -2,9 +2,9 @@ extern crate log;
 extern crate libc;
 extern crate cassandra;
 
-use cassandra::CassStatement;
 use cassandra::CassCluster;
 use cassandra::CassResult;
+use cassandra::CassStatement;
 
 #[deriving(Show)]
 pub struct Simple {
@@ -21,7 +21,6 @@ fn main()  {
 
   let mut session_future = cluster.connect_async();
   session_future.wait();
-
 
   if !session_future.error_code().is_error() {
     let session = session_future.get_session();

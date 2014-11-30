@@ -3,11 +3,11 @@ extern crate libc;
 extern crate cassandra;
 
 use cassandra::CassCluster;
-use cassandra::CassSession;
-use cassandra::CassResult;
-use cassandra::CassStatement;
-use cassandra::CassLogLevelType;
 use cassandra::CassError;
+use cassandra::CassLogLevelType;
+use cassandra::CassResult;
+use cassandra::CassSession;
+use cassandra::CassStatement;
 
 #[deriving(Show, Clone)]
 pub struct Extended {
@@ -90,17 +90,13 @@ fn main()  {
         .set_load_balance_dc_aware("dc1").unwrap()
         .set_token_aware_routing(true).unwrap();
 
-  
-
   match cluster.connect() {
     Err(fail) => println!("fail: {}",fail),
     Ok(session) => {
-      let mut session = session;
-      
+      let mut session = session;      
       assert!(session.execute_str(cmds.create_ks).is_ok());
       assert!(session.execute_str(cmds.use_ks).is_ok());
       assert!(session.execute_str(cmds.create_table).is_ok());
-
       let insert = insert_into_basic(&mut session, cmds.insert, "test", input);
       match insert {
         Err(fail) => println!("result: {}",fail),

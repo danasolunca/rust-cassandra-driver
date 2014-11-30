@@ -51,7 +51,6 @@ pub fn select_from_basic(session:&mut CassSession, select_statement: &str, key:&
 
 #[allow(unused_variables)]
 fn main()  {
-	
 	let cmds = Commands{
 		use_ks:"Use examples",
 		create_ks: "CREATE KEYSPACE IF NOT EXISTS examples WITH replication = { 'class': 'SimpleStrategy', 'replication_factor': '1' }",
@@ -59,7 +58,6 @@ fn main()  {
 		insert: "INSERT INTO examples.basic (key, bln, flt, dbl, i32, i64) VALUES (?, ?, ?, ?, ?, ?);",
 		select: "SELECT * FROM examples.basic WHERE key = ?;",
 	};
-	
 	
   let input = Basic{bln:true, dbl:0.001f64, flt:0.0002f32, i32:1, i64:2 };
   let mut output=  Basic{bln:false, dbl:0.0f64, flt:0.00f32, i32:0, i64:0};

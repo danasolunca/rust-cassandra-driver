@@ -2,13 +2,13 @@ extern crate log;
 extern crate libc;
 extern crate cassandra;
 
-use cassandra::CassStatement;
-use cassandra::CassFuture;
-use cassandra::CassSession;
 use cassandra::CassCluster;
-use cassandra::CassResult;
 use cassandra::CassCollection;
 use cassandra::CassError;
+use cassandra::CassFuture;
+use cassandra::CassResult;
+use cassandra::CassSession;
+use cassandra::CassStatement;
 
 struct Commands {
 	use_ks:&'static str,

@@ -9,10 +9,10 @@ extern crate collections;
 extern crate cassandra;
 // extern crate uuid;
 
-use cassandra::CassStatement;
 use cassandra::CassCluster;
 use cassandra::CassFuture;
 use cassandra::CassSession;
+use cassandra::CassStatement;
 
 //use uuid::Uuid;
 
@@ -52,8 +52,6 @@ fn select_from_paging(session:&mut CassSession) {
         (Ok(key),Ok(value)) => println!("key: '{}' value: '{}'", key, value),
        _ => panic!("bad key or value")
        }
-       
-
        if result.has_more_pages() {
       //FIXME
       //   statement.set_paging_state(&mut result);
