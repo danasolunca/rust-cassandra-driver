@@ -45,28 +45,26 @@ impl Drop for Batch {
   }
 }
 
+pub enum CassBatch { }
+type CassBatchType = c_uint;
 
+#[link(name = "cassandra")]
+extern "C" {
+  fn cass_batch_new(_type: CassBatchType) -> *mut CassBatch;
+  fn cass_batch_free(batch: *mut CassBatch);
+  fn cass_batch_set_consistency(batch: *mut CassBatch, consistency: CassConsistency) -> CassError;
+  fn cass_batch_add_statement(batch: *mut CassBatch, statement: *mut CassStatement) -> CassError;
+}
 
+#[cfg(test)]
+mod tests {
+  pub use batch::BatchType;
 
-  pub enum CassBatch { }
-  type CassBatchType = c_uint;
-
-  #[link(name = "cassandra")]
-  extern "C" {
-    fn cass_batch_new(_type: CassBatchType) -> *mut CassBatch;
-    fn cass_batch_free(batch: *mut CassBatch);
-    fn cass_batch_set_consistency(batch: *mut CassBatch, consistency: CassConsistency) -> CassError;
-    fn cass_batch_add_statement(batch: *mut CassBatch, statement: *mut CassStatement) -> CassError;
+  #[test]
+  fn new() {
+    super::Batch::new(BatchType::LOGGED);
+    super::Batch::new(BatchType::UNLOGGED);
+    super::Batch::new(BatchType::COUNTER);
   }
-
-  #[cfg(test)]
-  mod tests {
-    pub use batch::BatchType;
-    #[test]
-    fn new() {
-      super::Batch::new(BatchType::LOGGED);
-      super::Batch::new(BatchType::UNLOGGED);
-      super::Batch::new(BatchType::COUNTER);
-    }
 }
 
