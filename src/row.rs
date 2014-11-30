@@ -5,8 +5,6 @@ use iterator::CassIterator;
 use types::CassValue;
 use types::CassSizeType;
   
-
-
 pub struct Row {
   pub cass_row:*const CassRow,
 }

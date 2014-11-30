@@ -1,14 +1,13 @@
 #[allow(dead_code)]
-use row::Row;
-use types::Value;
-use types::CassValue;
-use result::Result;
 use collection::CassCollection;
+use result::Result;
 use row::CassRow;
-use types::CassBoolType;
-use row;
+use row::Row;
 use schema::CassSchemaMetaField;
 use schema::CassSchemaMeta;
+use types::CassBoolType;
+use types::Value;
+use types::CassValue;
 
 
 #[allow(dead_code)]
@@ -21,12 +20,9 @@ use schema::CassSchemaMeta;
   SCHEMA_META_FIELD=5,
 }
 
-
-
-
 //~ impl Drop for RowIterator {
   //~ fn drop(&mut self) {unsafe{
-    //~ internal::cass_iterator_free(self.cass_iterator)
+    //~ cass_iterator_free(self.cass_iterator)
   //~ }}
 //~ }
 
@@ -119,8 +115,6 @@ impl RowIterator {
   pub fn get_next_value(&self) -> Value {unsafe{
     Value{cass_value:cass_iterator_get_value(self.cass_iterator)}
   }}
-
-
 }
 
   #[repr(C)]

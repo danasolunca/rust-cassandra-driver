@@ -1,5 +1,4 @@
 extern crate libc;
-use log::LogLevel;
 use log::LogLevelType;
 use log::CassLogLevel;
 use cass_ssl::CassSsl;
@@ -12,7 +11,6 @@ use future::CassFuture;
 use session::Session;
 use error::CassError;
 use error::Error;
-//use error::CASS_OK;
 use cass_ssl::Ssl;
 
 #[allow(dead_code)]

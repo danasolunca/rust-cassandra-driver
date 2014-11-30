@@ -48,38 +48,37 @@ impl Drop for Schema {
 }
 
   
-  pub enum CassSchema { }
-  #[allow(dead_code)]
-  pub enum CassSchemaMeta { }
-  #[allow(dead_code)]
-  pub enum CassSchemaMetaField { }
-  #[repr(C)]
-  #[allow(dead_code)]
-  pub enum CassSchemaMetaType {
-    KEYSPACE=0,
-    TABLE=1,
-    COLUMN=2,
-  }
+pub enum CassSchema { }
+#[allow(dead_code)]
+pub enum CassSchemaMeta { }
+#[allow(dead_code)]
+pub enum CassSchemaMetaField { }
+#[repr(C)]
+#[allow(dead_code)]
+pub enum CassSchemaMetaType {
+  KEYSPACE=0,
+  TABLE=1,
+  COLUMN=2,
+}
 
-  impl CassSchemaMetaField {
-    pub fn name(&self,) -> String {unsafe{
-      Value::cass_string_to_string(cass_schema_meta_field_name(self))
-    }}
+impl CassSchemaMetaField {
+  pub fn name(&self,) -> String {unsafe{
+    Value::cass_string_to_string(cass_schema_meta_field_name(self))
+  }}
 
-    pub fn value(&self,) -> Value {unsafe{
-      Value{cass_value:cass_schema_meta_field_value(self)}
-    }}
-  }
+  pub fn value(&self,) -> Value {unsafe{
+    Value{cass_value:cass_schema_meta_field_value(self)}
+  }}
+}
 
-  #[link(name = "cassandra")]
-  extern "C" {
-    pub fn cass_iterator_from_schema(schema: *const CassSchema) -> *mut CassIterator;
-    pub fn cass_schema_free(schema: *const CassSchema);
-    pub fn cass_schema_get_keyspace(schema: *const CassSchema, keyspace_name: *const ::libc::c_char) -> *const CassSchemaMeta;
-    pub fn cass_schema_meta_type(meta: *const CassSchemaMeta) -> CassSchemaMetaType;
-    pub fn cass_schema_meta_get_entry(meta: *const CassSchemaMeta, name: *const ::libc::c_char) -> *const CassSchemaMeta;
-    pub fn cass_schema_meta_get_field(meta: *const CassSchemaMeta, name: *const ::libc::c_char) -> *const CassSchemaMetaField;
-    pub fn cass_schema_meta_field_name(field: *const CassSchemaMetaField) -> CassString;
-    pub fn cass_schema_meta_field_value(field: *const CassSchemaMetaField) -> *const CassValue;
-  }
-
+#[link(name = "cassandra")]
+extern "C" {
+  pub fn cass_iterator_from_schema(schema: *const CassSchema) -> *mut CassIterator;
+  pub fn cass_schema_free(schema: *const CassSchema);
+  pub fn cass_schema_get_keyspace(schema: *const CassSchema, keyspace_name: *const ::libc::c_char) -> *const CassSchemaMeta;
+  pub fn cass_schema_meta_type(meta: *const CassSchemaMeta) -> CassSchemaMetaType;
+  pub fn cass_schema_meta_get_entry(meta: *const CassSchemaMeta, name: *const ::libc::c_char) -> *const CassSchemaMeta;
+  pub fn cass_schema_meta_get_field(meta: *const CassSchemaMeta, name: *const ::libc::c_char) -> *const CassSchemaMetaField;
+  pub fn cass_schema_meta_field_name(field: *const CassSchemaMetaField) -> CassString;
+  pub fn cass_schema_meta_field_value(field: *const CassSchemaMetaField) -> *const CassValue;
+}

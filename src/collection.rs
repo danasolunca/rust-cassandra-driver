@@ -13,8 +13,6 @@ use types::CassBytes;
 use types::CassString;
 use types::CassBoolType;
 use types::CassSizeType;
-
-use types::ValueType;
 use types::_ValueType;
 use result::Result;
 use row::Row;

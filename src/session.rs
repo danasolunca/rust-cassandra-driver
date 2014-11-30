@@ -75,15 +75,14 @@ impl Session {
   
 }
 
-  
-  pub enum CassSession { }
+pub enum CassSession { }
 
- #[link(name = "cassandra")]
-  extern "C" {
-    pub fn cass_session_close(session: *mut CassSession) -> *mut CassFuture;
-    pub fn cass_session_prepare(session: *mut CassSession, query: CassString) -> *mut CassFuture;
-    pub fn cass_session_execute(session: *mut CassSession, statement: *const CassStatement) -> *mut CassFuture;
-    pub fn cass_session_execute_batch(session: *mut CassSession, batch: *const CassBatch) -> *mut CassFuture;
-    pub fn cass_session_get_schema(session: *mut CassSession) -> *const CassSchema;
-  }
+#[link(name = "cassandra")]
+extern "C" {
+  pub fn cass_session_close(session: *mut CassSession) -> *mut CassFuture;
+  pub fn cass_session_prepare(session: *mut CassSession, query: CassString) -> *mut CassFuture;
+  pub fn cass_session_execute(session: *mut CassSession, statement: *const CassStatement) -> *mut CassFuture;
+  pub fn cass_session_execute_batch(session: *mut CassSession, batch: *const CassBatch) -> *mut CassFuture;
+  pub fn cass_session_get_schema(session: *mut CassSession) -> *const CassSchema;
+}
 
