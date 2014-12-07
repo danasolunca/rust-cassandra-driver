@@ -32,6 +32,10 @@ path="src/bin/extended.rs"
 name="collections"
 path="src/bin/collections.rs"
 
+[[bin]]
+name="map"
+path="src/bin/map.rs"
+
 [lib]
 name = "cassandra"
 # path = "src/cassandra/mod.rs"

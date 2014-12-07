@@ -26,12 +26,13 @@ fn insert_into_async(session:&CassSession, cmd:&str, key:&str) {
     let mut statement = CassStatement::build_from_str(cmd, 6);
     let wrapped = key.to_string() + i.to_string();
     println!("response:{}",wrapped);
-    statement.bind_string(0, wrapped.as_slice()).unwrap()
-          .bind_bool(1, if i % 2 == 0 {true} else {false} as u32).unwrap()
-          .bind_float(2, i as f32 / 2.0).unwrap()
-          .bind_double(3, i  as f64 / 200.0).unwrap()
-          .bind_int32(4, (i as i32 * 10)).unwrap()
-          .bind_int64(5,(i as i64 * 100)).unwrap();
+    
+    statement.bind(0, wrapped).unwrap()
+          .bind(1, if i % 2 == 0 {true} else {false}).unwrap()
+          .bind(2, i as f32 / 2.0).unwrap()
+          .bind(3, i  as f64 / 200.0).unwrap()
+          .bind(4, (i as i32 * 10)).unwrap()
+          .bind(5,(i as i64 * 100)).unwrap();
     session.execute(&statement).unwrap();
     i+=1;
   }

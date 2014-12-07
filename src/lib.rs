@@ -4,6 +4,7 @@
 extern crate libc;
 extern crate uuid;
 
+//pub use statement::CassBindable;
 pub use batch::Batch as CassBatch;
 pub use cass_ssl::Ssl as CassSsl;
 pub use cluster::Cluster as CassCluster;
@@ -25,6 +26,7 @@ pub use schema::CassSchemaMetaField;
 pub use session::Session as CassSession;
 pub use statement::Statement as CassStatement;
 pub use statement::Prepared as CassPrepared;
+pub use statement::CassBindable;
 
 pub use types::Value;
 pub use types::Uuid;

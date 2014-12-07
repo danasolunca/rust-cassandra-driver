@@ -28,19 +28,19 @@ struct Commands {
 pub fn insert_into_basic(session:&mut CassSession, insert_statement: &str, key:&str, basic:Basic) -> Result<CassResult,CassError> {
   let mut statement = CassStatement::build_from_str(insert_statement, 6);
   println!("inserting key:{}",key);
-  statement.bind_string(0, key).unwrap()
-        .bind_bool(1, basic.bln as u32).unwrap()
-        .bind_float(2, basic.flt).unwrap()
-        .bind_double(3, basic.dbl).unwrap()
-        .bind_int32(4, basic.i32).unwrap()
-        .bind_int64(5, basic.i64).unwrap();
+  statement //.bind(0, key).unwrap()
+        .bind(1, basic.bln).unwrap()
+        .bind(2, basic.flt).unwrap()
+        .bind(3, basic.dbl).unwrap()
+        .bind(4, basic.i32).unwrap()
+        .bind(5, basic.i64).unwrap();
   session.execute(&mut statement)
 }
 
-pub fn select_from_basic(session:&mut CassSession, select_statement: &str, key:&str) -> Result<CassResult,CassError> {
+pub fn select_from_basic(session:&CassSession, select_statement: &str, key:&str) -> Result<CassResult,CassError> {
   let mut statement = CassStatement::build_from_str(select_statement, 1);
-  statement.bind_string(0, key).unwrap();
-  let future=session.execute(&mut statement);
+  let statement = try!(statement.bind(0, key.to_string()));
+  let future=session.execute(statement);
   match future {
     Err(err) => return Err(err),
     Ok(result) => {

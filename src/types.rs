@@ -13,7 +13,6 @@ use std::io::net::ip::IpAddr;
 use std::io::net::ip::Ipv4Addr;
 use std::io::net::ip::Ipv6Addr;
 use std::vec::Vec;
-use std::string::raw;
 
 use CollectionIterator;
 
@@ -136,7 +135,7 @@ impl Value {
       let length=output.length as uint;
       println!("item length: {}", length);
       println!("raw: {}", String::from_raw_parts(output.data as *mut u8, length, length));
-      Ok(raw::from_buf_len(output.data as *const u8, length))
+      Ok(String::from_raw_buf_len(output.data as *const u8, length))
     } else {Err(err)}
   }}
 

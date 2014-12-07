@@ -31,7 +31,7 @@ fn insert_into_collections(session:&mut CassSession, cmd:&str, key:&str, items:V
 
   //~ CassCollection::new_set(1);
   
-  statement.bind_string(0, key);
+  statement.bind(0, key.to_string());
   let mut collection = CassCollection::new_list(2);
   for item  in items.iter() {
     collection.append_str(*item);
@@ -47,7 +47,7 @@ fn insert_into_collections(session:&mut CassSession, cmd:&str, key:&str, items:V
 #[allow(unused_must_use)]
 fn select_from_collections(session:&CassSession, cmd:&str, key:&str) {
   let mut statement = CassStatement::build_from_str(cmd, 1);
-  statement.bind_string(0, key);
+  statement.bind(0, key.to_string());
  
   match session.execute(&statement) {
     Err(fail) => println!("fail: {}",fail),
