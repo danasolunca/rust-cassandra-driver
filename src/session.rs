@@ -27,7 +27,7 @@ impl Session {
     cass_session_prepare(self.cass_session,statement)
   }}
 
-  pub fn prepare(&self, statement: String) -> Future {unsafe{
+  pub fn prepare(&self, statement: &str) -> Future {unsafe{
     Future{cass_future:cass_session_prepare(
       self.cass_session,types::cass_string_init(statement.to_c_str().as_ptr())
     )}

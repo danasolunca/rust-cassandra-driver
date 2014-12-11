@@ -88,9 +88,9 @@ impl Collection {
     Error{cass_error:cass_collection_append_bytes(self.cass_collection,value.cass_bytes)}
   }}
 
-  //~ pub fn append_uuid(&mut self, value: Uuid) -> Error {unsafe{
-    //~ Error{cass_error:cass_collection_append_uuid(self.cass_collection,value.cass_uuid)}
-  //~ }}
+  pub fn append_uuid(&mut self, value: Uuid) -> Error {unsafe{
+    Error{cass_error:cass_collection_append_uuid(self.cass_collection,value.cass_uuid)}
+  }}
 
   pub fn append_inet(&mut self, value: Inet) -> Error {unsafe{
     Error{cass_error:cass_collection_append_inet(self.cass_collection,value.cass_inet)}

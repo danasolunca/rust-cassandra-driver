@@ -23,30 +23,25 @@ struct Commands {
 	create_ks:&'static str,
 	create_table:&'static str,
 	select:&'static str
-} 
+}
 
 pub fn insert_into_basic(session:&mut CassSession, insert_statement: &str, key:&str, basic:Basic) -> Result<CassResult,CassError> {
   let mut statement = CassStatement::build_from_str(insert_statement, 6);
   println!("inserting key:{}",key);
-  statement //.bind(0, key).unwrap()
-        .bind(1, basic.bln).unwrap()
-        .bind(2, basic.flt).unwrap()
-        .bind(3, basic.dbl).unwrap()
-        .bind(4, basic.i32).unwrap()
-        .bind(5, basic.i64).unwrap();
+  statement.bind(key.clone()).unwrap()
+        .bind(basic.bln).unwrap()
+        .bind(basic.flt).unwrap()
+        .bind(basic.dbl).unwrap()
+        .bind(basic.i32).unwrap()
+        .bind(basic.i64).unwrap();
   session.execute(&mut statement)
 }
 
 pub fn select_from_basic(session:&CassSession, select_statement: &str, key:&str) -> Result<CassResult,CassError> {
-  let mut statement = CassStatement::build_from_str(select_statement, 1);
-  let statement = try!(statement.bind(0, key.to_string()));
-  let future=session.execute(statement);
-  match future {
-    Err(err) => return Err(err),
-    Ok(result) => {
-      return Ok(result)
-    }
-  }
+  session.execute(
+    CassStatement::build_from_str(select_statement, 1)
+      .bind_by_idx(0, key.to_string()).unwrap()
+  )
 }
 
 #[allow(unused_variables)]
@@ -63,26 +58,22 @@ fn main()  {
   let mut output=  Basic{bln:false, dbl:0.0f64, flt:0.00f32, i32:0, i64:0};
 
   let contact_points = "127.0.0.1";
-  let mut cluster = CassCluster::new();
-  cluster = cluster.set_contact_points(contact_points).unwrap();
 
-  match cluster.connect() {
+  match CassCluster::new().set_contact_points(contact_points).unwrap().connect() {
     Err(fail) => println!("fail: {}",fail),
     Ok(session) => {
       let mut session = session;
-      
-      assert!(session.execute_str(cmds.create_ks).is_ok());
-      assert!(session.execute_str(cmds.use_ks).is_ok());
-      assert!(session.execute_str(cmds.create_table).is_ok());
 
-      let insert = insert_into_basic(&mut session, cmds.insert, "test", input);
-      match insert {
+      for cmd in [cmds.create_ks,cmds.use_ks,cmds.create_table].iter() {
+        assert!(session.execute_str(*cmd).is_ok());
+      }
+
+      match insert_into_basic(&mut session, cmds.insert, "test", input) {
         Err(fail) => println!("result: {}",fail),
         Ok(results) => {}
       }
 
-      let response = select_from_basic(&mut session, cmds.select, "test");
-      match response {
+      match select_from_basic(&mut session, cmds.select, "test") {
         Err(fail) => println!("result: {}",fail),
         Ok(results) => {
           for row in results.iterator() {	

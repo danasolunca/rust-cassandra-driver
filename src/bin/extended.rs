@@ -15,7 +15,8 @@ pub struct Extended {
   pub flt: f32,
   pub dbl: f64,
   pub i32: i32,
-  pub i64: i64
+  pub i64: i64,
+  pub string: &'static str
 }
 
 struct Commands {
@@ -27,22 +28,23 @@ struct Commands {
 } 
 
 pub fn insert_into_basic(session:&mut CassSession, insert_statement: &str, key:&str, extended:Extended) -> Result<CassResult,CassError> {
-  let mut statement = CassStatement::build_from_str(insert_statement, 6);
+  let mut statement = CassStatement::build_from_str(insert_statement, 7);
   println!("inserting key:{}",key);
-  statement.bind(0, key.to_string()).unwrap()
-        .bind(1, extended.bln).unwrap()
-        .bind(2, extended.flt).unwrap()
-        .bind(3, extended.dbl).unwrap()
-        .bind(4, extended.i32).unwrap()
-        .bind(5, extended.i64).unwrap();
+  statement
+        .bind(key.to_string()).unwrap()
+        .bind(extended.bln).unwrap()
+        .bind(extended.flt).unwrap()
+        .bind(extended.dbl).unwrap()
+        .bind(extended.i32).unwrap()
+        .bind(extended.i64).unwrap()
+        .bind(extended.string).unwrap();
   session.execute(&mut statement)
 }
 
 pub fn select_from_basic(session:&mut CassSession, select_statement: &str, key:&str) -> Result<CassResult,CassError> {
   let mut statement = CassStatement::build_from_str(select_statement, 1);
-  statement.bind(0, key.clone()).unwrap();
-  let future=session.execute(&mut statement);
-  match future {
+  statement.bind_by_idx(0, key.clone()).unwrap();
+  match session.execute(&mut statement) {
     Err(err) => return Err(err),
     Ok(result) => {
       return Ok(result)
@@ -56,13 +58,13 @@ fn main()  {
 	let cmds = Commands{
 		use_ks:"Use examples",
 		create_ks: "CREATE KEYSPACE IF NOT EXISTS examples WITH replication = { 'class': 'SimpleStrategy', 'replication_factor': '1' }",
-		create_table: "CREATE TABLE IF NOT EXISTS examples.extended (key text, bln boolean, flt float, dbl double, i32 int, i64 bigint, PRIMARY KEY (key));",
-		insert: "INSERT INTO examples.extended (key, bln, flt, dbl, i32, i64) VALUES (?, ?, ?, ?, ?, ?);",
+		create_table: "CREATE TABLE IF NOT EXISTS examples.extended (key text, bln boolean, flt float, dbl double, i32 int, i64 bigint, string text, PRIMARY KEY (key));",
+		insert: "INSERT INTO examples.extended (key, bln, flt, dbl, i32, i64, string) VALUES (?, ?, ?, ?, ?, ?, ?);",
 		select: "SELECT * FROM examples.extended WHERE key = ?;",
 	};
 	
-  let input = Extended{bln:true, dbl:0.001f64, flt:0.0002f32, i32:1, i64:2 };
-  let mut output=  Extended{bln:false, dbl:0.0f64, flt:0.00f32, i32:0, i64:0};
+  let input = Extended{bln:true, dbl:0.001f64, flt:0.0002f32, i32:1, i64:2, string: "String1" };
+  let mut output=  Extended{bln:false, dbl:0.0f64, flt:0.00f32, i32:0, i64:0, string: "" };
 
   let contact_points = "127.0.0.1";
   let mut cluster = CassCluster::new();
@@ -92,19 +94,16 @@ fn main()  {
 
   match cluster.connect() {
     Err(fail) => println!("fail: {}",fail),
-    Ok(session) => {
-      let mut session = session;      
-      assert!(session.execute_str(cmds.create_ks).is_ok());
-      assert!(session.execute_str(cmds.use_ks).is_ok());
-      assert!(session.execute_str(cmds.create_table).is_ok());
-      let insert = insert_into_basic(&mut session, cmds.insert, "test", input);
-      match insert {
+    Ok(mut session) => {
+      for cmd in [cmds.create_ks,cmds.use_ks,cmds.create_table].iter() {
+        assert!(session.execute_str(*cmd).is_ok());
+      }
+      match insert_into_basic(&mut session, cmds.insert, "test", input) {
         Err(fail) => println!("result: {}",fail),
         Ok(results) => {}
       }
 
-      let response = select_from_basic(&mut session, cmds.select, "test");
-      match response {
+      match select_from_basic(&mut session, cmds.select, "test") {
         Err(fail) => println!("result: {}",fail),
         Ok(results) => {
           for row in results.iterator() {	
@@ -113,6 +112,7 @@ fn main()  {
             match row.get_column(3).get_float() {Err(err) => println!("{}--",err),Ok(col) => output.flt=col}
             match row.get_column(4).get_int32() {Err(err) => println!("{}--",err),Ok(col) => output.i32=col}
             match row.get_column(5).get_int64() {Err(err) => println!("{}--",err),Ok(col) => output.i64=col}
+            match row.get_column(6).get_string() {Err(err) => println!("{}--",err),Ok(col) => output.string=col.as_slice().clone()}
           }
         }
       }
@@ -125,5 +125,6 @@ fn main()  {
   assert!(input.i32 == output.i32);
   assert!(input.i64 == output.i64);
   assert!(input.bln == output.bln);
+  assert!(input.string == output.string);
   println!("select and insert matched");
 }

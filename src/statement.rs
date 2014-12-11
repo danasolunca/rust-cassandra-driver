@@ -33,9 +33,11 @@ use std::fmt::Show;
 use std::fmt::Formatter;
 use std::result::Result as RustResult;
 
+
 pub struct Statement {
   pub cass_statement:*mut CassStatement,
-  pub last_error:Error
+  pub last_error:Error,
+  bound_index:u64
 }
 
 impl Show for Statement {
@@ -123,8 +125,14 @@ impl Drop for Statement {
 
 #[allow(dead_code)]
 impl Statement {
-  pub fn bind<T: CassBindable>(&mut self, index: CassSizeType, value: T) -> RustResult<&mut Statement,Error> {
+  pub fn bind_by_idx<T: CassBindable>(&mut self, index: CassSizeType, value: T) -> RustResult<&mut Statement,Error> {
     self.last_error = Error{cass_error:value.bind(index, self)};
+    Ok(self)
+  }
+
+  pub fn bind<T: CassBindable>(&mut self, value: T) -> RustResult<&mut Statement,Error> {
+    self.last_error = Error{cass_error:value.bind(self.bound_index, self)};
+    self.bound_index+=1;
     Ok(self)
   }
 
@@ -140,20 +148,16 @@ impl Statement {
   pub fn new(statement_string: &str, parameter_count: CassSizeType) ->  Statement {unsafe{
     let cass_string = Value::str_to_cass_string(statement_string);
     let statement = cass_statement_new(cass_string,parameter_count);
-    Statement{cass_statement:statement,last_error:Error::new(0)}
+    Statement{cass_statement:statement,last_error:Error::new(0), bound_index:0}
   }}
 
-  pub fn build_from_string(statement_string:&String, parameter_count: CassSizeType) -> Statement {unsafe{
-    let query_cstring = statement_string.to_c_str();
-    let query = types::cass_string_init(query_cstring.as_ptr());
-    Statement{cass_statement:cass_statement_new(query,parameter_count),last_error:Error::new(0)}
-  }}
+  pub fn build_from_string(statement_string:&String, parameter_count: CassSizeType) -> Statement {
+    Statement::new(statement_string.as_slice(),parameter_count)
+  }
 
-  pub fn build_from_str(statement_string:&str, parameter_count: CassSizeType) -> Statement {unsafe{
-    let query_cstring = statement_string.to_c_str();
-    let query = types::cass_string_init(query_cstring.as_ptr());
-    Statement{cass_statement:cass_statement_new(query,parameter_count),last_error:Error::new(0)}
-  }}
+  pub fn build_from_str(statement_string:&str, parameter_count: CassSizeType) -> Statement {
+    Statement::new(statement_string.as_slice(),parameter_count)
+  }
 
   pub fn set_paging_size( &mut self, page_size: ::libc::c_int) -> Option<Error> {unsafe{
     let error = Error{cass_error:cass_statement_set_paging_size(self.cass_statement,page_size)};
@@ -359,12 +363,12 @@ impl Prepared {
   }}
   
   pub fn cass_prepared_bind(&mut self) -> Statement {unsafe{
-	 Statement{cass_statement:cass_prepared_bind(self.cass_prepared),last_error:Error::new(0)}
+	 Statement{cass_statement:cass_prepared_bind(self.cass_prepared),last_error:Error::new(0),bound_index:0}
   }}
 
 #[allow(unused_variables)]
   pub fn bind(&mut self, parameter_count: CassSizeType) -> Statement {unsafe{
-    Statement{cass_statement:cass_prepared_bind(self.cass_prepared),last_error:Error::new(0)}
+    Statement{cass_statement:cass_prepared_bind(self.cass_prepared),last_error:Error::new(0),bound_index:0}
   }}
 }
 

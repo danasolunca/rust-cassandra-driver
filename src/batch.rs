@@ -39,11 +39,11 @@ impl Batch {
 
 }
 
-impl Drop for Batch {
-  fn drop(&mut self) {
-    self.free();
-  }
-}
+//~ impl Drop for Batch {
+  //~ fn drop(&mut self) {
+    //~ self.free();
+  //~ }
+//~ }
 
 pub enum CassBatch { }
 type CassBatchType = c_uint;

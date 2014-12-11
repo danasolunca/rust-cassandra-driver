@@ -27,12 +27,12 @@ fn insert_into_async(session:&CassSession, cmd:&str, key:&str) {
     let wrapped = key.to_string() + i.to_string();
     println!("response:{}",wrapped);
     
-    statement.bind(0, wrapped).unwrap()
-          .bind(1, if i % 2 == 0 {true} else {false}).unwrap()
-          .bind(2, i as f32 / 2.0).unwrap()
-          .bind(3, i  as f64 / 200.0).unwrap()
-          .bind(4, (i as i32 * 10)).unwrap()
-          .bind(5,(i as i64 * 100)).unwrap();
+    statement.bind_by_idx(0, wrapped).unwrap()
+          .bind(if i % 2 == 0 {true} else {false}).unwrap()
+          .bind(i as f32 / 2.0).unwrap()
+          .bind(i  as f64 / 200.0).unwrap()
+          .bind((i as i32 * 10)).unwrap()
+          .bind((i as i64 * 100)).unwrap();
     session.execute(&statement).unwrap();
     i+=1;
   }
@@ -54,19 +54,15 @@ fn main() {
 	};
 	
   let contact_points = "127.0.0.1";
-  let mut cluster = CassCluster::new();
-  cluster = cluster.set_contact_points(contact_points).unwrap();
 
-  match cluster.connect() {
+  match CassCluster::new().set_contact_points(contact_points).unwrap().connect() {
     Err(fail) => println!("fail: {}",fail),
     Ok(session) => {
       println!("foo");
-      let mut session=session;
-      let session = &mut session;
       assert!(session.execute_str(cmds.create_ks).is_ok());
       assert!(session.execute_str(cmds.use_ks).is_ok());
       assert!(session.execute_str(cmds.create_table).is_ok());
-      insert_into_async(session, cmds.insert,"test");
+      insert_into_async(&session, cmds.insert,"test");
       let mut close_future = session.close_async();
       close_future.wait();
     }

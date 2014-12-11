@@ -28,10 +28,8 @@ fn print_error(future:&mut CassFuture) {
 fn insert_into_collections(session:&mut CassSession, cmd:&str, key:&str, items:Vec<&str>) -> Result<CassResult,CassError> {
    println!("inserting key:{}",key);
   let mut statement = CassStatement::build_from_str(cmd, 2);
-
-  //~ CassCollection::new_set(1);
   
-  statement.bind(0, key.to_string());
+  statement.bind_by_idx(0, key.to_string());
   let mut collection = CassCollection::new_list(2);
   for item  in items.iter() {
     collection.append_str(*item);
@@ -47,13 +45,13 @@ fn insert_into_collections(session:&mut CassSession, cmd:&str, key:&str, items:V
 #[allow(unused_must_use)]
 fn select_from_collections(session:&CassSession, cmd:&str, key:&str) {
   let mut statement = CassStatement::build_from_str(cmd, 1);
-  statement.bind(0, key.to_string());
+  statement.bind_by_idx(0, key.to_string());
  
   match session.execute(&statement) {
     Err(fail) => println!("fail: {}",fail),
     Ok(result) => {
       let mut rows = result.iterator();
-        while rows.has_next() {
+      while rows.has_next() {
         let row = rows.get_next_row();
         let key = row.get_column(0);
         println!("key={}",key.get_string());
@@ -79,20 +77,14 @@ fn main() {
 
   let items = [ "apple", "orange", "banana", "mango"].to_vec();
 
-  let contact_points = "127.0.0.1";
-  let mut cluster = CassCluster::new();
-  cluster = cluster.set_contact_points(contact_points).unwrap();
-
-  match cluster.connect() {
+  match CassCluster::new().set_contact_points("127.0.0.1").unwrap().connect() {
     Err(fail) => println!("fail: {}",fail),
-    Ok(session) => {
-      let mut session=session;
-      let session = &mut session;
-      assert!(session.execute_str(cmds.create_ks).is_ok());
-      assert!(session.execute_str(cmds.use_ks).is_ok());
-      assert!(session.execute_str(cmds.create_table).is_ok());
-      assert!(insert_into_collections(session, cmds.insert,"test23", items).is_ok());
-      let collection = select_from_collections(session, cmds.select,"test23");
+    Ok(mut session) => {
+      for cmd in [cmds.create_ks,cmds.use_ks,cmds.create_table].iter() {
+        assert!((&mut session).execute_str(*cmd).is_ok());
+      }
+      assert!(insert_into_collections(&mut session, cmds.insert,"test23", items).is_ok());
+      let collection = select_from_collections(&mut session, cmds.select,"test23");
       println!("collection:{}",collection);
       let mut close_future = session.close_async();
       close_future.wait();
