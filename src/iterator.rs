@@ -52,7 +52,7 @@ impl Iterator<Row> for ResultIterator {
 
 #[allow(dead_code)]
 impl ResultIterator {
-  pub fn has_next(&mut self) -> bool {unsafe{
+  pub fn has_next(&self) -> bool {unsafe{
     cass_iterator_next(self.cass_iterator) > 0
   }}
 

@@ -29,11 +29,11 @@ impl Batch {
     cass_batch_free(self.cass_batch);
   }}
 
-  pub fn add_statement(&mut self, statement: Statement) -> Error {unsafe{
+  pub fn add_statement(&self, statement: Statement) -> Error {unsafe{
     Error{cass_error:cass_batch_add_statement(self.cass_batch,statement.cass_statement)}
   }}
 
-  pub fn set_consistency(&mut self, consistency: CassConsistency) -> Error {unsafe{
+  pub fn set_consistency(&self, consistency: CassConsistency) -> Error {unsafe{
     Error{cass_error:cass_batch_set_consistency(self.cass_batch,consistency)}
   }}
 

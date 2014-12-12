@@ -28,19 +28,19 @@ impl Future {
     cass_future_ready(self.cass_future)
   }}
 
-  pub fn wait(&mut self) {unsafe{
+  pub fn wait(&self) {unsafe{
     cass_future_wait(self.cass_future)
   }}
 
-  pub fn timed(&mut self, timeout: CassDurationType) -> CassBoolType {unsafe{
+  pub fn timed(&self, timeout: CassDurationType) -> CassBoolType {unsafe{
     cass_future_wait_timed(self.cass_future,timeout)
   }}
 
-  pub fn get_session(&mut self) -> Session {unsafe{
+  pub fn get_session(&self) -> Session {unsafe{
     Session{cass_session:cass_future_get_session(self.cass_future)}
   }}
 
-  pub fn get_result(&mut self) -> Result {unsafe{
+  pub fn get_result(&self) -> Result {unsafe{
     Result{cass_result:cass_future_get_result(self.cass_future)}
   }}
 
@@ -49,21 +49,21 @@ impl Future {
   //~ }}
 
 
-  pub fn get_prepared(&mut self) -> Prepared {unsafe{
+  pub fn get_prepared(&self) -> Prepared {unsafe{
     Prepared{cass_prepared:cass_future_get_prepared(self.cass_future)}
   }}
 
-  pub fn error_code(&mut self) -> Error {unsafe{
+  pub fn error_code(&self) -> Error {unsafe{
     Error{cass_error:cass_future_error_code(self.cass_future)}
   }}
 
-  pub fn error_message(&mut self) -> String {unsafe{
+  pub fn error_message(&self) -> String {unsafe{
     let cstr = cass_future_error_message(self.cass_future);
     let (raw,length) = (cstr.data as *mut u8,cstr.length as uint);
     String::from_raw_parts(raw, length, length)
   }}
 
-  pub fn print_error(&mut self) {
+  pub fn print_error(&self) {
     println!("Error: {}", "self");
   }
 }

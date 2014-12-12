@@ -63,7 +63,7 @@ fn main() {
       assert!(session.execute_str(cmds.use_ks).is_ok());
       assert!(session.execute_str(cmds.create_table).is_ok());
       insert_into_async(&session, cmds.insert,"test");
-      let mut close_future = session.close_async();
+      let close_future = session.close_async();
       close_future.wait();
     }
   }

@@ -67,8 +67,8 @@ fn main()  {
   let mut output=  Extended{bln:false, dbl:0.0f64, flt:0.00f32, i32:0, i64:0, string: "" };
 
   let contact_points = "127.0.0.1";
-  let mut cluster = CassCluster::new();
-  cluster = cluster.set_contact_points(contact_points).unwrap()
+  let cluster = CassCluster::new();
+  cluster.set_contact_points(contact_points).unwrap()
         .set_port(9042).unwrap()
         .set_protocol_version(3).unwrap()
         .set_queue_size_io(3).unwrap()

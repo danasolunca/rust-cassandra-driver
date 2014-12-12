@@ -15,11 +15,10 @@ pub struct Simple {
 }
 
 fn main()  {
-  let contact_points = "127.0.0.1";
-  let mut cluster = CassCluster::new();
-  cluster = cluster.set_contact_points(contact_points).unwrap();
+  let cluster = CassCluster::new();
+  cluster.set_contact_points("127.0.0.1").unwrap();
 
-  let mut session_future = cluster.connect_async();
+  let session_future = cluster.connect_async();
   session_future.wait();
 
   if !session_future.error_code().is_error() {
@@ -27,7 +26,7 @@ fn main()  {
 
     let mut statement = CassStatement::build_from_str("SELECT * FROM system.schema_keyspaces;", 0);
 
-    let mut result_future = session.execute_async(&mut statement);
+    let result_future = session.execute_async(&mut statement);
     result_future.wait();
 
     if!result_future.error_code().is_error() {
@@ -51,7 +50,7 @@ fn main()  {
       println!("{}",result_future.error_message());
     }
 
-    let mut close_future = session.close_async();
+    let close_future = session.close_async();
     close_future.wait();
   } else {
     let message = session_future.error_message();

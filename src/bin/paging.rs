@@ -39,26 +39,22 @@ fn insert_into_paging(session:&mut CassSession, key:&str) {
 }
 
 fn select_from_paging(session:&mut CassSession) {
-   let mut has_more_pages = true;
-   let mut statement = CassStatement::build_from_str("SELECT * FROM paging", 0);
-   while has_more_pages {
-     let mut future = session.execute_async(&mut statement);
-     let result = future.get_result();
-     let mut rows = result.iterator();
-     for row in rows {
+   //let has_more_pages = true;
+   //while has_more_pages {
+     for row in session.execute_async(&mut CassStatement::build_from_str("SELECT * FROM paging", 0)).get_result().iterator() {
        let key = row.get_column(0).get_string();
        let value = row.get_column(1).get_string();
        match (key,value) {
         (Ok(key),Ok(value)) => println!("key: '{}' value: '{}'", key, value),
        _ => panic!("bad key or value")
        }
-       if result.has_more_pages() {
+       //if result.has_more_pages() {
       //FIXME
       //   statement.set_paging_state(&mut result);
-       } else {
-         has_more_pages = false;
-       }
-     }
+      // } else {
+       //  has_more_pages = false;
+       //}
+    // }
    }
  }
 
@@ -66,8 +62,8 @@ fn select_from_paging(session:&mut CassSession) {
 fn main() {
   let contact_points = "127.0.0.1";
 
-  let mut cluster = CassCluster::new();
-  cluster = cluster.set_contact_points(contact_points).unwrap();
+  let cluster = CassCluster::new();
+  cluster.set_contact_points(contact_points).unwrap();
 
   match cluster.connect() {
     Err(fail) => println!("fail: {}",fail),

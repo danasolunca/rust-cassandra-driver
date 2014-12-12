@@ -36,7 +36,7 @@ impl Session {
   pub fn execute_string(&self, statement:&String) -> RustResult<Result,Error> {
 	let statement = Statement::build_from_string(statement, 0);
 	self.execute_async(&statement);
-    let mut future:Future = self.execute_async(&statement);
+    let future = self.execute_async(&statement);
     future.wait();
     let rc = future.error_code();
     if rc.is_error() {
@@ -51,7 +51,7 @@ impl Session {
 
   pub fn execute(&self, statement:&Statement) -> RustResult<Result,Error> {
 
-    let mut future:Future = self.execute_async(statement);
+    let future:Future = self.execute_async(statement);
     future.wait();
     let rc = future.error_code();
     if rc.is_error() {

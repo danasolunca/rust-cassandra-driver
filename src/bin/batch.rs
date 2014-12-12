@@ -41,7 +41,7 @@ fn prepare_insert_into_batch(session:CassSession, query:&str) -> Result<CassPrep
   }
 }
 
-fn insert_into_batch_with_prepared(session:CassSession , mut prepared:CassPrepared, pairs:&mut DList<Pair>) -> CassError {
+fn insert_into_batch_with_prepared(session:CassSession, prepared:CassPrepared, pairs:&mut DList<Pair>) -> CassError {
   let batch = &mut CassBatch::new(BatchType::LOGGED);
   for pair in pairs.iter_mut() {
     let mut statement = prepared.bind(2)

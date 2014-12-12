@@ -22,7 +22,6 @@ use types::Decimal;
 use types::Inet;
 use types::Bytes;
 use types::Value;
-use types;
 use uuid::Uuid;
 
 use libc::c_char;

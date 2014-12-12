@@ -25,7 +25,7 @@ struct Commands {
 	select:&'static str
 }
 
-pub fn insert_into_basic(session:&mut CassSession, insert_statement: &str, key:&str, basic:Basic) -> Result<CassResult,CassError> {
+pub fn insert_into_basic(session:&CassSession, insert_statement: &str, key:&str, basic:Basic) -> Result<CassResult,CassError> {
   let mut statement = CassStatement::build_from_str(insert_statement, 6);
   println!("inserting key:{}",key);
   statement.bind(key.clone()).unwrap()
@@ -62,18 +62,17 @@ fn main()  {
   match CassCluster::new().set_contact_points(contact_points).unwrap().connect() {
     Err(fail) => println!("fail: {}",fail),
     Ok(session) => {
-      let mut session = session;
-
+      let session = session;
       for cmd in [cmds.create_ks,cmds.use_ks,cmds.create_table].iter() {
         assert!(session.execute_str(*cmd).is_ok());
       }
 
-      match insert_into_basic(&mut session, cmds.insert, "test", input) {
+      match insert_into_basic(&session, cmds.insert, "test", input) {
         Err(fail) => println!("result: {}",fail),
         Ok(results) => {}
       }
 
-      match select_from_basic(&mut session, cmds.select, "test") {
+      match select_from_basic(&session, cmds.select, "test") {
         Err(fail) => println!("result: {}",fail),
         Ok(results) => {
           for row in results.iterator() {	

@@ -50,53 +50,53 @@ impl Collection {
     Collection{cass_collection:cass_collection_new(_ValueType::SET as u32,item_count)}
   }}
 
-  pub fn free(&mut self) {unsafe{
+  pub fn free(&self) {unsafe{
     cass_collection_free(self.cass_collection)
   }}
 
-  pub fn append_int32(&mut self, value: i32) -> Error {unsafe{
+  pub fn append_int32(&self, value: i32) -> Error {unsafe{
     Error{cass_error:cass_collection_append_int32(self.cass_collection,value)}
   }}
 
-  pub fn append_int64(&mut self, value: i64) -> Error {unsafe{
+  pub fn append_int64(&self, value: i64) -> Error {unsafe{
     Error{cass_error:cass_collection_append_int64(self.cass_collection,value)}
   }}
 
-  pub fn append_float(&mut self, value: f32) -> Error {unsafe{
+  pub fn append_float(&self, value: f32) -> Error {unsafe{
     Error{cass_error:cass_collection_append_float(self.cass_collection,value)}
   }}
 
-  pub fn append_double(&mut self, value: f64) -> Error {unsafe{
+  pub fn append_double(&self, value: f64) -> Error {unsafe{
     Error{cass_error:cass_collection_append_double(self.cass_collection,value)}
   }}
 
-  pub fn append_bool(&mut self, value: bool) -> Error {unsafe{
+  pub fn append_bool(&self, value: bool) -> Error {unsafe{
     Error{cass_error:cass_collection_append_bool(self.cass_collection,match value {true=>1,false=>0})}
   }}
 
-  pub fn append_string(&mut self, value: &String) -> Error {unsafe{
+  pub fn append_string(&self, value: &String) -> Error {unsafe{
     let cass_string = Value::string_to_cass_string(value);
    Error{cass_error:cass_collection_append_string(self.cass_collection,cass_string)}
   }}
 
-  pub fn append_str(&mut self, value: &str) -> Error {unsafe{
+  pub fn append_str(&self, value: &str) -> Error {unsafe{
     let cass_string = Value::string_to_cass_string(&value.to_string());
     Error{cass_error:cass_collection_append_string(self.cass_collection,cass_string)}
   }}
 
-  pub fn append_bytes(&mut self, value: Bytes) -> Error {unsafe{
+  pub fn append_bytes(&self, value: Bytes) -> Error {unsafe{
     Error{cass_error:cass_collection_append_bytes(self.cass_collection,value.cass_bytes)}
   }}
 
-  pub fn append_uuid(&mut self, value: Uuid) -> Error {unsafe{
+  pub fn append_uuid(&self, value: Uuid) -> Error {unsafe{
     Error{cass_error:cass_collection_append_uuid(self.cass_collection,value.cass_uuid)}
   }}
 
-  pub fn append_inet(&mut self, value: Inet) -> Error {unsafe{
+  pub fn append_inet(&self, value: Inet) -> Error {unsafe{
     Error{cass_error:cass_collection_append_inet(self.cass_collection,value.cass_inet)}
     }}
 
-  pub fn append_decimal(&mut self, value: Decimal) -> Error {unsafe{
+  pub fn append_decimal(&self, value: Decimal) -> Error {unsafe{
     Error::new(cass_collection_append_decimal(self.cass_collection,value.cass_decimal))
   }}
 
