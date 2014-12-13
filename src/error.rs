@@ -77,21 +77,17 @@ pub enum CassErrorSSLType {
   NOT_IMPLEMENTED=50331654,
 }
 
-#[allow(dead_code)]
 #[deriving(Clone,Show)]
 pub struct Error {
   pub cass_error:CassError,
 }
-
-#[allow(dead_code)]
-
 
 impl Error {
   pub fn new(err:u32) -> Error {
     Error{cass_error:err}
   }
 
-  pub fn is_error(self) -> bool {
+  pub fn is_error(&self) -> bool {
     if self.cass_error != CASS_OK {true} else {false}
   }
 

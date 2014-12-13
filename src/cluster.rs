@@ -45,9 +45,9 @@ impl Cluster {
   pub fn connect(&self) -> Result<Session,Error> {
     let future: Future = self.connect_async();
     future.wait();
-    let rc = future.error_code();
+    let mut rc = future.error_code();
     let session = future.get_session();
-    if rc.is_error() {return Err(rc);} else {return Ok(session);}
+    if rc.is_error() {Err(rc)} else {Ok(session)}
   }
 
   pub fn connect_keyspace(&self, keyspace: *const c_char) -> Future {unsafe{

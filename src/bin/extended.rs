@@ -16,7 +16,7 @@ pub struct Extended {
   pub dbl: f64,
   pub i32: i32,
   pub i64: i64,
-  pub string: &'static str
+  pub string: String
 }
 
 struct Commands {
@@ -27,7 +27,7 @@ struct Commands {
 	select:&'static str
 } 
 
-pub fn insert_into_basic(session:&mut CassSession, insert_statement: &str, key:&str, extended:Extended) -> Result<CassResult,CassError> {
+pub fn insert_into_basic(session:&mut CassSession, insert_statement: &str, key:&str, extended:&Extended) -> Result<CassResult,CassError> {
   let mut statement = CassStatement::build_from_str(insert_statement, 7);
   println!("inserting key:{}",key);
   statement
@@ -37,11 +37,11 @@ pub fn insert_into_basic(session:&mut CassSession, insert_statement: &str, key:&
         .bind(extended.dbl).unwrap()
         .bind(extended.i32).unwrap()
         .bind(extended.i64).unwrap()
-        .bind(extended.string).unwrap();
+        .bind(extended.string.clone()).unwrap();
   session.execute(&mut statement)
 }
 
-pub fn select_from_basic(session:&mut CassSession, select_statement: &str, key:&str) -> Result<CassResult,CassError> {
+pub fn select_from_basic(session:&mut CassSession, select_statement: &str, key:&String) -> Result<CassResult,CassError> {
   let mut statement = CassStatement::build_from_str(select_statement, 1);
   statement.bind_by_idx(0, key.clone()).unwrap();
   match session.execute(&mut statement) {
@@ -63,8 +63,8 @@ fn main()  {
 		select: "SELECT * FROM examples.extended WHERE key = ?;",
 	};
 	
-  let input = Extended{bln:true, dbl:0.001f64, flt:0.0002f32, i32:1, i64:2, string: "String1" };
-  let mut output=  Extended{bln:false, dbl:0.0f64, flt:0.00f32, i32:0, i64:0, string: "" };
+  let input = Extended{bln:true, dbl:0.001f64, flt:0.0002f32, i32:1, i64:2, string: "String1".to_string()};
+  let mut output=  Extended{bln:false, dbl:0.0f64, flt:0.00f32, i32:0, i64:0, string: "".to_string()};
 
   let contact_points = "127.0.0.1";
   let cluster = CassCluster::new();
@@ -98,12 +98,12 @@ fn main()  {
       for cmd in [cmds.create_ks,cmds.use_ks,cmds.create_table].iter() {
         assert!(session.execute_str(*cmd).is_ok());
       }
-      match insert_into_basic(&mut session, cmds.insert, "test", input) {
+      match insert_into_basic(&mut session, cmds.insert, "test", &input) {
         Err(fail) => println!("result: {}",fail),
         Ok(results) => {}
       }
 
-      match select_from_basic(&mut session, cmds.select, "test") {
+      match select_from_basic(&mut session, cmds.select, &"test".to_string()) {
         Err(fail) => println!("result: {}",fail),
         Ok(results) => {
           for row in results.iterator() {	
@@ -112,7 +112,7 @@ fn main()  {
             match row.get_column(3).get_float() {Err(err) => println!("{}--",err),Ok(col) => output.flt=col}
             match row.get_column(4).get_int32() {Err(err) => println!("{}--",err),Ok(col) => output.i32=col}
             match row.get_column(5).get_int64() {Err(err) => println!("{}--",err),Ok(col) => output.i64=col}
-            match row.get_column(6).get_string() {Err(err) => println!("{}--",err),Ok(col) => output.string=col.as_slice().clone()}
+            match row.get_column(6).get_string() {Err(err) => println!("{}--",err),Ok(col) => output.string=col}
           }
         }
       }

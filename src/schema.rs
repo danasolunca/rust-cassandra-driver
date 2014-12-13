@@ -37,8 +37,8 @@ impl SchemaMeta {
     SchemaMeta{cass_schema_meta:cass_schema_meta_get_entry(self.cass_schema_meta,name.as_ptr() as *const i8)}
   }}
 
-  pub fn get_field(&self, name:&str) -> CassSchemaMetaField {unsafe{
-    *cass_schema_meta_get_field(self.cass_schema_meta,name.as_ptr() as *const i8)
+  pub fn get_field(&self, name:&str) -> *const CassSchemaMetaField {unsafe{
+    cass_schema_meta_get_field(self.cass_schema_meta,name.as_ptr() as *const i8)
   }}
 }
 

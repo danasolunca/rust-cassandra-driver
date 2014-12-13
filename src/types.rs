@@ -13,6 +13,9 @@ use std::io::net::ip::IpAddr;
 use std::io::net::ip::Ipv4Addr;
 use std::io::net::ip::Ipv6Addr;
 use std::vec::Vec;
+use std::str::FromStr;
+
+use uuid::Uuid;
 
 use CollectionIterator;
 
@@ -48,48 +51,38 @@ pub struct Value {
 }
 
 #[allow(dead_code)]
-pub struct Uuid {
-  pub cass_uuid:CassUuid,
-}
+pub type Bytes = Vec<u8>;
 
-impl Uuid {
+pub trait CassUuid {
 
-  pub fn generate_timeuuid() -> Uuid {unsafe{
-    let output:CassUuid = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+  fn generate_timeuuid() -> _CassUuid {unsafe{
+    let output:_CassUuid = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
     cass_uuid_generate_time(output);
-    Uuid{cass_uuid:output}
+    output
   }}
 
-  pub fn build_from_time(time:u64) -> Uuid {unsafe{
-    let output:CassUuid = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+  fn build_from_time(time:u64) -> _CassUuid {unsafe{
+    let output:_CassUuid = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
     cass_uuid_from_time(time,output);
-    Uuid{cass_uuid:output}
+    output
   }}
 
-  pub fn min_from_time(time:u64) -> Uuid {unsafe{
-    let output:CassUuid = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+  fn min_from_time(time:u64) -> _CassUuid {unsafe{
+    let output:_CassUuid = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
     cass_uuid_min_from_time(time,output);
-    Uuid{cass_uuid:output}
+    output
   }}
 
-  pub fn max_from_time(time:u64) -> Uuid {unsafe{
-    let output:CassUuid = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+  fn max_from_time(time:u64) -> _CassUuid {unsafe{
+    let output:_CassUuid = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
     cass_uuid_max_from_time(time,output);
-    Uuid{cass_uuid:output}
+    output
   }}
 
-  pub fn generate_uuid() -> Uuid {unsafe{
-    let output:CassUuid = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+  fn generate_uuid() -> _CassUuid {unsafe{
+    let output:_CassUuid = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
     cass_uuid_generate_random(output);
-    Uuid{cass_uuid:output}
-  }}
-
-  pub fn get_timestamp(&self) -> u64 {unsafe{
-    cass_uuid_timestamp(self.cass_uuid)
-  }}
-
-  pub fn get_version(&self) -> u8 {unsafe{
-    cass_uuid_version(self.cass_uuid)
+    output
   }}
 
   //~ pub fn as_string(&self) -> u8 {unsafe{
@@ -98,20 +91,6 @@ impl Uuid {
   //~ }}
 }
 
-#[allow(dead_code)]
-pub struct Inet {
-  pub cass_inet:CassInet,
-}
-
-#[allow(dead_code)]
-pub struct Bytes {
-  pub cass_bytes:CassBytes,
-}
-
-#[allow(dead_code)]
-pub struct Decimal {
-  pub cass_decimal:CassDecimal,
-}
 
 #[allow(dead_code)]
 pub struct ValueType {
@@ -121,16 +100,47 @@ pub struct ValueType {
 #[allow(dead_code)]
 impl Value {
 
+  pub fn bytes2cassbytes(bytes:&Bytes) -> CassBytes {unsafe{
+    cass_bytes_init(bytes.as_slice().as_ptr(), bytes.len() as u64)
+  }}
+
+  pub fn cassinet2ipaddr(inet:CassInet) -> IpAddr {
+    match inet.address_length {
+      4 =>   FromStr::from_str(inet.to_string().as_slice()),
+      16 => FromStr::from_str(inet.to_string().as_slice()),
+      _ => panic!("invalid ipaddr length")
+    }.unwrap()
+  }
+
+  pub fn ipaddr2cassinet(addr:IpAddr) -> CassInet {
+    match addr {
+      Ipv4Addr(oct1,oct2,oct3,oct4) => {
+        let mut v:Vec<u8> = Vec::with_capacity(4);
+        v.push(oct1);v.push(oct2);v.push(oct3);v.push(oct4);
+        Value::cass_inet_init_v4(v.as_ptr())
+      },
+      Ipv6Addr(_,_,_,_,_,_,_,_) => {
+        //let v:Vec<u16> = Vec::with_capacity(8);
+        panic!("FIXME: can't handle v6 addresses yet");
+        //~ v.push(seg1);v.push(seg2);v.push(seg3);v.push(seg4);
+        //~ v.push(seg5);v.push(seg6);v.push(seg7);v.push(seg8);
+        //~ CassValue::cass_inet_init_v4(v.as_ptr())
+      },
+    }
+  }
+
+  pub fn uuid_to_cassuuid(uuid:&Uuid) -> _CassUuid {
+    Value::arr2b(uuid.as_bytes())
+  }
+
   pub fn get_collection_iterator(&self) -> CollectionIterator {unsafe{
     CollectionIterator{cass_iterator:collection::cass_iterator_from_collection(self.cass_value)}
   }}
 
   pub fn get_string(self) -> Result<String,Error> {unsafe{
-    let ref mut output:CassString=cass_string_init(self.cass_value as *const i8);
-    let ref mut output = *output;
-    let err_string = cass_value_get_string(self.cass_value,&mut*output);
+    let mut output:CassString=cass_string_init(self.cass_value as *const i8);
+    let err_string = cass_value_get_string(self.cass_value,&mut output);
     let err = Error{cass_error:err_string};
-    let ref mut output = *output;
     if err.cass_error == CASS_OK {
       let length=output.length as uint;
       println!("item length: {}", length);
@@ -169,24 +179,28 @@ impl Value {
     if err.cass_error == CASS_OK {return Ok(*output> 0)} else {return Err(err)}
   }}
 
-  pub fn get_uuid(self, output: Uuid) -> Error {unsafe{
-    Error{cass_error:cass_value_get_uuid(self.cass_value,output.cass_uuid)}
+  pub fn get_uuid(self) -> Uuid {unsafe{
+    let output:_CassUuid = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    cass_value_get_uuid(self.cass_value,output);
+    Uuid::from_bytes(output.as_slice()).unwrap()
   }}
 
-  pub fn get_inet(self, mut output: Inet) -> Error {unsafe{
-    let ref mut cass_inet = output.cass_inet;
-    Error{cass_error:cass_value_get_inet(self.cass_value,cass_inet)}
+  pub fn get_inet(&self, mut output: IpAddr) -> Error {unsafe{
+    let mut output = Value::ipaddr2cassinet(output);
+        let ref mut output = output;
+
+    Error{cass_error:cass_value_get_inet(self.cass_value,output)}
   }}
 
-  pub fn get_bytes(self, mut output: Bytes) -> Error {unsafe{
-    let ref mut my_bytes = output.cass_bytes;
-    Error{cass_error:cass_value_get_bytes(self.cass_value,my_bytes)}
-  }}
+  //~ pub fn get_bytes(&self, mut output: Vec<u8>) -> Error {unsafe{
+    //~ let ref mut my_bytes = output;
+    //~ Error{cass_error:cass_value_get_bytes(self.cass_value,my_bytes)}
+  //~ }}
 
-  pub fn get_decimal(self, mut output: Decimal) -> Error {unsafe{
-    let ref mut my_decimal = output.cass_decimal;
-    Error{cass_error:cass_value_get_decimal(self.cass_value,my_decimal)}
-  }}
+  //~ pub fn get_decimal(self, mut output: f64) -> Error {unsafe{
+    //~ let ref mut my_decimal = output;
+    //~ Error{cass_error:cass_value_get_decimal(self.cass_value,output)}
+  //~ }}
 
   pub fn is_null(self) -> bool {unsafe{
     !cass_value_is_null(self.cass_value) == Int::zero()
@@ -209,63 +223,69 @@ impl Value {
   }}
 
 
-  fn cass_uuid_from_time(time: u64, output: Uuid) {unsafe{
-    cass_uuid_from_time(time,output.cass_uuid);
+  fn uuid_from_time(time: u64) -> Option<Uuid> {unsafe{
+    let output:_CassUuid = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    cass_uuid_from_time(time,output);
+    Uuid::from_bytes(output.as_slice())
   }}
 
-  pub fn cass_uuid_min_from_time(time: u64, output: Uuid) {unsafe{
-    cass_uuid_min_from_time(time,output.cass_uuid)
+  pub fn cass_uuid_min_from_time(time: u64) -> Option<Uuid> {unsafe{
+    let output:_CassUuid = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    cass_uuid_min_from_time(time,output);
+    Uuid::from_bytes(output.as_slice())
   }}
 
-  pub fn cass_uuid_max_from_time(time: u64, output: Uuid) {unsafe{
-    cass_uuid_max_from_time(time,output.cass_uuid)
+  pub fn cass_uuid_max_from_time(time: u64, ) -> Option<Uuid> {unsafe{
+    let output:_CassUuid = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    cass_uuid_max_from_time(time,output);
+    Uuid::from_bytes(output.as_slice())
   }}
 
   pub fn cass_uuid_generate_random(output: Uuid) {unsafe{
-    cass_uuid_generate_random(output.cass_uuid)
+    cass_uuid_generate_random(Value::arr2b(output.as_bytes()))
   }}
 
   pub fn cass_uuid_timestamp(uuid: Uuid) -> u64 {unsafe{
-    cass_uuid_timestamp(uuid.cass_uuid)
+    cass_uuid_timestamp(Value::arr2b(uuid.as_bytes()))
+  }}
+
+  pub fn arr2b(bytes:&[u8]) -> [u8, ..16] {
+    [
+      bytes[0],bytes[1],bytes[2],bytes[3],
+      bytes[4],bytes[5],bytes[6],bytes[7],
+      bytes[8],bytes[9],bytes[10],bytes[11],
+      bytes[12],bytes[13],bytes[14],bytes[15]
+    ]
+  }
+
+  fn generate_uuid() -> _CassUuid {unsafe{
+    let output:_CassUuid = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    cass_uuid_generate_random(output);
+    output
   }}
 
   pub fn cass_uuid_version(uuid: Uuid) -> u8 {unsafe{
-    cass_uuid_version(uuid.cass_uuid)
+    let uuid = uuid.as_bytes();
+    let bytes = [
+    uuid[0],uuid[1],uuid[2],uuid[3],
+    uuid[4],uuid[5],uuid[6],uuid[7],
+    uuid[8],uuid[9],uuid[10],uuid[11],
+    uuid[12],uuid[13],uuid[14],uuid[15],
+    ];
+    cass_uuid_version(bytes)
   }}
 
   pub fn cass_uuid_string(uuid: Uuid, output: *mut c_char) {unsafe{
-    cass_uuid_string(uuid.cass_uuid,output)
+    cass_uuid_string(Value::arr2b(uuid.as_bytes()),output)
   }}
 
-  fn cass_inet_init_v4(address: *const u8) -> Inet {unsafe{
-    Inet{cass_inet:cass_inet_init_v4(address)}
+  fn cass_inet_init_v4(address: *const u8) -> CassInet {unsafe{
+    cass_inet_init_v4(address)
   }}
-
-  pub fn build_cass_inet(addr: IpAddr) -> Inet {
-    match addr {
-      Ipv4Addr(oct1,oct2,oct3,oct4) => {
-        let mut v:Vec<u8> = Vec::with_capacity(4);
-        v.push(oct1);v.push(oct2);v.push(oct3);v.push(oct4);
-        Value::cass_inet_init_v4(v.as_ptr())
-      },
-      Ipv6Addr(_,_,_,_,_,_,_,_) => {
-        //let v:Vec<u16> = Vec::with_capacity(8);
-        panic!("FIXME: can't handle v6 addresses yet");
-        //~ v.push(seg1);v.push(seg2);v.push(seg3);v.push(seg4);
-        //~ v.push(seg5);v.push(seg6);v.push(seg7);v.push(seg8);
-        //~ CassValue::cass_inet_init_v4(v.as_ptr())
-      },
-    }
-  }
-
-  pub fn build_cass_bytes(data: Vec<u8>) -> Bytes {
-    Value::cass_bytes_init(data.as_slice().as_ptr(), data.len() as u64)
-  }
   
-  pub fn build_cass_decimal(int_value: i32, scale:i32) -> Decimal {
-    let varint = Value::build_cass_bytes(int_value.to_string().into_bytes());
-    Value::cass_decimal_init(scale,varint)
-  }
+  //~ pub fn build_cass_decimal(int_value: i32, scale:i32) -> f64 {
+    //~ Value::cass_decimal_init(scale,Value::build_cass_bytes(int_value.to_string().into_bytes()))
+  //~ }
 
   pub fn string_to_cass_string(string:&String) -> CassString {unsafe{
      cass_string_init2(string.as_bytes().as_ptr() as *const i8,string.as_bytes().len() as u64)
@@ -279,16 +299,8 @@ impl Value {
     String::from_raw_buf_len(cass_str.data as *const u8,cass_str.length as uint)
   }}
 
-  pub fn cass_inet_init_v6(address: *const u8) -> Inet {unsafe{
-    Inet{cass_inet:cass_inet_init_v6(address)}
-  }}
-
-  fn cass_decimal_init(scale: i32, varint: Bytes) -> Decimal {unsafe{
-    Decimal{cass_decimal:cass_decimal_init(scale,varint.cass_bytes)}
-  }}
-
-  fn cass_bytes_init(data: *const u8, size: CassSizeType) -> Bytes {unsafe{
-    Bytes{cass_bytes:cass_bytes_init(data,size)}
+  pub fn cass_inet_init_v6(address: *const u8) -> CassInet {unsafe{
+    cass_inet_init_v6(address)
   }}
 
   pub fn get_type(&self) -> u32 {unsafe{
@@ -298,9 +310,7 @@ impl Value {
 
 impl Show for CassString {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {unsafe{
-    let raw = self.data as *const u8;
-    let length = self.length as uint;
-    write!(f, "{}", String::from_raw_buf_len(raw, length))
+    write!(f, "{}", String::from_raw_buf_len(self.data as *const u8, self.length as uint))
   }
 }}
 
@@ -315,6 +325,7 @@ pub enum CassValue {
 }
 
 #[repr(C)]
+#[derive(Clone)]
 pub struct CassDecimal {
   pub scale: i32,
   pub varint: CassBytes,
@@ -326,7 +337,14 @@ pub struct CassInet {
   pub address_length: u8,
 }
 
-pub type CassUuid = [u8, ..16u];
+impl CassInet {
+  pub fn to_string(&self) -> String {
+    //FIXME
+    "1.1.1.1".to_string()
+  }
+}
+
+pub type _CassUuid = [u8, ..16u];
 
 #[repr(C)]
 pub struct CassBytes {
@@ -346,20 +364,20 @@ pub type CassDurationType = u64;
 
 #[link(name = "cassandra")]
 extern "C" {
-  fn cass_uuid_generate_time(output: CassUuid);
-  fn cass_uuid_from_time(time: u64, output: CassUuid);
-  fn cass_uuid_min_from_time(time: u64, output: CassUuid);
-  fn cass_uuid_max_from_time(time: u64, output: CassUuid);
-  fn cass_uuid_generate_random(output: CassUuid);
-  fn cass_uuid_timestamp(uuid: CassUuid) -> u64;
-  fn cass_uuid_version(uuid: CassUuid) -> u8;
-  fn cass_uuid_string(uuid: CassUuid, output: *mut c_char);
+  fn cass_uuid_generate_time(output: _CassUuid);
+  fn cass_uuid_from_time(time: u64, output: _CassUuid);
+  fn cass_uuid_min_from_time(time: u64, output: _CassUuid);
+  fn cass_uuid_max_from_time(time: u64, output: _CassUuid);
+  fn cass_uuid_generate_random(output: _CassUuid);
+  fn cass_uuid_timestamp(uuid: _CassUuid) -> u64;
+  fn cass_uuid_version(uuid: _CassUuid) -> u8;
+  fn cass_uuid_string(uuid: _CassUuid, output: *mut c_char);
   fn cass_value_get_int32(value: *const CassValue, output: *mut i32) -> CassError;
   fn cass_value_get_int64(value: *const CassValue, output: *mut i64) -> CassError;
   fn cass_value_get_float(value: *const CassValue, output: *mut f32) -> CassError;
   fn cass_value_get_double(value: *const CassValue, output: *mut f64) -> CassError;
   fn cass_value_get_bool(value: *const CassValue, output: *mut CassBoolType) -> CassError;
-  fn cass_value_get_uuid(value: *const CassValue, output: CassUuid) -> CassError;
+  fn cass_value_get_uuid(value: *const CassValue, output: _CassUuid) -> CassError;
   fn cass_value_get_inet(value: *const CassValue, output: *mut CassInet) -> CassError;
   fn cass_value_get_string(value: *const CassValue, output: *mut CassString) -> CassError;
   fn cass_value_get_bytes(value: *const CassValue, output: *mut CassBytes) -> CassError;

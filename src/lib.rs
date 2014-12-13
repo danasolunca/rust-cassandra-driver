@@ -29,9 +29,7 @@ pub use statement::Prepared as CassPrepared;
 pub use statement::CassBindable;
 
 pub use types::Value;
-pub use types::Uuid;
-pub use types::Bytes;
-pub use types::Inet;
+pub use types::CassUuid;
 pub use batch::BatchType;
 
 mod batch;

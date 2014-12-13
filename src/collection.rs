@@ -1,19 +1,20 @@
 use error::CassError;
 use error::Error;
-use types::Decimal;
-use types::Inet;
-use types::Uuid;
-use types::Bytes;
 use types::Value;
 use types::CassValue;
 use types::CassDecimal;
 use types::CassInet;
-use types::CassUuid;
 use types::CassBytes;
 use types::CassString;
 use types::CassBoolType;
 use types::CassSizeType;
 use types::_ValueType;
+use types::_CassUuid;
+use types::Bytes;
+
+use std::io::net::ip::IpAddr;
+ 
+use uuid::Uuid;
 use result::Result;
 use row::Row;
 use row;
@@ -85,20 +86,21 @@ impl Collection {
   }}
 
   pub fn append_bytes(&self, value: Bytes) -> Error {unsafe{
-    Error{cass_error:cass_collection_append_bytes(self.cass_collection,value.cass_bytes)}
+    Error{cass_error:cass_collection_append_bytes(self.cass_collection,Value::bytes2cassbytes(&value))}
   }}
 
-  pub fn append_uuid(&self, value: Uuid) -> Error {unsafe{
-    Error{cass_error:cass_collection_append_uuid(self.cass_collection,value.cass_uuid)}
+  pub fn append_uuid(&self, value: &Uuid) -> Error {unsafe{
+     Error{cass_error:cass_collection_append_uuid(self.cass_collection, Value::uuid_to_cassuuid(value))}
   }}
 
-  pub fn append_inet(&self, value: Inet) -> Error {unsafe{
-    Error{cass_error:cass_collection_append_inet(self.cass_collection,value.cass_inet)}
-    }}
 
-  pub fn append_decimal(&self, value: Decimal) -> Error {unsafe{
-    Error::new(cass_collection_append_decimal(self.cass_collection,value.cass_decimal))
+  pub fn append_inet(&self, value: IpAddr) -> Error {unsafe{
+    Error{cass_error:cass_collection_append_inet(self.cass_collection,Value::ipaddr2cassinet(value))}
   }}
+
+  //~ pub fn append_decimal(&self, value: Decimal) -> Error {unsafe{
+    //~ Error::new(cass_collection_append_decimal(self.cass_collection,value.cass_decimal))
+  //~ }}
 
   pub fn collection_iterator_from_collection(collection:Value) -> CollectionIterator {unsafe{
     CollectionIterator{cass_iterator:cass_iterator_from_collection(collection.cass_value)}
@@ -138,7 +140,7 @@ impl Drop for Collection {
     fn cass_collection_append_bool(collection: *mut CassCollection, value: CassBoolType) -> CassError;
     fn cass_collection_append_string(collection: *mut CassCollection, value: CassString) -> CassError;
     fn cass_collection_append_bytes(collection: *mut CassCollection, value: CassBytes) -> CassError;
-    fn cass_collection_append_uuid(collection: *mut CassCollection, value: CassUuid) -> CassError;
+    fn cass_collection_append_uuid(collection: *mut CassCollection, value: _CassUuid) -> CassError;
     fn cass_collection_append_inet(collection: *mut CassCollection, value: CassInet) -> CassError;
     fn cass_collection_append_decimal(collection: *mut CassCollection, value: CassDecimal) -> CassError;
     pub fn cass_iterator_from_collection(value: *const CassValue) -> *mut CassIterator;
@@ -168,14 +170,14 @@ use types::CassDecimal;
   fn append_list() {
     let mut list = super::Collection::new_list(10);
     list.append_bool(true);
-    list.append_bytes(Value::build_cass_bytes("cass_bytes".to_string().into_bytes()));
-    list.append_decimal(Value::build_cass_decimal(1234567890,3));
+    list.append_bytes("cass_bytes".to_string().into_bytes());
+    //list.append_decimal(Value::build_cass_decimal(1234567890,3));
     list.append_double(1234.392832f64);
     list.append_float(1234.39232f32);
-    list.append_inet(Value::build_cass_inet(match from_str("127.0.0.1") {
+    list.append_inet(match from_str("127.0.0.1") {
       Some(ip) => ip,
       None => panic!("failed to parse inet address")
-    }));
+    });
     list.append_int32(42i32);
     list.append_int64(42i64);
     list.append_str("abcdefg");
@@ -187,14 +189,14 @@ use types::CassDecimal;
   fn append_map() {
     let mut map = super::Collection::new_map(10);
     map.append_bool(true);
-    map.append_bytes(Value::build_cass_bytes("cass_bytes".to_string().into_bytes()));
-    map.append_decimal(Value::build_cass_decimal(1234567890,3));
+    map.append_bytes("cass_bytes".to_string().into_bytes());
+    //map.append_decimal(Value::build_cass_decimal(1234567890,3));
     map.append_double(1234.392832f64);
     map.append_float(1234.39232f32);
-    map.append_inet(Value::build_cass_inet(match from_str("127.0.0.1") {
+    map.append_inet(match from_str("127.0.0.1") {
       Some(ip) => ip,
       None => panic!("failed to parse inet address")
-    }));
+    });
     map.append_int32(42i32);
     map.append_int64(42i64);
     //FIXME this append_str causes segfault
@@ -207,14 +209,14 @@ use types::CassDecimal;
   fn append_set() {
     let mut set = super::Collection::new_set(10);
     set.append_bool(true);
-    set.append_bytes(Value::build_cass_bytes("cass_bytes".to_string().into_bytes()));
-    set.append_decimal(Value::build_cass_decimal(1234567890,3));
+    set.append_bytes("cass_bytes".to_string().into_bytes());
+    //set.append_decimal(Value::build_cass_decimal(1234567890,3));
     set.append_double(1234.392832f64);
     set.append_float(1234.39232f32);
-    set.append_inet(Value::build_cass_inet(match from_str("127.0.0.1") {
+    set.append_inet(match from_str("127.0.0.1") {
       Some(ip) => ip,
       None => panic!("failed to parse inet address")
-    }));
+    });
     set.append_int32(42i32);
     set.append_int64(42i64);
     //set.append_str("abcdefg");

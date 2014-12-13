@@ -8,7 +8,7 @@ use cassandra::CassStatement;
 use cassandra::CassError;
 use cassandra::CassResult;
 
-#[deriving(Show, Clone)]
+#[deriving(Show, Copy)]
 pub struct Basic {
   pub bln: bool,
   pub flt: f32,
@@ -25,16 +25,16 @@ struct Commands {
 	select:&'static str
 }
 
-pub fn insert_into_basic(session:&CassSession, insert_statement: &str, key:&str, basic:Basic) -> Result<CassResult,CassError> {
+pub fn insert_into_basic(session:&CassSession, insert_statement: &str, key:String, basic:&Basic) -> Result<CassResult,CassError> {
   let mut statement = CassStatement::build_from_str(insert_statement, 6);
   println!("inserting key:{}",key);
-  statement.bind(key.clone()).unwrap()
-        .bind(basic.bln).unwrap()
-        .bind(basic.flt).unwrap()
-        .bind(basic.dbl).unwrap()
-        .bind(basic.i32).unwrap()
-        .bind(basic.i64).unwrap();
-  session.execute(&mut statement)
+    statement.bind(key).unwrap()
+      .bind(basic.bln).unwrap()
+      .bind(basic.flt).unwrap()
+      .bind(basic.dbl).unwrap()
+      .bind(basic.i32).unwrap()
+      .bind(basic.i64).unwrap();
+    session.execute(&mut statement)
 }
 
 pub fn select_from_basic(session:&CassSession, select_statement: &str, key:&str) -> Result<CassResult,CassError> {
@@ -67,7 +67,7 @@ fn main()  {
         assert!(session.execute_str(*cmd).is_ok());
       }
 
-      match insert_into_basic(&session, cmds.insert, "test", input) {
+      match insert_into_basic(&session, cmds.insert, "test".to_string(), &input) {
         Err(fail) => println!("result: {}",fail),
         Ok(results) => {}
       }
