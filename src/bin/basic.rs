@@ -25,7 +25,7 @@ struct Commands {
 	select:&'static str
 }
 
-pub fn insert_into_basic(session:&mut CassSession, insert_statement: &str, key:String, basic:&Basic) -> Result<CassResult,CassError> {
+pub fn insert_into_basic<'a>(session:&'a mut CassSession, insert_statement: &str, key:String, basic:&Basic) -> Result<&'a CassResult,CassError> {
   let mut statement = CassStatement::build_from_str(insert_statement, 6);
   println!("inserting key:{}",key);
     statement.bind(key).unwrap()
@@ -34,10 +34,10 @@ pub fn insert_into_basic(session:&mut CassSession, insert_statement: &str, key:S
       .bind(basic.dbl).unwrap()
       .bind(basic.i32).unwrap()
       .bind(basic.i64).unwrap();
-    session.execute(&mut statement)
+    session.execute(&statement)
 }
 
-pub fn select_from_basic(session:&mut CassSession, select_statement: &str, key:&str) -> Result<CassResult,CassError> {
+pub fn select_from_basic<'a>(session:&'a mut CassSession, select_statement: &str, key:&str) -> Result<&'a CassResult,CassError> {
   session.execute(
     CassStatement::build_from_str(select_statement, 1)
       .bind_by_idx(0, key.to_string()).unwrap()

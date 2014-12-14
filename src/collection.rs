@@ -15,7 +15,7 @@ use types::Bytes;
 use std::io::net::ip::IpAddr;
  
 use uuid::Uuid;
-use result::Result;
+use result::CassResult;
 use row::Row;
 use row;
 use iterator::CassIterator;
@@ -110,8 +110,8 @@ impl Collection {
     CollectionIterator{cass_iterator:cass_iterator_from_map(collection.cass_value)}
   }}
 
-  pub fn collection_iterator_from_result(result:Result) -> CollectionIterator {unsafe{
-    CollectionIterator{cass_iterator:result::cass_iterator_from_result(result.cass_result)}
+  pub fn collection_iterator_from_result(result:&CassResult) -> CollectionIterator {unsafe{
+    CollectionIterator{cass_iterator:result::cass_iterator_from_result(result)}
   }}
 
   pub fn collection_iterator_from_row(row:Row) -> CollectionIterator {unsafe{

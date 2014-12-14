@@ -1,6 +1,6 @@
 #[allow(dead_code)]
 use collection::CassCollection;
-use result::Result;
+use result::CassResult;
 use row::CassRow;
 use row::Row;
 use schema::CassSchemaMetaField;
@@ -31,7 +31,7 @@ pub struct CIterator<T> {
   pub cass_iterator:*mut CassIterator
 }
 
-pub type ResultIterator = CIterator<Result>;
+pub type ResultIterator = CIterator<CassResult>;
 pub type RowIterator = CIterator<CassRow>;
 pub type CollectionIterator = CIterator<CassCollection>;
 

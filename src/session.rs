@@ -1,7 +1,7 @@
 use statement::Statement;
 use statement::CassStatement;
 use future::CassFuture;
-use result::Result;
+use result::CassResult;
 use error::Error;
 use batch::CassBatch;
 use schema::CassSchema;
@@ -30,7 +30,7 @@ impl CassSession {
     &*cass_session_prepare(self,types::cass_string_init(statement.to_c_str().as_ptr()))
   }}
 
-  pub fn execute_string(&mut self, statement:&String) -> RustResult<Result,Error> {
+  pub fn execute_string(&mut self, statement:&String) -> RustResult<&CassResult,Error> {
 	let statement = Statement::build_from_string(statement, 0);
 	self.execute_async(&statement);
     let future = self.execute_async(&statement);
@@ -42,11 +42,11 @@ impl CassSession {
     return Ok(future.get_result());
   }
 
-  pub fn execute_str(&mut self, statement:&str) -> RustResult<Result,Error> {
+  pub fn execute_str(&mut self, statement:&str) -> RustResult<&CassResult,Error> {
     self.execute_string(&statement.to_string())
   }
 
-  pub fn execute(&mut self, statement:&Statement) -> RustResult<Result,Error> {
+  pub fn execute(&mut self, statement:&Statement) -> RustResult<&CassResult,Error> {
 
     let future = self.execute_async(statement);
     future.wait();
@@ -72,6 +72,8 @@ impl CassSession {
 }
 
 pub enum CassSession { }
+
+impl Copy for CassSession{}
 
 #[link(name = "cassandra")]
 extern "C" {

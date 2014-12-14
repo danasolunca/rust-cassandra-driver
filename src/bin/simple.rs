@@ -3,7 +3,6 @@ extern crate libc;
 extern crate cassandra;
 
 use cassandra::CassCluster;
-use cassandra::CassResult;
 use cassandra::CassStatement;
 
 #[deriving(Show)]
@@ -30,7 +29,7 @@ fn main()  {
     result_future.wait();
 
     if !result_future.error_code().is_error() {
-      let result:CassResult = result_future.get_result();
+      let result = result_future.get_result();
       let mut rows = result.iterator();
 
       let mut output:Simple = Simple {

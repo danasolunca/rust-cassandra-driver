@@ -21,6 +21,7 @@ use CollectionIterator;
 
 
 #[allow(dead_code)]
+#[repr(C)]
 pub enum _ValueType {
   UNKNOWN = 65535,
   CUSTOM = 0,

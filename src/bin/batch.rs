@@ -41,19 +41,19 @@ fn prepare_insert_into_batch(session:CassSession, query:&str) -> Result<CassPrep
   }
 }
 
-fn insert_into_batch_with_prepared(session:CassSession, prepared:CassPrepared, pairs:&mut DList<Pair>) -> CassError {
-  let batch = &mut CassBatch::new(BatchType::LOGGED);
+fn insert_into_batch_with_prepared(session:&CassSession, prepared:&CassPrepared, pairs:&mut DList<Pair>) -> CassError {
+  let batch = CassBatch::new(BatchType::LOGGED);
   for pair in pairs.iter_mut() {
     let mut statement = prepared.bind(2)
           .bind(pair.key).unwrap()
           .bind(pair.value).unwrap();
-    batch.add_statement(*statement);
+    batch.add_statement(statement);
   }
   let st2 = CassStatement::build_from_str("INSERT INTO examples.pairs (key, value) VALUES ('c', '3')",0);
-  batch.add_statement(st2);
+  batch.add_statement(&st2);
   let mut statement = CassStatement::build_from_str("INSERT INTO examples.pairs (key, value) VALUES (?, ?)",2)
-    .bind("d");
-    .bind("4");
+    .bind("d").unwrap()
+    .bind("4").unwrap();
   batch.add_statement(statement);
   let mut future = session.execute_batch(batch);
   future.wait();
@@ -76,8 +76,8 @@ fn main() {
   let contact_points = "127.0.0.1";
   let cluster = CassCluster::new().set_contact_points(contact_points);
   let pairs:&mut DList<Pair> = &mut DList::new();
-  pairs.push_front(Pair{key:"a".to_string(), value:"1"});
-  pairs.push_front(Pair{key:"b".to_string(), value:"2"});
+  pairs.push_front(Pair{key:"a", value:"1"});
+  pairs.push_front(Pair{key:"b", value:"2"});
 
   match cluster.connect() {
     Err(fail) => println!("fail: {}",fail),

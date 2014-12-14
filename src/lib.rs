@@ -18,7 +18,7 @@ pub use iterator::ResultIterator;
 pub use iterator::CIterator as CassIterator;
 pub use log::LogLevelType as CassLogLevelType;
 pub use log::CassLogLevel;
-pub use result::Result as CassResult;	
+pub use result::CassResult;	
 pub use row::Row as CassRow;
 pub use schema::CassSchema;
 pub use schema::CassSchemaMeta;

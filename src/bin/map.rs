@@ -27,7 +27,7 @@ fn print_error(future:&mut CassFuture) {
 }
 
 #[allow(unused_must_use)]
-fn insert_into_collections(session:&mut CassSession, cmd:&str, key:&str, items:HashMap<&str,u32>) -> Result<CassResult,CassError> {
+fn insert_into_collections<'a>(session:&'a mut CassSession, cmd:&str, key:&str, items:HashMap<&str,u32>) -> Result<&'a CassResult,CassError> {
    println!("inserting key:{}",key);
   let statement:&mut CassStatement = &mut CassStatement::build_from_str(cmd, 2);
 

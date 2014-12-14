@@ -2,7 +2,7 @@ use session::CassSession;
 use error::CassError;
 use error::Error;
 use statement::Prepared;
-use result::Result;
+use result::CassResult;
 use result;
 use types::CassString;
 use types::CassBoolType;
@@ -34,8 +34,8 @@ impl CassFuture {
     &mut*cass_future_get_session(self)
   }}
 
-  pub fn get_result(&mut self) -> Result {unsafe{
-    Result{cass_result:cass_future_get_result(self)}
+  pub fn get_result(&mut self) -> &CassResult {unsafe{
+    &*cass_future_get_result(self)
   }}
 
   //~ pub fn set_callback(&mut self,callback: CassFutureCallback, data: *mut ::libc::c_void) -> CassResult {unsafe{

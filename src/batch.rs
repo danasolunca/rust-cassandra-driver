@@ -15,12 +15,6 @@ pub enum BatchType {
 }
 impl Copy for BatchType {}
 
-//~ #[allow(dead_code)]
-//~ pub struct Batch {
-  //~ pub cass_batch:*mut CassBatch,
-//~ }
-//~ impl Copy for Batch {}
-
 #[allow(dead_code)]
 impl CassBatch {
   pub fn new(batch_type: BatchType) -> &'static CassBatch {unsafe{
@@ -31,7 +25,7 @@ impl CassBatch {
     cass_batch_free(self);
   }}
 
-  pub fn add_statement(&mut self, statement: Statement) -> Error {unsafe{
+  pub fn add_statement(&mut self, statement: &Statement) -> Error {unsafe{
     Error{cass_error:cass_batch_add_statement(self,statement.cass_statement)}
   }}
 

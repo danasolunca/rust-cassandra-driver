@@ -7,7 +7,7 @@ use error::CassError;
 use error::Error;
 use future::CassFuture;
 use result;
-use result::Result;
+use result::CassResult;
 use session;
 use session::CassSession;
 use types::CassBoolType;
@@ -223,10 +223,10 @@ impl Statement {
     if error.is_error() {return Some(error)} else {return None}
   }}
 
-  pub fn set_paging_state(&mut self, result: &mut RustResult<Result,Error>) -> Option<Error> {unsafe{
-    match result.clone().ok() {
+  pub fn set_paging_state(&mut self, result: &mut RustResult<&CassResult,Error>) -> Option<Error> {unsafe{
+    match result.ok() {
       Some(r) => {
-        let resp = cass_statement_set_paging_state(self.cass_statement,r.cass_result);
+        let resp = cass_statement_set_paging_state(self.cass_statement,r);
         if resp > 0 {
 	      Some(Error{cass_error:resp})
 	    } 
