@@ -6,45 +6,38 @@ use types::CassString;
 use types::Value;
 use libc::c_char;
 
-pub struct Schema {
-  pub cass_schema:*const CassSchema
-}
-
-pub struct SchemaMeta {
-  pub cass_schema_meta:*const CassSchemaMeta
-}
-impl Copy for SchemaMeta {}
+impl Copy for CassSchemaMeta {}
 
 
-impl Schema {
-  pub fn get_iterator(&self) -> CIterator<Schema> {unsafe{
-    CIterator{cass_iterator:cass_iterator_from_schema(self.cass_schema)}
+impl CassSchema {
+  pub fn get_iterator(&self) -> CIterator<CassSchema> {unsafe{
+    CIterator{cass_iterator:cass_iterator_from_schema(self)}
   }}
 
   pub fn free(&self) {unsafe{
-    cass_schema_free(self.cass_schema);
+    cass_schema_free(self);
   }}
 
-  pub fn get_keyspace(&self,  keyspace_name:&str) -> SchemaMeta {unsafe{
-    SchemaMeta{cass_schema_meta:cass_schema_get_keyspace(self.cass_schema,keyspace_name.as_ptr() as *const i8)}
+  pub fn get_keyspace(&self,  keyspace_name:&str) -> &CassSchemaMeta {unsafe{
+    &*cass_schema_get_keyspace(self,keyspace_name.as_ptr() as *const i8)
   }}
 }
 
-impl SchemaMeta {
+impl CassSchemaMeta {
   pub fn meta_type(&self) -> CassSchemaMetaType {unsafe{
-    cass_schema_meta_type(self.cass_schema_meta)
+    cass_schema_meta_type(self)
   }}
 
-  pub fn get_entry(&self, name:&str) -> SchemaMeta {unsafe{
-    SchemaMeta{cass_schema_meta:cass_schema_meta_get_entry(self.cass_schema_meta,name.as_ptr() as *const i8)}
+  pub fn get_entry(&self, name:&str) -> &CassSchemaMeta {unsafe{
+    &*cass_schema_meta_get_entry(self,name.as_ptr() as *const i8)
   }}
 
   pub fn get_field(&self, name:&str) -> *const CassSchemaMetaField {unsafe{
-    cass_schema_meta_get_field(self.cass_schema_meta,name.as_ptr() as *const i8)
+    cass_schema_meta_get_field(self,name.as_ptr() as *const i8)
   }}
 }
 
-impl Drop for Schema {
+impl Drop for CassSchema {
   fn drop(&mut self) {
     self.free();
   }

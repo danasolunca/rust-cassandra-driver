@@ -4,7 +4,6 @@ use future::CassFuture;
 use result::Result;
 use error::Error;
 use batch::CassBatch;
-use schema::Schema;
 use schema::CassSchema;
 use types;
 use types::CassString;
@@ -66,8 +65,8 @@ impl CassSession {
     &*cass_session_execute_batch(self,&*batch)
   }}
 
-  pub fn get_schema(&mut self) -> Schema {unsafe{
-    Schema{cass_schema:cass_session_get_schema(self)}
+  pub fn get_schema(&mut self) -> &CassSchema {unsafe{
+    &*cass_session_get_schema(self)
   }}
   
 }
