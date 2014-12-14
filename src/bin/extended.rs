@@ -98,12 +98,12 @@ fn main()  {
       for cmd in [cmds.create_ks,cmds.use_ks,cmds.create_table].iter() {
         assert!(session.execute_str(*cmd).is_ok());
       }
-      match insert_into_basic(&mut session, cmds.insert, "test", &input) {
+      match insert_into_basic(session, cmds.insert, "test", &input) {
         Err(fail) => println!("result: {}",fail),
         Ok(results) => {}
       }
 
-      match select_from_basic(&mut session, cmds.select, &"test".to_string()) {
+      match select_from_basic(session, cmds.select, &"test".to_string()) {
         Err(fail) => println!("result: {}",fail),
         Ok(results) => {
           for row in results.iterator() {	

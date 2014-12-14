@@ -27,9 +27,9 @@ fn print_error(future:&mut CassFuture) {
 }
 
 #[allow(unused_must_use)]
-fn insert_into_collections(session:&CassSession, cmd:&str, key:&str, items:HashMap<&str,u32>) -> Result<CassResult,CassError> {
+fn insert_into_collections(session:&mut CassSession, cmd:&str, key:&str, items:HashMap<&str,u32>) -> Result<CassResult,CassError> {
    println!("inserting key:{}",key);
-  let mut statement = CassStatement::build_from_str(cmd, 2);
+  let statement:&mut CassStatement = &mut CassStatement::build_from_str(cmd, 2);
 
   statement.bind_by_idx(0, key.to_string());
   let collection = CassCollection::new_list(2);
@@ -37,7 +37,7 @@ fn insert_into_collections(session:&CassSession, cmd:&str, key:&str, items:HashM
     collection.append_str(*item);
   }
   statement.bind_collection(1, collection);
-  let future=session.execute(&statement);
+  let future=session.execute(statement);
   match future {
     Err(err) => Err(err),
     Ok(result) => Ok(result)
@@ -45,11 +45,11 @@ fn insert_into_collections(session:&CassSession, cmd:&str, key:&str, items:HashM
 }
 
 #[allow(unused_must_use)]
-fn select_from_collections(session:&CassSession, cmd:&str, key:&str) {
-  let mut statement = CassStatement::build_from_str(cmd, 1);
+fn select_from_collections(session:&mut CassSession, cmd:&str, key:&str) {
+  let mut statement = &mut CassStatement::build_from_str(cmd, 1);
   statement.bind_by_idx(0, key.to_string());
  
-  match session.execute(&statement) {
+  match session.execute(statement) {
     Err(fail) => println!("fail: {}",fail),
     Ok(result) => {
       let rows = result.iterator();
@@ -91,8 +91,8 @@ fn main() {
       assert!(session.execute_str(cmds.create_ks).is_ok());
       assert!(session.execute_str(cmds.use_ks).is_ok());
       assert!(session.execute_str(cmds.create_table).is_ok());
-      assert!(insert_into_collections(&session, cmds.insert,"test23", items).is_ok());
-      let collection = select_from_collections(&session, cmds.select,"test23");
+      assert!(insert_into_collections(session, cmds.insert,"test23", items).is_ok());
+      let collection = select_from_collections(session, cmds.select,"test23");
       println!("collection:{}",collection);
       let close_future = session.close_async();
       close_future.wait();

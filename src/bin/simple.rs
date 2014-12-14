@@ -22,14 +22,14 @@ fn main()  {
   session_future.wait();
 
   if !session_future.error_code().is_error() {
-    let session = session_future.get_session();
+    let mut session = session_future.get_session();
 
     let mut statement = CassStatement::build_from_str("SELECT * FROM system.schema_keyspaces;", 0);
 
     let result_future = session.execute_async(&mut statement);
     result_future.wait();
 
-    if!result_future.error_code().is_error() {
+    if !result_future.error_code().is_error() {
       let result:CassResult = result_future.get_result();
       let mut rows = result.iterator();
 
@@ -50,8 +50,9 @@ fn main()  {
       println!("{}",result_future.error_message());
     }
 
-    let close_future = session.close_async();
-    close_future.wait();
+    //FIXME
+    //let close_future = session.close_async();
+    //close_future.wait();
   } else {
     let message = session_future.error_message();
     println!("Error: {}", message);

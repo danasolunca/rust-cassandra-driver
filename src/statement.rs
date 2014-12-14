@@ -5,12 +5,11 @@ use consistency;
 use consistency::CassConsistency;
 use error::CassError;
 use error::Error;
-use future::Future;
 use future::CassFuture;
 use result;
 use result::Result;
 use session;
-use session::Session;
+use session::CassSession;
 use types::CassBoolType;
 use types::CassSizeType;
 use types::CassDecimal;
@@ -273,11 +272,9 @@ pub struct Prepared {
 
 #[allow(dead_code)]
 impl Prepared {
-  pub fn new(statement_string:&str, session:Session) -> Future {unsafe{
-    let cass_string = Value::str_to_cass_string(statement_string);
-    let state:*mut CassFuture = session::cass_session_prepare(session.cass_session,cass_string);
-    let prepared = Future{cass_future:state};
-    prepared
+  pub fn new(statement_string:String, session:&mut CassSession) -> &CassFuture {unsafe{
+    let cass_string = Value::str_to_cass_string(statement_string.as_slice());
+    &*session::cass_session_prepare(session,cass_string)
   }}
 
   fn free(&self) {unsafe{

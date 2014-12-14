@@ -3,12 +3,11 @@ use cass_ssl::Ssl;
 use cass_ssl::CassSsl;
 use error::CassError;
 use error::Error;
-use future::Future;
 use future::CassFuture;
 use log::LogLevelType;
 use log::CassLogLevel;
 use log::CassLogCallback;
-use session::Session;
+use session::CassSession;
 use types::CassBoolType;
 use types;
 
@@ -34,22 +33,22 @@ impl CassCluster {
     Ok(self)
   }}
 
-  pub fn connect_async(&mut self) -> Future{unsafe{
-     let my_self_ptr: *mut CassCluster = self;
-    Future{cass_future:cass_cluster_connect(my_self_ptr)}
+  pub fn connect_async(&mut self) -> &mut CassFuture{unsafe{
+    let my_self_ptr: *mut CassCluster = self;
+    &mut*cass_cluster_connect(my_self_ptr)
   }}
 
-  pub fn connect(&mut self) -> Result<Session,Error> {
-    let future: Future = self.connect_async();
-    future.wait();
+  pub fn connect(&mut self) -> Result<&mut CassSession,Error> {
+    let mut future = self.connect_async();
+//    future.wait();
     let rc = future.error_code();
     let session = future.get_session();
     if rc.is_error() {Err(rc)} else {Ok(session)}
   }
 
-  pub fn connect_keyspace(&mut self, keyspace: *const c_char) -> Future {unsafe{
+  pub fn connect_keyspace(&mut self, keyspace: *const c_char) -> &CassFuture {unsafe{
     let my_self_ptr: *mut CassCluster = self;
-    Future{cass_future:cass_cluster_connect_keyspace(my_self_ptr,keyspace)}
+    &*cass_cluster_connect_keyspace(my_self_ptr,keyspace)
   }}
 
   fn free(&mut self) {unsafe{

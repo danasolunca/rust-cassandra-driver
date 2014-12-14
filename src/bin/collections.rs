@@ -25,7 +25,7 @@ fn print_error(future:&mut CassFuture) {
 }
 
 #[allow(unused_must_use)]
-fn insert_into_collections(session:&CassSession, cmd:&str, key:&str, items:Vec<&str>) -> Result<CassResult,CassError> {
+fn insert_into_collections(session:&mut CassSession, cmd:&str, key:&str, items:Vec<&str>) -> Result<CassResult,CassError> {
    println!("inserting key:{}",key);
   let mut statement = CassStatement::build_from_str(cmd, 2);
   
@@ -43,7 +43,7 @@ fn insert_into_collections(session:&CassSession, cmd:&str, key:&str, items:Vec<&
 }
 
 #[allow(unused_must_use)]
-fn select_from_collections(session:&CassSession, cmd:&str, key:&str) {
+fn select_from_collections(session:&mut CassSession, cmd:&str, key:&str) {
   let mut statement = CassStatement::build_from_str(cmd, 1);
   statement.bind_by_idx(0, key.to_string());
  
@@ -77,10 +77,10 @@ fn main() {
     Err(fail) => println!("fail: {}",fail),
     Ok(session) => {
       for cmd in [cmds.create_ks,cmds.use_ks,cmds.create_table].iter() {
-        assert!((&session).execute_str(*cmd).is_ok());
+        assert!((session).execute_str(*cmd).is_ok());
       }
-      assert!(insert_into_collections(&session, cmds.insert,"test23", items).is_ok());
-      let collection = select_from_collections(&session, cmds.select,"test23");
+      assert!(insert_into_collections(session, cmds.insert,"test23", items).is_ok());
+      let collection = select_from_collections(session, cmds.select,"test23");
       println!("collection:{}",collection);
       let close_future = session.close_async();
       close_future.wait();

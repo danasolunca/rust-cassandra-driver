@@ -25,7 +25,7 @@ struct Commands {
 	select:&'static str
 }
 
-pub fn insert_into_basic(session:&CassSession, insert_statement: &str, key:String, basic:&Basic) -> Result<CassResult,CassError> {
+pub fn insert_into_basic(session:&mut CassSession, insert_statement: &str, key:String, basic:&Basic) -> Result<CassResult,CassError> {
   let mut statement = CassStatement::build_from_str(insert_statement, 6);
   println!("inserting key:{}",key);
     statement.bind(key).unwrap()
@@ -37,7 +37,7 @@ pub fn insert_into_basic(session:&CassSession, insert_statement: &str, key:Strin
     session.execute(&mut statement)
 }
 
-pub fn select_from_basic(session:&CassSession, select_statement: &str, key:&str) -> Result<CassResult,CassError> {
+pub fn select_from_basic(session:&mut CassSession, select_statement: &str, key:&str) -> Result<CassResult,CassError> {
   session.execute(
     CassStatement::build_from_str(select_statement, 1)
       .bind_by_idx(0, key.to_string()).unwrap()
@@ -67,12 +67,12 @@ fn main()  {
         assert!(session.execute_str(*cmd).is_ok());
       }
 
-      match insert_into_basic(&session, cmds.insert, "test".to_string(), &input) {
+      match insert_into_basic(session, cmds.insert, "test".to_string(), &input) {
         Err(fail) => println!("result: {}",fail),
         Ok(results) => {}
       }
 
-      match select_from_basic(&session, cmds.select, "test") {
+      match select_from_basic(session, cmds.select, "test") {
         Err(fail) => println!("result: {}",fail),
         Ok(results) => {
           for row in results.iterator() {	

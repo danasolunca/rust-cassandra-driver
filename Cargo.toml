@@ -12,17 +12,17 @@ path="src/bin/basic.rs"
 # name="batch"
 # path="src/bin/batch.rs"
 
-[[bin]]
-name="paging"
-path="src/bin/paging.rs"
+# [[bin]]
+# name="paging"
+# path="src/bin/paging.rs"
 
 [[bin]]
 name="simple"
 path="src/bin/simple.rs"
 
-[[bin]]
-name="async"
-path="src/bin/async.rs"
+# [[bin]]
+# name="async"
+# path="src/bin/async.rs"
 
 [[bin]]
 name="extended"

@@ -78,8 +78,8 @@ fn main() {
 
       let result=session.execute(&mut CassStatement::build_from_str("USE examples",0));
 
-      insert_into_paging(&mut session, "test");
-      select_from_paging(&mut session);
+      insert_into_paging(session, "test");
+      select_from_paging(session);
      }
   }
 }
