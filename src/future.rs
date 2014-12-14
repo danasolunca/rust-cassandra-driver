@@ -1,7 +1,6 @@
 use session::CassSession;
 use error::CassError;
 use error::Error;
-use statement::Prepared;
 use result::CassResult;
 use result;
 use types::CassString;
@@ -43,8 +42,8 @@ impl CassFuture {
   //~ }}
 
 
-  pub fn get_prepared(&mut self) -> Prepared {unsafe{
-    Prepared{cass_prepared:cass_future_get_prepared(self)}
+  pub fn get_prepared(&mut self) -> &CassPrepared {unsafe{
+    &*cass_future_get_prepared(self)
   }}
 
   pub fn error_code(&mut self) -> Error {unsafe{

@@ -265,33 +265,28 @@ impl Statement {
   }}
 }
 
-#[allow(dead_code)]
-pub struct Prepared {
-  pub cass_prepared:*const CassPrepared,
-}
 
-#[allow(dead_code)]
-impl Prepared {
+impl CassPrepared {
   pub fn new(statement_string:String, session:&mut CassSession) -> &CassFuture {unsafe{
     let cass_string = Value::str_to_cass_string(statement_string.as_slice());
     &*session::cass_session_prepare(session,cass_string)
   }}
 
   fn free(&self) {unsafe{
-     cass_prepared_free(self.cass_prepared);
+     cass_prepared_free(self);
   }}
   
   pub fn cass_prepared_bind(&self) -> Statement {unsafe{
-	 Statement{cass_statement:cass_prepared_bind(self.cass_prepared),last_error:Error::new(0),bound_index:0}
+	 Statement{cass_statement:cass_prepared_bind(self),last_error:Error::new(0),bound_index:0}
   }}
 
 #[allow(unused_variables)]
   pub fn bind(&self, parameter_count: CassSizeType) -> Statement {unsafe{
-    Statement{cass_statement:cass_prepared_bind(self.cass_prepared),last_error:Error::new(0),bound_index:0}
+    Statement{cass_statement:cass_prepared_bind(self),last_error:Error::new(0),bound_index:0}
   }}
 }
 
-impl Drop for Prepared {
+impl Drop for CassPrepared {
   fn drop(&mut self) {
     self.free();
   }
