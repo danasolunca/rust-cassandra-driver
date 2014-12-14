@@ -13,11 +13,13 @@ pub enum BatchType {
   UNLOGGED=1,
   COUNTER=2,
 }
+impl Copy for BatchType {}
 
 #[allow(dead_code)]
 pub struct Batch {
   pub cass_batch:*mut CassBatch,
 }
+impl Copy for Batch {}
 
 #[allow(dead_code)]
 impl Batch {

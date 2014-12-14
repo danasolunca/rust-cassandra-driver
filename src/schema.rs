@@ -13,6 +13,8 @@ pub struct Schema {
 pub struct SchemaMeta {
   pub cass_schema_meta:*const CassSchemaMeta
 }
+impl Copy for SchemaMeta {}
+
 
 impl Schema {
   pub fn get_iterator(&self) -> CIterator<Schema> {unsafe{
@@ -54,6 +56,7 @@ pub enum CassSchema { }
 pub enum CassSchemaMeta { }
 #[allow(dead_code)]
 pub enum CassSchemaMetaField { }
+impl Copy for CassSchemaMetaField {}
 #[repr(C)]
 #[allow(dead_code)]
 pub enum CassSchemaMetaType {

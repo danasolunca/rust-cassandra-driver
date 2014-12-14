@@ -16,6 +16,8 @@ use std::result::Result as RustResult;
 pub struct Session {
   pub cass_session:*mut CassSession
 }
+impl Copy for Session {}
+
 
 #[allow(dead_code)]
 impl Session {

@@ -20,169 +20,168 @@ use libc::c_int;
 
 
 #[allow(dead_code)]
-pub struct Cluster {
-  cass_cluster:*mut CassCluster
-}
-
-#[allow(dead_code)]
 #[allow(unused_variables)]
-impl Cluster {
+impl CassCluster {
 
-  pub fn new() -> Cluster {unsafe{
-    Cluster{cass_cluster:cass_cluster_new()}
+  pub fn new() -> &'static mut CassCluster {unsafe{
+    &mut*cass_cluster_new()
   }}
   
-  pub fn set_contact_points(&self,contact_points:&str) -> Result<&Cluster,CassError> {unsafe{
+  pub fn set_contact_points(&mut self,contact_points:&str) -> Result<&mut CassCluster,CassError> {unsafe{
     let points = contact_points.to_c_str();
-    let err = cass_cluster_set_contact_points(self.cass_cluster,types::cass_string_init(points.as_ptr()).data);
+    let my_self_ptr: *mut CassCluster = self;
+    let err = cass_cluster_set_contact_points(my_self_ptr,types::cass_string_init(points.as_ptr()).data);
     Ok(self)
   }}
 
-  pub fn connect_async(&self) -> Future{unsafe{
-    Future{cass_future:cass_cluster_connect(self.cass_cluster)}
+  pub fn connect_async(&mut self) -> Future{unsafe{
+     let my_self_ptr: *mut CassCluster = self;
+    Future{cass_future:cass_cluster_connect(my_self_ptr)}
   }}
 
-  pub fn connect(&self) -> Result<Session,Error> {
+  pub fn connect(&mut self) -> Result<Session,Error> {
     let future: Future = self.connect_async();
     future.wait();
-    let mut rc = future.error_code();
+    let rc = future.error_code();
     let session = future.get_session();
     if rc.is_error() {Err(rc)} else {Ok(session)}
   }
 
-  pub fn connect_keyspace(&self, keyspace: *const c_char) -> Future {unsafe{
-    Future{cass_future:cass_cluster_connect_keyspace(self.cass_cluster,keyspace)}
+  pub fn connect_keyspace(&mut self, keyspace: *const c_char) -> Future {unsafe{
+    let my_self_ptr: *mut CassCluster = self;
+    Future{cass_future:cass_cluster_connect_keyspace(my_self_ptr,keyspace)}
   }}
 
-  fn free(&self) {unsafe{
-    cass_cluster_free(self.cass_cluster)
+  fn free(&mut self) {unsafe{
+    cass_cluster_free(self)
   }}
 
-  pub fn set_port(&self,port:i32) -> Result<&Cluster,Error> {unsafe{
-    let err = cass_cluster_set_port(self.cass_cluster,port);
+  pub fn set_port(&mut self,port:i32) -> Result<&mut CassCluster,Error> {unsafe{
+    let err = cass_cluster_set_port(self,port);
     Ok(self)
   }}
 
 
   //Need to test this
-  pub fn set_ssl(self,ssl:Ssl) -> Result<Cluster,Error> {unsafe{
-    let err = cass_cluster_set_ssl(self.cass_cluster,ssl.cass_ssl);
+  pub fn set_ssl(&mut self,ssl:Ssl) -> Result<&mut CassCluster,Error> {unsafe{
+    let my_self_ptr: *mut CassCluster = self;    
+    let err = cass_cluster_set_ssl(my_self_ptr,ssl.cass_ssl);
     Ok(self)
   }}
 
-  pub fn set_protocol_version(&self,protocol_version:i32) -> Result<&Cluster,Error> {unsafe{
-    let err = cass_cluster_set_protocol_version(self.cass_cluster,protocol_version);
+  pub fn set_protocol_version(&mut self,protocol_version:i32) -> Result<&mut CassCluster,Error> {unsafe{
+    let err = cass_cluster_set_protocol_version(self,protocol_version);
     Ok(self)
   }}
 
-  pub fn set_num_threads_io(&self,num_threads:u32) -> Result<&Cluster,Error> {unsafe{
-    let err = cass_cluster_set_num_threads_io(self.cass_cluster,num_threads);
+  pub fn set_num_threads_io(&mut self,num_threads:u32) -> Result<&mut CassCluster,Error> {unsafe{
+    let err = cass_cluster_set_num_threads_io(self,num_threads);
     Ok(self)
   }}
 
-  pub fn set_queue_size_io(&self,queue_size:u32) -> Result<&Cluster,Error> {unsafe{
-    let err = cass_cluster_set_queue_size_io(self.cass_cluster,queue_size);
+  pub fn set_queue_size_io(&mut self,queue_size:u32) -> Result<&mut CassCluster,Error> {unsafe{
+    let err = cass_cluster_set_queue_size_io(self,queue_size);
     Ok(self)
   }}
 
-  pub fn set_queue_size_event(&self,queue_size:u32) -> Result<&Cluster,Error> {unsafe{
-    let err = cass_cluster_set_queue_size_event(self.cass_cluster,queue_size);
+  pub fn set_queue_size_event(&mut self,queue_size:u32) -> Result<&mut CassCluster,Error> {unsafe{
+    let err = cass_cluster_set_queue_size_event(self,queue_size);
     Ok(self)
   }}
 
-  pub fn set_queue_size_log(&self,queue_size:u32) -> Result<&Cluster,CassError> {unsafe{
-    let err = cass_cluster_set_queue_size_log(self.cass_cluster,queue_size);
+  pub fn set_queue_size_log(&mut self,queue_size:u32) -> Result<&mut CassCluster,CassError> {unsafe{
+    let err = cass_cluster_set_queue_size_log(self,queue_size);
     Ok(self)
   }}
 
-  pub fn set_core_connections_per_host(&self,connections:u32) -> Result<&Cluster,Error> {unsafe{
-    let err = cass_cluster_set_core_connections_per_host(self.cass_cluster,connections);
+  pub fn set_core_connections_per_host(&mut self,connections:u32) -> Result<&mut CassCluster,Error> {unsafe{
+    let err = cass_cluster_set_core_connections_per_host(self,connections);
     Ok(self)
   }}
   
-  pub fn set_max_connections_per_host(&self,connections:u32) -> Result<&Cluster,Error> {unsafe{
-    let err = cass_cluster_set_max_connections_per_host(self.cass_cluster,connections);
+  pub fn set_max_connections_per_host(&mut self,connections:u32) -> Result<&mut CassCluster,Error> {unsafe{
+    let err = cass_cluster_set_max_connections_per_host(self,connections);
     Ok(self)
   }}
 
-  pub fn set_reconnect_wait_time(&self,wait_time:u32) -> Result<&Cluster,Error> {unsafe{
-    let err = cass_cluster_set_reconnect_wait_time(self.cass_cluster,wait_time);
+  pub fn set_reconnect_wait_time(&mut self,wait_time:u32) -> Result<&mut CassCluster,Error> {unsafe{
+    let err = cass_cluster_set_reconnect_wait_time(self,wait_time);
     Ok(self)
   }}
 
-  pub fn set_max_concurrent_creation(&self,num_connections:u32) -> Result<&Cluster,Error> {unsafe{
-    let err = cass_cluster_set_max_concurrent_creation(self.cass_cluster,num_connections);
+  pub fn set_max_concurrent_creation(&mut self,num_connections:u32) -> Result<&mut CassCluster,Error> {unsafe{
+    let err = cass_cluster_set_max_concurrent_creation(self,num_connections);
     Ok(self)
   }}
 
-  pub fn set_max_concurrent_requests_threshold(&self,num_requests:u32) -> Result<&Cluster,Error> {unsafe{
-    let err = cass_cluster_set_max_concurrent_requests_threshold(self.cass_cluster,num_requests);
+  pub fn set_max_concurrent_requests_threshold(&mut self,num_requests:u32) -> Result<&mut CassCluster,Error> {unsafe{
+    let err = cass_cluster_set_max_concurrent_requests_threshold(self,num_requests);
     Ok(self)
   }}
 
-  pub fn set_max_requests_per_flush(&self,num_requests:u32) -> Result<&Cluster,Error> {unsafe{
-    let err = cass_cluster_set_max_requests_per_flush(self.cass_cluster,num_requests);
+  pub fn set_max_requests_per_flush(&mut self,num_requests:u32) -> Result<&mut CassCluster,Error> {unsafe{
+    let err = cass_cluster_set_max_requests_per_flush(self,num_requests);
     Ok(self)
   }}
 
-  pub fn set_write_bytes_high_water_mark(&self,num_bytes:u32) -> Result<&Cluster,Error> {unsafe{
-    let err = cass_cluster_set_write_bytes_high_water_mark(self.cass_cluster,num_bytes);
+  pub fn set_write_bytes_high_water_mark(&mut self,num_bytes:u32) -> Result<&mut CassCluster,Error> {unsafe{
+    let err = cass_cluster_set_write_bytes_high_water_mark(self,num_bytes);
     Ok(self)
   }}
 
-  pub fn set_write_bytes_low_water_mark(&self,num_bytes:u32) -> Result<&Cluster,Error> {unsafe{
-    let err = cass_cluster_set_write_bytes_low_water_mark(self.cass_cluster,num_bytes);
+  pub fn set_write_bytes_low_water_mark(&mut self,num_bytes:u32) -> Result<&mut CassCluster,Error> {unsafe{
+    let err = cass_cluster_set_write_bytes_low_water_mark(self,num_bytes);
     Ok(self)
   }}
 
-  pub fn set_pending_requests_high_water_mark(&self,num_requests:u32) -> Result<&Cluster,Error> {unsafe{
-    let err = cass_cluster_set_pending_requests_high_water_mark(self.cass_cluster,num_requests);
+  pub fn set_pending_requests_high_water_mark(&mut self,num_requests:u32) -> Result<&mut CassCluster,Error> {unsafe{
+    let err = cass_cluster_set_pending_requests_high_water_mark(self,num_requests);
     Ok(self)
   }}
 
-  pub fn set_pending_requests_low_water_mark(&self,num_requests:u32) -> Result<&Cluster,Error> {unsafe{
-    let err = cass_cluster_set_pending_requests_low_water_mark(self.cass_cluster,num_requests);
+  pub fn set_pending_requests_low_water_mark(&mut self,num_requests:u32) -> Result<&mut CassCluster,Error> {unsafe{
+    let err = cass_cluster_set_pending_requests_low_water_mark(self,num_requests);
     Ok(self)
   }}
 
-  pub fn set_connect_timeout(&self,timeout_ms:u32) -> Result<&Cluster,Error> {unsafe{
-    let err = cass_cluster_set_connect_timeout(self.cass_cluster,timeout_ms);
+  pub fn set_connect_timeout(&mut self,timeout_ms:u32) -> Result<&mut CassCluster,Error> {unsafe{
+    let err = cass_cluster_set_connect_timeout(self,timeout_ms);
     Ok(self)
   }}
 
-  pub fn set_request_timeout(&self,timeout_ms:u32) -> Result<&Cluster,Error> {unsafe{
-    let err = cass_cluster_set_request_timeout(self.cass_cluster,timeout_ms);
+  pub fn set_request_timeout(&mut self,timeout_ms:u32) -> Result<&mut CassCluster,Error> {unsafe{
+    let err = cass_cluster_set_request_timeout(self,timeout_ms);
     Ok(self)
   }}
 
-  pub fn set_log_level(&self,log_level:LogLevelType) -> Result<&Cluster,Error> {unsafe{
-    let err = cass_cluster_set_log_level(self.cass_cluster,log_level as u32);
+  pub fn set_log_level(&mut self,log_level:LogLevelType) -> Result<&mut CassCluster,Error> {unsafe{
+    let err = cass_cluster_set_log_level(self,log_level as u32);
     Ok(self)
   }}
 
-  pub fn set_credentials(&self,username:&str, password:&str) -> Result<&Cluster,Error> {unsafe{
-    let err = cass_cluster_set_credentials(self.cass_cluster,username.as_ptr() as *const i8,password.as_ptr() as *const i8);
+  pub fn set_credentials(&mut self,username:&str, password:&str) -> Result<&mut CassCluster,Error> {unsafe{
+    let err = cass_cluster_set_credentials(self,username.as_ptr() as *const i8,password.as_ptr() as *const i8);
     Ok(self)
   }}
 
-  pub fn set_load_balance_round_robin(&self) -> Result<&Cluster,Error> {unsafe{
-    let err = cass_cluster_set_load_balance_round_robin(self.cass_cluster);
+  pub fn set_load_balance_round_robin(&mut self) -> Result<&mut CassCluster,Error> {unsafe{
+    let err = cass_cluster_set_load_balance_round_robin(self);
     Ok(self)
   }}
 
-  pub fn set_load_balance_dc_aware(&self,local_dc:&str) -> Result<&Cluster,Error> {unsafe{
-    let err = cass_cluster_set_load_balance_dc_aware(self.cass_cluster,local_dc.as_ptr() as *const i8);
+  pub fn set_load_balance_dc_aware(&mut self,local_dc:&str) -> Result<&mut CassCluster,Error> {unsafe{
+    let err = cass_cluster_set_load_balance_dc_aware(self,local_dc.as_ptr() as *const i8);
     Ok(self)
   }}
 
-  pub fn set_token_aware_routing(&self,enabled:bool) -> Result<&Cluster,Error> {unsafe{
-    let err = cass_cluster_set_token_aware_routing(self.cass_cluster,match enabled {true=>1,false=>0});
+  pub fn set_token_aware_routing(&mut self,enabled:bool) -> Result<&mut CassCluster,Error> {unsafe{
+    let err = cass_cluster_set_token_aware_routing(self,match enabled {true=>1,false=>0});
     Ok(self)
   }}
 
 }
 
-impl Drop for Cluster {
+impl Drop for CassCluster {
   fn drop(&mut self) {
     self.free();
   }
@@ -228,25 +227,25 @@ impl Drop for Cluster {
 mod tests {
     #[test]
     fn new() {
-      super::Cluster::new();
+      super::CassCluster::new();
     }
 
     #[test]
     fn create() {
-      let cluster = super::Cluster::new();
+      let cluster = super::CassCluster::new();
       cluster.set_contact_points("127.0.0.1").unwrap();
     }
 
     #[test]
     fn connect() {
-      let cluster = super::Cluster::new();
+      let cluster = super::CassCluster::new();
       cluster.set_contact_points("127.0.0.1").unwrap()
             .connect();
     }
 
     #[test_should_fail]
     fn connect_bad_host() {
-     let cluster = super::Cluster::new();
+     let cluster = super::CassCluster::new();
      cluster.set_contact_points("10.254.254.254").unwrap()
           .connect();
     }

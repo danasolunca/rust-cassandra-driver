@@ -81,6 +81,7 @@ pub enum CassErrorSSLType {
 pub struct Error {
   pub cass_error:CassError,
 }
+impl Copy for Error {}
 
 impl Error {
   pub fn new(err:u32) -> Error {

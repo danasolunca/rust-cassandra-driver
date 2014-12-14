@@ -50,6 +50,8 @@ pub struct Value {
   pub cass_value:*const CassValue
 }
 
+impl Copy for Value {}
+
 #[allow(dead_code)]
 pub type Bytes = Vec<u8>;
 
@@ -185,11 +187,10 @@ impl Value {
     Uuid::from_bytes(output.as_slice()).unwrap()
   }}
 
-  pub fn get_inet(&self, mut output: IpAddr) -> Error {unsafe{
-    let mut output = Value::ipaddr2cassinet(output);
-        let ref mut output = output;
-
-    Error{cass_error:cass_value_get_inet(self.cass_value,output)}
+  pub fn get_inet(&self, addr: IpAddr) -> Error {unsafe{
+    let mut inet = Value::ipaddr2cassinet(addr);
+    let ref mut inet = inet;
+    Error{cass_error:cass_value_get_inet(self.cass_value,inet)}
   }}
 
   //~ pub fn get_bytes(&self, mut output: Vec<u8>) -> Error {unsafe{
@@ -325,7 +326,6 @@ pub enum CassValue {
 }
 
 #[repr(C)]
-#[derive(Clone)]
 pub struct CassDecimal {
   pub scale: i32,
   pub varint: CassBytes,

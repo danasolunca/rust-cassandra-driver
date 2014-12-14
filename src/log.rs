@@ -14,18 +14,15 @@ pub enum LogLevelType {
   TRACE=6,
   LAST_ENTRY=7,
 }
+impl Copy for LogLevelType {}
 
-pub struct LogLevel {
-  cass_log_level:u32
-}
+pub type CassLogLevel = u32;
+//~ impl CassLogLevel {
+  //~ pub fn get_level(&self) -> *const ::libc::c_char {unsafe{
+    //~ cass_log_level_string(self.cass_log_level)
+  //~ }}
+//~ }
 
-impl LogLevel {
-  pub fn get_level(&self) -> *const ::libc::c_char {unsafe{
-    cass_log_level_string(self.cass_log_level)
-  }}
-}
-
-  pub type CassLogLevel = u32;
   pub type CassLogCallback = ::std::option::Option<extern "C" fn
                               (arg1: u64, arg2: CassLogLevel,
                                arg3: CassString, arg4: *mut c_void)>;

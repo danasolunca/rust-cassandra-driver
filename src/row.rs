@@ -10,6 +10,8 @@ use libc::c_char;
 pub struct Row {
   pub cass_row:*const CassRow,
 }
+impl Copy for Row {}
+
 
 impl Row {
   pub fn iterator(&mut self) -> RowIterator {unsafe{
