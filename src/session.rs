@@ -2,7 +2,6 @@ use statement::Statement;
 use statement::CassStatement;
 use future::Future;
 use future::CassFuture;
-use batch::Batch;
 use result::Result;
 use error::Error;
 use batch::CassBatch;
@@ -67,8 +66,8 @@ impl Session {
     Future{cass_future:future}
   }}
 
-  pub fn execute_batch(&self, batch: &Batch) -> Future {unsafe{
-    Future{cass_future:cass_session_execute_batch(self.cass_session,&*batch.cass_batch)}
+  pub fn execute_batch(&self, batch: &CassBatch) -> Future {unsafe{
+    Future{cass_future:cass_session_execute_batch(self.cass_session,&*batch)}
   }}
 
   pub fn get_schema(&self) -> Schema {unsafe{

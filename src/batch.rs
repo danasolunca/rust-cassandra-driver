@@ -15,39 +15,38 @@ pub enum BatchType {
 }
 impl Copy for BatchType {}
 
-#[allow(dead_code)]
-pub struct Batch {
-  pub cass_batch:*mut CassBatch,
-}
-impl Copy for Batch {}
-
-#[allow(dead_code)]
-impl Batch {
-  pub fn new(batch_type: BatchType) -> Batch {unsafe{
-    Batch{cass_batch:cass_batch_new(batch_type as u32)}
-  }}
-
-  pub fn free(&self) {unsafe{
-    cass_batch_free(self.cass_batch);
-  }}
-
-  pub fn add_statement(&self, statement: Statement) -> Error {unsafe{
-    Error{cass_error:cass_batch_add_statement(self.cass_batch,statement.cass_statement)}
-  }}
-
-  pub fn set_consistency(&self, consistency: CassConsistency) -> Error {unsafe{
-    Error{cass_error:cass_batch_set_consistency(self.cass_batch,consistency)}
-  }}
-
-}
-
-//~ impl Drop for Batch {
-  //~ fn drop(&mut self) {
-    //~ self.free();
-  //~ }
+//~ #[allow(dead_code)]
+//~ pub struct Batch {
+  //~ pub cass_batch:*mut CassBatch,
 //~ }
+//~ impl Copy for Batch {}
 
-pub enum CassBatch { }
+#[allow(dead_code)]
+impl CassBatch {
+  pub fn new(batch_type: BatchType) -> &'static CassBatch {unsafe{
+    &*cass_batch_new(batch_type as u32)
+  }}
+
+  pub fn free(&mut self) {unsafe{
+    cass_batch_free(self);
+  }}
+
+  pub fn add_statement(&mut self, statement: Statement) -> Error {unsafe{
+    Error{cass_error:cass_batch_add_statement(self,statement.cass_statement)}
+  }}
+
+  pub fn set_consistency(&mut self, consistency: CassConsistency) -> Error {unsafe{
+    Error{cass_error:cass_batch_set_consistency(self,consistency)}
+  }}
+}
+
+impl Drop for CassBatch {
+  fn drop(&mut self) {
+    self.free();
+  }
+}
+
+  pub enum CassBatch { }
 type CassBatchType = c_uint;
 
 #[link(name = "cassandra")]
@@ -64,9 +63,9 @@ mod tests {
 
   #[test]
   fn new() {
-    super::Batch::new(BatchType::LOGGED);
-    super::Batch::new(BatchType::UNLOGGED);
-    super::Batch::new(BatchType::COUNTER);
+    super::CassBatch::new(BatchType::LOGGED);
+    super::CassBatch::new(BatchType::UNLOGGED);
+    super::CassBatch::new(BatchType::COUNTER);
   }
 }
 
