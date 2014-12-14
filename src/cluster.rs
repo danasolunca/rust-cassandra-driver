@@ -1,5 +1,4 @@
 extern crate libc;
-use cass_ssl::Ssl;
 use cass_ssl::CassSsl;
 use error::CassError;
 use error::Error;
@@ -62,9 +61,9 @@ impl CassCluster {
 
 
   //Need to test this
-  pub fn set_ssl(&mut self,ssl:Ssl) -> Result<&mut CassCluster,Error> {unsafe{
+  pub fn set_ssl(&mut self,ssl:&mut CassSsl) -> Result<&mut CassCluster,Error> {unsafe{
     let my_self_ptr: *mut CassCluster = self;    
-    let err = cass_cluster_set_ssl(my_self_ptr,ssl.cass_ssl);
+    let err = cass_cluster_set_ssl(my_self_ptr,ssl);
     Ok(self)
   }}
 

@@ -6,7 +6,7 @@ extern crate uuid;
 
 //pub use statement::CassBindable;
 pub use batch::CassBatch;
-pub use cass_ssl::Ssl as CassSsl;
+pub use cass_ssl::CassSsl;
 pub use cluster::CassCluster;
 pub use collection::Collection as CassCollection;
 pub use consistency::CassConsistency;
