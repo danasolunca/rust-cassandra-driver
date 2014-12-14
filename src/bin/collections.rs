@@ -27,7 +27,7 @@ fn print_error(future:&mut CassFuture) {
 #[allow(unused_must_use)]
 fn insert_into_collections<'a>(session:&'a mut CassSession, cmd:&str, key:&str, items:Vec<&str>) -> Result<&'a CassResult,CassError> {
    println!("inserting key:{}",key);
-  let mut statement = CassStatement::build_from_str(cmd, 2);
+  let statement = CassStatement::build_from_str(cmd, 2);
   
   statement.bind_by_idx(0, key.to_string());
   let collection = CassCollection::new_list(2);
@@ -35,7 +35,7 @@ fn insert_into_collections<'a>(session:&'a mut CassSession, cmd:&str, key:&str, 
     collection.append_str(*item);
   }
   statement.bind_collection(1, collection);
-  let future=session.execute(&mut statement);
+  let future=session.execute(statement);
   match future {
     Err(err) => Err(err),
     Ok(result) => Ok(result)
@@ -47,7 +47,7 @@ fn select_from_collections(session:&mut CassSession, cmd:&str, key:&str) {
   let mut statement = CassStatement::build_from_str(cmd, 1);
   statement.bind_by_idx(0, key.to_string());
  
-  match session.execute(&statement) {
+  match session.execute(statement) {
     Err(fail) => println!("fail: {}",fail),
     Ok(result) => {
       for row in result.iterator() {

@@ -1,6 +1,5 @@
 extern crate libc;
 #[allow(dead_code)]
-use statement::Statement;
 use statement::CassStatement;
 use error::CassError;
 use error::Error;
@@ -25,8 +24,8 @@ impl CassBatch {
     cass_batch_free(self);
   }}
 
-  pub fn add_statement(&mut self, statement: &Statement) -> Error {unsafe{
-    Error{cass_error:cass_batch_add_statement(self,statement.cass_statement)}
+  pub fn add_statement(&mut self, statement: &mut CassStatement) -> Error {unsafe{
+    Error{cass_error:cass_batch_add_statement(self,statement)}
   }}
 
   pub fn set_consistency(&mut self, consistency: CassConsistency) -> Error {unsafe{

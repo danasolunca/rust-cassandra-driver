@@ -29,7 +29,7 @@ fn print_error(future:&mut CassFuture) {
 #[allow(unused_must_use)]
 fn insert_into_collections<'a>(session:&'a mut CassSession, cmd:&str, key:&str, items:HashMap<&str,u32>) -> Result<&'a CassResult,CassError> {
    println!("inserting key:{}",key);
-  let statement:&mut CassStatement = &mut CassStatement::build_from_str(cmd, 2);
+  let statement = CassStatement::build_from_str(cmd, 2);
 
   statement.bind_by_idx(0, key.to_string());
   let collection = CassCollection::new_list(2);
@@ -46,7 +46,7 @@ fn insert_into_collections<'a>(session:&'a mut CassSession, cmd:&str, key:&str, 
 
 #[allow(unused_must_use)]
 fn select_from_collections(session:&mut CassSession, cmd:&str, key:&str) {
-  let mut statement = &mut CassStatement::build_from_str(cmd, 1);
+  let statement = CassStatement::build_from_str(cmd, 1);
   statement.bind_by_idx(0, key.to_string());
  
   match session.execute(statement) {

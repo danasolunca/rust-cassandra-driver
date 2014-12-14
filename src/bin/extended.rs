@@ -31,20 +31,20 @@ pub fn insert_into_basic<'a>(session:&'a mut CassSession, insert_statement: &str
   let mut statement = CassStatement::build_from_str(insert_statement, 7);
   println!("inserting key:{}",key);
   statement
-        .bind(key.to_string()).unwrap()
-        .bind(extended.bln).unwrap()
-        .bind(extended.flt).unwrap()
-        .bind(extended.dbl).unwrap()
-        .bind(extended.i32).unwrap()
-        .bind(extended.i64).unwrap()
-        .bind(extended.string.clone()).unwrap();
-  session.execute(&statement)
+        .bind_by_idx(0,key.to_string()).unwrap()
+        .bind_by_idx(1,extended.bln).unwrap()
+        .bind_by_idx(2,extended.flt).unwrap()
+        .bind_by_idx(3,extended.dbl).unwrap()
+        .bind_by_idx(4,extended.i32).unwrap()
+        .bind_by_idx(5,extended.i64).unwrap()
+        .bind_by_idx(6,extended.string.clone()).unwrap();
+  session.execute(statement)
 }
 
 pub fn select_from_basic<'a>(session:&'a mut CassSession, select_statement: &str, key:&String) -> Result<&'a CassResult,CassError> {
-  let mut statement = CassStatement::build_from_str(select_statement, 1);
+  let statement = CassStatement::build_from_str(select_statement, 1);
   statement.bind_by_idx(0, key.clone()).unwrap();
-  match session.execute(&mut statement) {
+  match session.execute(statement) {
     Err(err) => return Err(err),
     Ok(result) => {
       return Ok(result)

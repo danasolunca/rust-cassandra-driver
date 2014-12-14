@@ -24,7 +24,7 @@ pub use schema::CassSchema;
 pub use schema::CassSchemaMeta;
 pub use schema::CassSchemaMetaField;
 pub use session::CassSession;
-pub use statement::Statement as CassStatement;
+pub use statement::CassStatement;
 pub use statement::CassPrepared;
 pub use statement::CassBindable;
 

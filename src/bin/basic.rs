@@ -26,22 +26,21 @@ struct Commands {
 }
 
 pub fn insert_into_basic<'a>(session:&'a mut CassSession, insert_statement: &str, key:String, basic:&Basic) -> Result<&'a CassResult,CassError> {
-  let mut statement = CassStatement::build_from_str(insert_statement, 6);
+  let statement = CassStatement::build_from_str(insert_statement, 6);
   println!("inserting key:{}",key);
-    statement.bind(key).unwrap()
-      .bind(basic.bln).unwrap()
-      .bind(basic.flt).unwrap()
-      .bind(basic.dbl).unwrap()
-      .bind(basic.i32).unwrap()
-      .bind(basic.i64).unwrap();
-    session.execute(&statement)
+    statement.bind_by_idx(0,key).unwrap()
+      .bind_by_idx(1,basic.bln).unwrap()
+      .bind_by_idx(2,basic.flt).unwrap()
+      .bind_by_idx(3,basic.dbl).unwrap()
+      .bind_by_idx(4,basic.i32).unwrap()
+      .bind_by_idx(5,basic.i64).unwrap();
+    session.execute(statement)
 }
 
 pub fn select_from_basic<'a>(session:&'a mut CassSession, select_statement: &str, key:&str) -> Result<&'a CassResult,CassError> {
-  session.execute(
-    CassStatement::build_from_str(select_statement, 1)
-      .bind_by_idx(0, key.to_string()).unwrap()
-  )
+  let statement = CassStatement::build_from_str(select_statement, 1);
+  statement.bind_by_idx(0, key.to_string()).unwrap();
+  session.execute(statement)
 }
 
 #[allow(unused_variables)]

@@ -1,4 +1,3 @@
-use statement::Statement;
 use statement::CassStatement;
 use future::CassFuture;
 use result::CassResult;
@@ -31,9 +30,9 @@ impl CassSession {
   }}
 
   pub fn execute_string(&mut self, statement:&String) -> RustResult<&CassResult,Error> {
-	let statement = Statement::build_from_string(statement, 0);
-	self.execute_async(&statement);
-    let future = self.execute_async(&statement);
+	let statement = CassStatement::build_from_string(statement, 0);
+	self.execute_async(statement);
+    let future = self.execute_async(statement);
     future.wait();
     let rc = future.error_code();
     if rc.is_error() {
@@ -46,7 +45,7 @@ impl CassSession {
     self.execute_string(&statement.to_string())
   }
 
-  pub fn execute(&mut self, statement:&Statement) -> RustResult<&CassResult,Error> {
+  pub fn execute(&mut self, statement:&CassStatement) -> RustResult<&CassResult,Error> {
 
     let future = self.execute_async(statement);
     future.wait();
@@ -57,8 +56,8 @@ impl CassSession {
     return Ok(future.get_result());
   }
 
-  pub fn execute_async(&mut self, statement: &Statement) -> &mut CassFuture {unsafe{
-    &mut*cass_session_execute(self,&*statement.cass_statement)
+  pub fn execute_async(&mut self, statement: &CassStatement) -> &mut CassFuture {unsafe{
+    &mut*cass_session_execute(self,&*statement)
   }}
 
   pub fn execute_batch(&mut self, batch: &CassBatch) -> &CassFuture {unsafe{

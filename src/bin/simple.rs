@@ -23,9 +23,9 @@ fn main()  {
   if !session_future.error_code().is_error() {
     let mut session = session_future.get_session();
 
-    let mut statement = CassStatement::build_from_str("SELECT * FROM system.schema_keyspaces;", 0);
+    let statement = CassStatement::build_from_str("SELECT * FROM system.schema_keyspaces;", 0);
 
-    let result_future = session.execute_async(&mut statement);
+    let result_future = session.execute_async(statement);
     result_future.wait();
 
     if !result_future.error_code().is_error() {
