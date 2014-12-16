@@ -1,42 +1,42 @@
 use RowIterator;
-use Value;
-
-use iterator::CassIterator;
 use types::CassValue;
-use types::CassSizeType;
+
+use iterator::_CassIterator;
+use types::_CassValue;
+use types::_CassSizeType;
 
 use libc::c_char;
   
-pub struct Row {
-  pub cass_row:*const CassRow,
+pub struct CassRow {
+  pub row:*const _CassRow,
 }
-impl Copy for Row {}
+impl Copy for CassRow {}
 
 
-impl Row {
+impl CassRow {
   pub fn iterator(&mut self) -> RowIterator {unsafe{
-    let ref cass_row = *self.cass_row;
+    let ref cass_row = *self.row;
     let my_iter = cass_iterator_from_row(cass_row);
-    RowIterator{cass_iterator:my_iter}
+    RowIterator{iter:my_iter}
   }}
 
-  pub fn get_column(&self, index: u64) -> Value {unsafe{
-    let ref cass_row = *self.cass_row;
+  pub fn get_column(&self, index: u64) -> CassValue {unsafe{
+    let ref cass_row = *self.row;
     let col = cass_row_get_column(cass_row,index);
-    Value{cass_value:col}
+    CassValue{val:col}
   }}
 
-  pub fn get_column_by_name(&self, name: &str) -> Value {unsafe{
-    let ref cass_row = *self.cass_row;
+  pub fn get_column_by_name(&self, name: &str) -> CassValue {unsafe{
+    let ref cass_row = *self.row;
     let col = cass_row_get_column_by_name(cass_row,name.as_ptr() as *const i8);
-    Value{cass_value:col}
+    CassValue{val:col}
   }}
 }
-  pub enum CassRow { }
+  pub enum _CassRow { }
   #[link(name = "cassandra")]
   extern "C" {
-    pub fn cass_iterator_from_row(row: *const CassRow) -> *mut CassIterator;
-    fn cass_row_get_column(row: *const CassRow, index: CassSizeType) -> *const CassValue;
-    fn cass_row_get_column_by_name(row: *const CassRow, name: *const c_char) -> *const CassValue;
+    pub fn cass_iterator_from_row(row: *const _CassRow) -> *mut _CassIterator;
+    fn cass_row_get_column(row: *const _CassRow, index: _CassSizeType) -> *const _CassValue;
+    fn cass_row_get_column_by_name(row: *const _CassRow, name: *const c_char) -> *const _CassValue;
   }
 

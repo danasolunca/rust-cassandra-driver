@@ -52,17 +52,16 @@ fn select_from_collections(session:&mut CassSession, cmd:&str, key:&str) {
   match session.execute(statement) {
     Err(fail) => println!("fail: {}",fail),
     Ok(result) => {
-      let rows = result.iterator();
-        while rows.has_next() {
-        let row = rows.get_next_row();
-        let key = row.get_column(0);
-        println!("key={}",key.get_string());
-        let value = row.get_column(1);
-        for item in value.get_collection_iterator() {
-          let item_string = item.get_string();
-          println!("item: {}", item_string);
+      let mut rows = result.iterator();
+        for mut row in rows {
+          let key = row.get_column(0);
+          println!("key={}",key.get_string());
+          let value = row.get_column(1);
+          for item in value.get_collection_iterator().unwrap() {
+            let item_string = item.get_string();
+            println!("item: {}", item_string);
+          }
         }
-      }
     }
   }
 }

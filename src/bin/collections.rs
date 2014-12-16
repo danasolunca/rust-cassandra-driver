@@ -9,6 +9,10 @@ use cassandra::CassFuture;
 use cassandra::CassResult;
 use cassandra::CassSession;
 use cassandra::CassStatement;
+use cassandra::CassIterator;
+use cassandra::CassValue;
+use cassandra::CollectionIterator;
+use cassandra::CassValueType;
 
 struct Commands {
 	use_ks:&'static str,
@@ -51,11 +55,25 @@ fn select_from_collections(session:&mut CassSession, cmd:&str, key:&str) {
     Err(fail) => println!("fail: {}",fail),
     Ok(result) => {
       for row in result.iterator() {
-        let (key,value) = (row.get_column(0),row.get_column(1));
-        println!("key={}",key.get_string());
-        for item in value.get_collection_iterator() {
-          let item_string = item.get_string();
-          println!("item: {}", item_string);
+        let key:CassValue = row.get_column(0);
+        let value:CassValue=row.get_column(1);
+            println!("key={}",key);
+            println!("val={}",value);
+        match value.get_type() {
+          CassValueType::VARCHAR => {panic!("unexpected varchar")},
+          CassValueType::SET => {
+            match value.get_collection_iterator() {
+              Ok(mut value) => {
+                println!("key={}",key.get_string());
+                for item in value {
+                  let item_string = item.get_string();
+                  println!("item: {}", item_string);
+                }
+              },
+              Err(err) => panic!("collection iterator: {}",err)
+            }
+          }
+          _ => {panic!("unexpected types: {}",value.get_type())},
         }
       }
     }

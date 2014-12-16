@@ -1,8 +1,8 @@
 extern crate libc;
 #[allow(dead_code)]
 use statement::CassStatement;
+use error::_CassError;
 use error::CassError;
-use error::Error;
 use consistency::CassConsistency;
 
 use libc::c_uint;
@@ -24,12 +24,12 @@ impl CassBatch {
     cass_batch_free(self);
   }}
 
-  pub fn add_statement(&mut self, statement: &mut CassStatement) -> Error {unsafe{
-    Error{cass_error:cass_batch_add_statement(self,statement)}
+  pub fn add_statement(&mut self, statement: &mut CassStatement) -> CassError {unsafe{
+    CassError{err:cass_batch_add_statement(self,statement)}
   }}
 
-  pub fn set_consistency(&mut self, consistency: CassConsistency) -> Error {unsafe{
-    Error{cass_error:cass_batch_set_consistency(self,consistency)}
+  pub fn set_consistency(&mut self, consistency: CassConsistency) -> CassError {unsafe{
+    CassError{err:cass_batch_set_consistency(self,consistency)}
   }}
 }
 
@@ -46,8 +46,8 @@ type CassBatchType = c_uint;
 extern "C" {
   fn cass_batch_new(_type: CassBatchType) -> *mut CassBatch;
   fn cass_batch_free(batch: *mut CassBatch);
-  fn cass_batch_set_consistency(batch: *mut CassBatch, consistency: CassConsistency) -> CassError;
-  fn cass_batch_add_statement(batch: *mut CassBatch, statement: *mut CassStatement) -> CassError;
+  fn cass_batch_set_consistency(batch: *mut CassBatch, consistency: CassConsistency) -> _CassError;
+  fn cass_batch_add_statement(batch: *mut CassBatch, statement: *mut CassStatement) -> _CassError;
 }
 
 #[cfg(test)]

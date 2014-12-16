@@ -1,12 +1,12 @@
 use session::CassSession;
+use error::_CassError;
 use error::CassError;
-use error::Error;
 use result::CassResult;
 use result;
-use types::CassString;
-use types::CassBoolType;
-use types::CassDurationType;
-use types::CassSizeType;
+use types::_CassString;
+use types::_CassBoolType;
+use types::_CassDurationType;
+use types::_CassSizeType;
 use statement::CassPrepared;
 use libc::c_void;
 
@@ -17,7 +17,7 @@ impl Drop for CassFuture {
 }}
 
 impl CassFuture {
-  pub fn ready(&mut self) -> CassSizeType {unsafe{
+  pub fn ready(&mut self) -> _CassSizeType {unsafe{
     cass_future_ready(self)
   }}
 
@@ -25,7 +25,7 @@ impl CassFuture {
     cass_future_wait(self);
   }}
 
-  pub fn timed(&mut self, timeout: CassDurationType) -> CassBoolType {unsafe{
+  pub fn timed(&mut self, timeout: _CassDurationType) -> _CassBoolType {unsafe{
     cass_future_wait_timed(self,timeout)
   }}
 
@@ -46,8 +46,8 @@ impl CassFuture {
     &*cass_future_get_prepared(self)
   }}
 
-  pub fn error_code(&mut self) -> Error {unsafe{
-    Error{cass_error:cass_future_error_code(self)}
+  pub fn error_code(&mut self) -> CassError {unsafe{
+    CassError{err:cass_future_error_code(self)}
   }}
 
   pub fn error_message(&mut self) -> String {unsafe{
@@ -67,14 +67,14 @@ pub type CassFutureCallback = Option<extern "C" fn (arg1: *mut CassFuture, arg2:
   #[link(name = "cassandra")]
   extern "C" {
     pub fn cass_future_free(future: *mut CassFuture);
-    pub fn cass_future_set_callback(future: *mut CassFuture, callback: CassFutureCallback, data: *mut c_void) -> CassError;
-    pub fn cass_future_ready(future: *mut CassFuture) -> CassSizeType;
+    pub fn cass_future_set_callback(future: *mut CassFuture, callback: CassFutureCallback, data: *mut c_void) -> _CassError;
+    pub fn cass_future_ready(future: *mut CassFuture) -> _CassSizeType;
     pub fn cass_future_wait(future: *mut CassFuture);
-    pub fn cass_future_wait_timed(future: *mut CassFuture, timeout_us: CassDurationType) -> CassBoolType;
+    pub fn cass_future_wait_timed(future: *mut CassFuture, timeout_us: _CassDurationType) -> _CassBoolType;
     pub fn cass_future_get_session(future: *mut CassFuture) -> *mut CassSession;
     pub fn cass_future_get_result(future: *mut CassFuture) -> *const result::CassResult;
     pub fn cass_future_get_prepared(future: *mut CassFuture) -> *const CassPrepared;
-    pub fn cass_future_error_code(future: *mut CassFuture) -> CassError;
-    pub fn cass_future_error_message(future: *mut CassFuture) -> CassString;
+    pub fn cass_future_error_code(future: *mut CassFuture) -> _CassError;
+    pub fn cass_future_error_message(future: *mut CassFuture) -> _CassString;
   }
 

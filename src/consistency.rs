@@ -13,4 +13,5 @@ pub enum CassConsistency {
   LOCAL_SERIAL=9,
   LOCAL_ONE=10,
 }
+
 impl Copy for CassConsistency {}

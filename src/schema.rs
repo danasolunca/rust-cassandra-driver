@@ -1,17 +1,16 @@
 #[allow(dead_code)]
+use iterator::_CassIterator;
 use iterator::CassIterator;
-use iterator::CIterator;
+use types::_CassValue;
+use types::_CassString;
 use types::CassValue;
-use types::CassString;
-use types::Value;
 use libc::c_char;
 
 impl Copy for CassSchemaMeta {}
 
-
 impl CassSchema {
-  pub fn get_iterator(&self) -> CIterator<CassSchema> {unsafe{
-    CIterator{cass_iterator:cass_iterator_from_schema(self)}
+  pub fn get_iterator(&self) -> CassIterator<CassSchema> {unsafe{
+    CassIterator{iter:cass_iterator_from_schema(self)}
   }}
 
   pub fn free(&self) {unsafe{
@@ -43,7 +42,6 @@ impl Drop for CassSchema {
   }
 }
 
-  
 pub enum CassSchema { }
 #[allow(dead_code)]
 pub enum CassSchemaMeta { }
@@ -60,22 +58,34 @@ pub enum CassSchemaMetaType {
 
 impl CassSchemaMetaField {
   pub fn name(&self,) -> String {unsafe{
-    Value::cass_string_to_string(cass_schema_meta_field_name(self))
+    CassValue::cass_string_to_string(cass_schema_meta_field_name(self))
   }}
 
-  pub fn value(&self,) -> Value {unsafe{
-    Value{cass_value:cass_schema_meta_field_value(self)}
+  pub fn value(&self,) -> CassValue {unsafe{
+    CassValue{val:cass_schema_meta_field_value(self)}
   }}
+}
+
+impl CassSchemaMeta {
+ pub fn get_iterator(&self) -> &_CassIterator {unsafe{
+    &*cass_iterator_from_schema_meta(&*self)
+ }}
+
+  pub fn get_iterator_fields(&self) -> &_CassIterator {unsafe{
+    &*cass_iterator_fields_from_schema_meta(&*self)
+ }}
 }
 
 #[link(name = "cassandra")]
 extern "C" {
-  pub fn cass_iterator_from_schema(schema: *const CassSchema) -> *mut CassIterator;
+  pub fn cass_iterator_from_schema_meta(meta: *const CassSchemaMeta) -> *mut _CassIterator;
+  pub fn cass_iterator_fields_from_schema_meta(meta: *const CassSchemaMeta) -> *mut _CassIterator;
+  pub fn cass_iterator_from_schema(schema: *const CassSchema) -> *mut _CassIterator;
   pub fn cass_schema_free(schema: *const CassSchema);
   pub fn cass_schema_get_keyspace(schema: *const CassSchema, keyspace_name: *const c_char) -> *const CassSchemaMeta;
   pub fn cass_schema_meta_type(meta: *const CassSchemaMeta) -> CassSchemaMetaType;
   pub fn cass_schema_meta_get_entry(meta: *const CassSchemaMeta, name: *const c_char) -> *const CassSchemaMeta;
   pub fn cass_schema_meta_get_field(meta: *const CassSchemaMeta, name: *const c_char) -> *const CassSchemaMetaField;
-  pub fn cass_schema_meta_field_name(field: *const CassSchemaMetaField) -> CassString;
-  pub fn cass_schema_meta_field_value(field: *const CassSchemaMetaField) -> *const CassValue;
+  pub fn cass_schema_meta_field_name(field: *const CassSchemaMetaField) -> _CassString;
+  pub fn cass_schema_meta_field_value(field: *const CassSchemaMetaField) -> *const _CassValue;
 }

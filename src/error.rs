@@ -3,6 +3,12 @@ extern crate libc;
 use libc::c_char;
 use libc::c_uint;
 
+use std::fmt::Show;
+use std::fmt::Formatter;
+use std::fmt;
+
+use std::c_str::CString;
+
 #[allow(dead_code)]
 pub const CASS_ERROR_LAST_ENTRY: ::libc::c_uint = 50331654;
 #[allow(non_camel_case_types)]
@@ -77,30 +83,40 @@ pub enum CassErrorSSLType {
   NOT_IMPLEMENTED=50331654,
 }
 
-#[deriving(Clone,Show)]
-pub struct Error {
-  pub cass_error:CassError,
-}
-impl Copy for Error {}
 
-impl Error {
-  pub fn new(err:u32) -> Error {
-    Error{cass_error:err}
+pub struct CassError {
+  pub err:_CassError,
+}
+
+impl Show for CassError {
+  fn fmt(&self, f: &mut Formatter) -> fmt::Result {unsafe{
+    let err = self.err;
+    let err = cass_error_desc(err);
+    let err = CString::new(err, false);
+    write!(f, "Error:{}", self.err)
+  }}
+}
+
+impl Copy for CassError {}
+
+impl CassError {
+  pub fn new(err:u32) -> CassError {
+    CassError{err:err}
   }
 
   pub fn is_error(&self) -> bool {
-    if self.cass_error != CASS_OK {true} else {false}
+    if self.err != CASS_OK {true} else {false}
   }
 
   pub fn cass_error_desc(&self) -> *const c_char {unsafe{
-    cass_error_desc(self.cass_error)
+    cass_error_desc(self.err)
   }}
 }
 
   type CassErrorSource = c_uint;  
-  pub type CassError = c_uint;
+  pub type _CassError = c_uint;
   #[link(name = "cassandra")]
   extern "C" {
-    pub fn cass_error_desc(error: CassError) -> *const c_char;
+    pub fn cass_error_desc(error: _CassError) -> *const c_char;
   }
 
