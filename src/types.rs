@@ -266,7 +266,7 @@ impl CassValue {
   //~ }}
 
   pub fn is_null(self) -> bool {unsafe{
-    !cass_value_is_null(self.val) == Int::zero()
+    cass_value_is_null(self.val) != Int::zero()
   }}
 
   pub fn is_collection(self) -> bool {unsafe{
