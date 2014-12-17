@@ -154,8 +154,12 @@ pub trait CassUuid {
 #[allow(dead_code)]
 impl CassValue {
 
-  pub fn bytes2cassbytes(bytes:&_Bytes) -> _CassBytes {unsafe{
+  pub fn bytes2cassbytes(bytes:&Vec<u8>) -> _CassBytes {unsafe{
     cass_bytes_init(bytes.as_slice().as_ptr(), bytes.len() as u64)
+  }}
+
+  pub fn cassbytes2bytes(bytes:&_CassBytes) -> Vec<u8> {unsafe{
+    Vec::from_raw_buf(bytes.data, bytes.size as uint)
   }}
 
   pub fn cassinet2ipaddr(inet:_CassInet) -> IpAddr {
@@ -255,14 +259,19 @@ impl CassValue {
     CassError{err:cass_value_get_inet(self.val,inet)}
   }}
 
-  //~ pub fn get_bytes(&self, mut output: Vec<u8>) -> Error {unsafe{
-    //~ let ref mut my_bytes = output;
-    //~ Error{cass_error:cass_value_get_bytes(self.cass_value,my_bytes)}
+  //~ pub fn get_bytes(&self) -> &Vec<u8> {unsafe{
+    //~ let my_ptr: *const _CassValue = self.val;
+    //~ let bytes = cass_bytes_init2(my_ptr as *const u8,);
+    //~ CassValue::cassbytes2bytes(bytes)
   //~ }}
 
-  //~ pub fn get_decimal(self, mut output: f64) -> Error {unsafe{
-    //~ let ref mut my_decimal = output;
-    //~ Error{cass_error:cass_value_get_decimal(self.cass_value,output)}
+  //~ pub fn get_decimal(&self) -> Result<&Decimal,CassError> {unsafe{
+    //~ let ref output = Decimal{scale:1,varint:2};
+    //~ let err = CassError{err:cass_value_get_decimal(self.val,output)};
+    //~ match err.is_error() {
+      //~ true => Ok(output),
+      //~ false => err
+    //~ }
   //~ }}
 
   pub fn is_null(self) -> bool {unsafe{
@@ -270,7 +279,7 @@ impl CassValue {
   }}
 
   pub fn is_collection(self) -> bool {unsafe{
-    !cass_value_is_collection(self.val) == Int::zero()
+    cass_value_is_collection(self.val) != Int::zero()
   }}
 
   pub fn item_count(self) -> u64 {unsafe{
@@ -421,7 +430,7 @@ pub struct _CassString {
   pub length: _CassSizeType,
 }
 
-pub type _Bytes = Vec<u8>;
+//pub type Bytes = Vec<u8>;
 
 pub type _CassDurationType = u64;
 

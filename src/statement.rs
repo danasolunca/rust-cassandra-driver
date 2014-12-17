@@ -19,7 +19,6 @@ use types::_CassString;
 use types::CassValue;
 use uuid::Uuid;
 use types::_CassUuid;
-use types::_Bytes;
 
 use std::io::net::ip::IpAddr;
 
@@ -150,7 +149,7 @@ impl Drop for CassStatement {
     }}
   }
 
-  impl CassBindable for _Bytes {
+  impl CassBindable for Vec<u8> {
     fn bind(&self, index: _CassSizeType, _statement: &mut CassStatement)-> u32 {unsafe{
       cass_statement_bind_bytes(_statement,index,CassValue::bytes2cassbytes(self))
     }}

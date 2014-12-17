@@ -93,7 +93,7 @@ impl Show for CassError {
     let err = self.err;
     let err = cass_error_desc(err);
     let err = CString::new(err, false);
-    write!(f, "Error:{}", self.err)
+    write!(f, "Error:{}", err)
   }}
 }
 

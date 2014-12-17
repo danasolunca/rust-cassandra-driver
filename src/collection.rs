@@ -9,7 +9,6 @@ use types::_CassString;
 use types::_CassBoolType;
 use types::_CassSizeType;
 use types::_CassUuid;
-use types::_Bytes;
 use types::CassValueType;
 
 use std::io::net::ip::IpAddr;
@@ -85,7 +84,7 @@ impl CassCollection {
     CassError{err:cass_collection_append_string(self.collection,cass_string)}
   }}
 
-  pub fn append_bytes(&self, value: _Bytes) -> CassError {unsafe{
+  pub fn append_bytes(&self, value: Vec<u8>) -> CassError {unsafe{
     CassError{err:cass_collection_append_bytes(self.collection,CassValue::bytes2cassbytes(&value))}
   }}
 
@@ -98,9 +97,9 @@ impl CassCollection {
     CassError{err:cass_collection_append_inet(self.collection,CassValue::ipaddr2cassinet(value))}
   }}
 
-  //~ pub fn append_decimal(&self, value: Decimal) -> Error {unsafe{
-    //~ Error::new(cass_collection_append_decimal(self.cass_collection,value.cass_decimal))
-  //~ }}
+  pub fn append_decimal(&self, value: Decimal) -> CassError {unsafe{
+    CassError::new(cass_collection_append_decimal(self.collection,value))
+  }}
 
   pub fn collection_iterator_from_collection(collection:CassValue) -> CollectionIterator {unsafe{
     CollectionIterator{iter:cass_iterator_from_collection(collection.val)}
