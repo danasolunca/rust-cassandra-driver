@@ -68,7 +68,7 @@ fn main()  {
 
   let contact_points = "127.0.0.1";
   let cluster = CassCluster::new();
-  cluster.set_contact_points(contact_points).unwrap()
+  cluster.set_contact_points(contact_points)
         .set_port(9042).unwrap()
         .set_protocol_version(3).unwrap()
         .set_queue_size_io(3).unwrap()

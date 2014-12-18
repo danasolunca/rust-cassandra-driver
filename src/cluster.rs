@@ -15,6 +15,15 @@ use libc::c_void;
 use libc::c_uint;
 use libc::c_int;
 
+// phantom types
+struct Complete;
+struct Incomplete;
+
+trait ClusterBuilder {
+    fn set_contact_points(&mut self,contact_points:&str) -> &mut CassCluster;
+    fn name(mut self, &str) -> CassCluster;
+}
+
 #[allow(dead_code)]
 #[allow(unused_variables)]
 impl CassCluster {
@@ -23,11 +32,11 @@ impl CassCluster {
     &mut*cass_cluster_new()
   }}
   
-  pub fn set_contact_points(&mut self,contact_points:&str) -> Result<&mut CassCluster,_CassError> {unsafe{
+  pub fn set_contact_points(&mut self,contact_points:&str) -> &mut CassCluster {unsafe{
     let points = contact_points.to_c_str();
     let my_self_ptr: *mut CassCluster = self;
     let err = cass_cluster_set_contact_points(my_self_ptr,types::cass_string_init(points.as_ptr()).data);
-    Ok(self)
+    self
   }}
 
   pub fn connect_async(&mut self) -> &mut CassFuture{unsafe{
@@ -176,13 +185,14 @@ impl CassCluster {
 
 }
 
+#[unsafe_destructor]
 impl Drop for CassCluster {
   fn drop(&mut self) {
     self.free();
   }
 }
 
-  pub enum CassCluster { }
+  pub enum CassCluster<C=Incomplete>{ }
   #[link(name = "cassandra")]
   extern "C" {
     fn cass_cluster_new() -> *mut CassCluster;

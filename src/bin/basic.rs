@@ -58,7 +58,7 @@ fn main()  {
 
   let contact_points = "127.0.0.1";
 
-  match CassCluster::new().set_contact_points(contact_points).unwrap().connect() {
+  match CassCluster::new().set_contact_points(contact_points).connect() {
     Err(fail) => println!("fail: {}",fail),
     Ok(session) => {
       let session = session;

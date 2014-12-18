@@ -15,7 +15,7 @@ pub struct Simple {
 
 fn main()  {
   let cluster = CassCluster::new();
-  cluster.set_contact_points("127.0.0.1").unwrap();
+  cluster.set_contact_points("127.0.0.1");
 
   let session_future = cluster.connect_async();
   session_future.wait();

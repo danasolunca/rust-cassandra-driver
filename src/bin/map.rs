@@ -82,7 +82,7 @@ fn main() {
   items.insert("mango",4);
 
   let cluster = CassCluster::new();
-  cluster.set_contact_points("127.0.0.1").unwrap();
+  cluster.set_contact_points("127.0.0.1");
 
   match cluster.connect() {
     Err(fail) => println!("fail: {}",fail),

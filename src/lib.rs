@@ -1,5 +1,6 @@
 #![feature(globs)]
 #![feature(unsafe_destructor)]
+#![feature(default_type_params)]
 
 extern crate libc;
 extern crate uuid;

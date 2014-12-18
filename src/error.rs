@@ -6,6 +6,11 @@ use libc::c_uint;
 use std::fmt::Show;
 use std::fmt::Formatter;
 use std::fmt;
+use std::collections::HashMap;
+
+use std::mem::transmute;
+use std::error::Error;
+use std::str;
 
 use std::c_str::CString;
 
@@ -28,6 +33,8 @@ pub enum CassErrorSourceType {
 
 #[allow(dead_code)]
 #[allow(non_camel_case_types)]
+#[deriving(Eq)]
+#[deriving(PartialEq)]
 pub enum CassErrorLibType {
   BAD_PARAMS=16777217,
   NO_STREAMS=16777218,
@@ -97,6 +104,12 @@ impl Show for CassError {
   }}
 }
 
+impl Error for CassError {
+  fn description(&self) -> &str {unsafe{
+    str::from_c_str(cass_error_desc(self.err))
+  }}
+}
+
 impl Copy for CassError {}
 
 impl CassError {
@@ -107,10 +120,6 @@ impl CassError {
   pub fn is_error(&self) -> bool {
     if self.err != CASS_OK {true} else {false}
   }
-
-  pub fn cass_error_desc(&self) -> *const c_char {unsafe{
-    cass_error_desc(self.err)
-  }}
 }
 
   type CassErrorSource = c_uint;  

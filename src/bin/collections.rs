@@ -9,9 +9,7 @@ use cassandra::CassFuture;
 use cassandra::CassResult;
 use cassandra::CassSession;
 use cassandra::CassStatement;
-use cassandra::CassIterator;
 use cassandra::CassValue;
-use cassandra::CollectionIterator;
 use cassandra::CassValueType;
 
 struct Commands {
@@ -91,7 +89,7 @@ fn main() {
 
   let items = [ "apple", "orange", "banana", "mango"].to_vec();
 
-  match CassCluster::new().set_contact_points("127.0.0.1").unwrap().connect() {
+  match CassCluster::new().set_contact_points("127.0.0.1").connect() {
     Err(fail) => println!("fail: {}",fail),
     Ok(session) => {
       for cmd in [cmds.create_ks,cmds.use_ks,cmds.create_table].iter() {
