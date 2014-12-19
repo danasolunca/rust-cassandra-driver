@@ -470,14 +470,13 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-  use super::CassString;
-  use super::Value;
+  use super::CassValue;
   #[test]
   fn string_wrapping() {
     let test_string = "test_string2345678";
-    let cass_string:CassString = Value::str_to_cass_string(test_string);
+    let cass_string = CassValue::str_to_cass_string(test_string);
     //println!("cassstr: {}", cass_string);
-    let reconstituted = Value::cass_string_to_string(cass_string);
+    let reconstituted = CassValue::cass_string_to_string(cass_string);
     println!("reconstituted: {}", reconstituted);
     assert!(test_string == reconstituted.as_slice());
   }

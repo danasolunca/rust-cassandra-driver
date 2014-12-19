@@ -5,7 +5,9 @@
 extern crate libc;
 extern crate uuid;
 
-//pub use statement::CassBindable;
+// Tools for dealing with universes (this is a doc comment, and is shown on
+// the crate index page. The ! makes it apply to the parent of the comment,
+// rather than what follows).
 pub use batch::CassBatch;
 pub use cass_ssl::CassSsl;
 pub use cluster::CassCluster;

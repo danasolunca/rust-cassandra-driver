@@ -43,6 +43,9 @@ impl Drop for CassStatement {
   }}
 }
 
+  ///Convenience methods to bind Rust data types to Cassandra Statements
+  ///
+  ///TODO add a new bind method with implicit indexing
   pub trait CassBindable {
     fn bind_by_name(&self, name: &str, statement: &mut CassStatement) -> u32;
     fn bind(&self, index: _CassSizeType, statement: &mut CassStatement) -> u32;
@@ -87,7 +90,7 @@ impl Drop for CassStatement {
       cass_statement_bind_bool_by_name(_statement,name.as_ptr() as *const i8,if *self == true {1} else {0})
     }}
   }
-    
+
   impl CassBindable for f32 {
     fn bind(&self, index: _CassSizeType, _statement: &mut CassStatement)-> u32 {unsafe{
       cass_statement_bind_float(_statement,index,*self)

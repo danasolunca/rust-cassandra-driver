@@ -154,20 +154,19 @@ use std::str::FromStr;
 use std::io::net::ip::IpAddr;
 use std::io::net::ip::Ipv4Addr;
 use std::io::net::ip::Ipv6Addr;
-use types::CassBytes;
 use super::CassCollection;
-use types::Value;
-use types::CassDecimal;
+use types::CassValue;
+//use types::CassDecimal;
   #[test]
   fn new() {
-    super::Collection::new_list(4);
-    super::Collection::new_map(5);
-    super::Collection::new_set(6);
+    super::CassCollection::new_list(4);
+    super::CassCollection::new_map(5);
+    super::CassCollection::new_set(6);
   }
 
   #[test]
   fn append_list() {
-    let mut list = super::Collection::new_list(10);
+    let mut list = super::CassCollection::new_list(10);
     list.append_bool(true);
     list.append_bytes("cass_bytes".to_string().into_bytes());
     //list.append_decimal(Value::build_cass_decimal(1234567890,3));
@@ -186,7 +185,7 @@ use types::CassDecimal;
 
   #[test]
   fn append_map() {
-    let mut map = super::Collection::new_map(10);
+    let mut map = super::CassCollection::new_map(10);
     map.append_bool(true);
     map.append_bytes("cass_bytes".to_string().into_bytes());
     //map.append_decimal(Value::build_cass_decimal(1234567890,3));
@@ -206,7 +205,7 @@ use types::CassDecimal;
 
   //#[test]
   fn append_set() {
-    let mut set = super::Collection::new_set(10);
+    let mut set = super::CassCollection::new_set(10);
     set.append_bool(true);
     set.append_bytes("cass_bytes".to_string().into_bytes());
     //set.append_decimal(Value::build_cass_decimal(1234567890,3));

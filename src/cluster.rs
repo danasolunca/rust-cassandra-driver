@@ -238,20 +238,20 @@ mod tests {
     #[test]
     fn create() {
       let cluster = super::CassCluster::new();
-      cluster.set_contact_points("127.0.0.1").unwrap();
+      cluster.set_contact_points("127.0.0.1");
     }
 
     #[test]
     fn connect() {
       let cluster = super::CassCluster::new();
-      cluster.set_contact_points("127.0.0.1").unwrap()
+      cluster.set_contact_points("127.0.0.1")
             .connect();
     }
 
     #[test_should_fail]
     fn connect_bad_host() {
      let cluster = super::CassCluster::new();
-     cluster.set_contact_points("10.254.254.254").unwrap()
+     cluster.set_contact_points("10.254.254.254")
           .connect();
     }
 }
